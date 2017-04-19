@@ -1,21 +1,21 @@
-package net.lovexq.seckill.controller;
+package net.lovexq.seckill.kernel.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * 演示控制层
+ * 房地产控制层
  *
  * @author LuPindong
  * @time 2017-04-19 07:42
  */
 @Controller
-@RequestMapping("/hello")
-public class HelloController {
+@RequestMapping("/estate")
+public class EstateController {
 
-    @GetMapping("/world")
-    public void world() {
-        System.out.println("world()");
+    @GetMapping("/list")
+    public String list() {
+        return "/estate/list";
     }
 }

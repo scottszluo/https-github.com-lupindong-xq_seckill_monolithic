@@ -1,12 +1,12 @@
 ## LOGGING
 logging:
-  path: /home/lupindong/Development/logfile/xq-blog
-#  config: classpath:config/logback.xml
+  path: D:/LOGFILE/xq_seckill_monolithic
+  config: classpath:config/logback.xml
   level:
-    org.springframework: INFO
-    org.hibernate: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
     com.alibaba.druid: DEBUG
-    com.gcidesign: DEBUG
+    net.lovexq: DEBUG
 
 ## EMBEDDED SERVER CONFIGURATION (ServerProperties)
 server:
@@ -39,8 +39,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://${masterSource.host}/${masterSource.name}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
-    username: blogapp
-    password: app@blog
+    username: seckill_app
+    password: secki1105@mysql.COM
     # 初始化大小，最小，最大
     initialSize: 5
     minIdle: 5
@@ -59,9 +59,10 @@ spring:
     poolPreparedStatements: true
     maxPoolPreparedStatementPerConnectionSize: 20
     # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
-    filters: stat,wall,log4j
+    filters: stat,wall,slf4j
     # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-    connectionProperties: druid.stat.mergeSql=true;druid.stat.logSlowSql=rue;druid.stat.slowSqlMillis=5000;druid.log.conn=truedruid.log.rs=false;druid.log.stmt=false;druid.log.stmt.executableSql=true;
+    #connectionProperties: druid.stat.mergeSql=true;druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=5000;druid.log.conn=true;druid.log.rs=true;druid.log.stmt=true;druid.log.stmt.executableSql=true;
+    connectionProperties: druid.log.stmt.executableSql=true;druid.stat.logSlowSql=true;
     # 合并多个DruidDataSource的监控数据
     useGlobalDataSourceStat: true
 
@@ -75,5 +76,5 @@ spring:
 
 ## DATASOURCE
 masterSource:
-  host: 127.0.0.1:33006
-  name: xq-blog
+  host: 192.168.9.105:33060
+  name: db_seckill_monolithic

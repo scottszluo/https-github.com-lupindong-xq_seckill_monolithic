@@ -1,12 +1,18 @@
-## LOGGING
-logging:
-  #path: D:/LOGFILE/xq-blog
-  #config: classpath:config/logback.xml
-  level:
-    org.springframework: INFO
-    org.hibernate: INFO
-    com.alibaba.druid: DEBUG
-    org.lovexq: DEBUG
+## APPLICATION CUSTOM CONFIG
+app:
+  masterDB:
+    host: 192.168.9.105:33060
+    name: db_seckill_monolithic
+    username: seckill_app
+    password: secki1105@mysql.COM
+  dataSource:
+    master:
+      name: MasterSource
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClass: com.mysql.jdbc.Driver
+      url: jdbc:mysql://${app.masterDB.host}/${app.masterDB.name}?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
+      username: ${app.masterDB.username}
+      password: ${app.masterDB.password}
 
 ## EMBEDDED SERVER CONFIGURATION (ServerProperties)
 server:
@@ -20,7 +26,28 @@ server:
   tomcat:
     uri-encoding: UTF-8
 
+## LOGGING
+logging:
+  path: D:/LOGFILE/xq_seckill_monolithic
+  config: classpath:config/logback.xml
+  #OFF、FATAL、ERROR、WARN、INFO、DEBUG、ALL
+  level:
+    application : WARN
+    druid.sql: DEBUG
+    #druid.sql.DataSource: DEBUG
+    #druid.sql.Connection: DEBUG
+    #druid.sql.Statement: DEBUG
+    #druid.sql.ResultSet: DEBUG
+    net.lovexq.seckill: DEBUG
+    org.hibernate: WARN
+    org.springframework: WARN
+    org.thymeleaf: WARN
+
+## SPRING CONFIGURATION
 spring:
+  devtools:
+    restart:
+      enabled: true
   ## THYMELEAF (ThymeleafAutoConfiguration)
   thymeleaf:
     cache: false # Enable template caching.
@@ -32,49 +59,3 @@ spring:
     mode: HTML5 # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
     prefix: classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
     suffix: .html # Suffix that gets appended to view names when building a URL.
-
-  ## DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
-  datasource:
-    name: MasterSource
-    type: com.alibaba.druid.pool.DruidDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://${masterSource.host}/${masterSource.name}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
-    username: seckill_app
-    password: secki1105@mysql.COM
-    # 初始化大小，最小，最大
-    initialSize: 5
-    minIdle: 5
-    maxActive: 30
-    # 配置获取连接等待超时的时间
-    maxWait: 60000
-    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-    timeBetweenEvictionRunsMillis: 60000
-    # 配置一个连接在池中最小生存的时间，单位是毫秒
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: SELECT 1 FROM DUAL
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    # 打开PSCache，并且指定每个连接上PSCache的大小
-    poolPreparedStatements: true
-    maxPoolPreparedStatementPerConnectionSize: 20
-    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
-    filters: stat,wall,slf4j
-    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-    #connectionProperties: druid.stat.mergeSql=true;druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=5000;druid.log.conn=true;druid.log.rs=true;druid.log.stmt=true;druid.log.stmt.executableSql=true;
-    connectionProperties: druid.log.stmt.executableSql=true;druid.stat.logSlowSql=true;
-    # 合并多个DruidDataSource的监控数据
-    useGlobalDataSourceStat: true
-
-  ## JPA (JpaBaseConfiguration, HibernateJpaAutoConfiguration)
-  data:
-    jpa:
-      repositories:
-        enabled: true
-  jpa:
-    database: MYSQL
-
-## DATASOURCE
-masterSource:
-  host: 192.168.9.105:33060
-  name: db_seckill_monolithic
