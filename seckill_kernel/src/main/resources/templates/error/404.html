@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head th:include="error/errorHead :: head('404 Page | XQ博客')"></head>
+<!-- END HEAD -->
+<body class=" page-404-full-page">
+<div class="row">
+    <div class="col-md-12 page-404">
+        <div class="number font-red"> 404</div>
+        <div class="details">
+            <h3>哎呀！你迷路了。</h3>
+            <p>
+                我们找不到你要找的那一页。<br/>
+            </p>
+            <p>
+                <a href="/">返回主页</a>　或者　<a href="javascript:void(0)" onclick="history.back();">返回上一页</a>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- BEGIN FOOTER -->
+<span th:replace="error/errorFoot"></span>
+<!-- END FOOTER -->
+</body>
+
+</html>

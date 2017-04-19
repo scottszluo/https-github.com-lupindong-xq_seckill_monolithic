@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head th:include="error/errorHead :: head('ERROR Page | XQ博客')"></head>
+<!-- END HEAD -->
+<body class=" page-404-3">
+<div class="page-inner">
+    <img src="/component/metronic_v4.6/assets/pages/media/pages/earth.jpg" class="img-responsive"/>
+</div>
+<div class="container error-404">
+    <h1>ERROR</h1>
+    <p th:text="${exception}"></p>
+    <p th:text="${message}"></p>
+    <p>
+        我们正在修复它！请稍后重试或联系管理员。<br/>
+    </p>
+    <p>
+        <a href="/">返回主页</a>　或者　<a href="javascript:void(0)" onclick="history.back();">返回上一页</a>
+    </p>
+</div>
+<!-- BEGIN FOOTER -->
+<span th:replace="error/errorFoot"></span>
+<!-- END FOOTER -->
+</body>
+
+</html>

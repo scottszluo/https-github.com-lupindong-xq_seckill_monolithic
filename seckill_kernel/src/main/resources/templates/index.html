@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head th:include="foreground/common/pageHead :: head('XQ博客')"></head>
+<!-- END HEAD -->
+<body>
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <span th:replace="foreground/common/pageHeader"></span>
+    <!-- END HEADER -->
+    <div role="main" class="main">
+        <hr/>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="blog-posts">
+                        <!--<ul class="pagination pagination-lg pull-right">-->
+                        <!--<li><a href="#">«</a></li>-->
+                        <!--<li class="active"><a href="#">1</a></li>-->
+                        <!--<li><a href="#">2</a></li>-->
+                        <!--<li><a href="#">3</a></li>-->
+                        <!--<li><a href="#">»</a></li>-->
+                        <!--</ul>-->
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <!-- BEGIN SIDEBAR -->
+                    <span th:replace="foreground/common/pageSidebar"></span>
+                    <!-- END SIDEBAR -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- BEGIN FOOTER -->
+    <span th:replace="foreground/common/pageFooter"></span>
+    <!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<span th:replace="foreground/common/pageFoot"></span>
+<!-- END FOOT -->
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
+        // 加载文章列表
+        loadPosts(1);
+    })
+
+    // 加载文章列表
+    function loadPosts(pageNumber) {
+        $.get('/post/listData', {pageNumber: pageNumber, pageSize: 10})
+                .done(function (response) {
+                    var jsonData = JSON.parse(response);
+                    $.each(jsonData, function (index, data) {
+                        $(".blog-posts")
+                                .html('<article class="post post-medium"><div class="row"><div class="col-md-5"><div class="post-image"><div class="img-thumbnail"><img class="img-responsive" width="300px" src="/appRes/img/avatar800.jpg" alt=""></div></div></div><div class="col-md-7"><div class="post-content"><h2><a href="blog-post.html">' + data.postTitle + '</a></h2><p>' + data.postContent.substr(0, 100) + ' [...]</p></div></div></div><div class="row"><div class="col-md-12"><div class="post-meta"><span><i class="fa fa-calendar"></i>January 10, 2016</span> <span><i class="fa fa-user"></i> By <a href="#">John Doe</a></span> <span><i class="fa fa-tag"></i><a href="#">Duis</a>, <a href="#">News</a></span> <span><i class="fa fa-comments"></i><a href="#">12 Comments</a></span> <a href="blog-post.html" class="btn btn-xs btn-primary pull-right">阅读全文 <i class="fa fa-arrow-right"></i></a></div></div></div></article>');
+                    })
+                })
+                .fail(function () {
+                    alert("出错啦！");
+                });
+    }
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+</html>

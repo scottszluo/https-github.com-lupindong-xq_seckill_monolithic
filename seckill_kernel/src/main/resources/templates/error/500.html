@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head th:include="error/errorHead :: head('500 Page | XQ博客')"></head>
+<!-- END HEAD -->
+<body class="page-500-full-page">
+<div class="row">
+    <div class="col-md-12 page-500">
+        <div class=" number font-red">500</div>
+        <div class=" details">
+            <h3>哎呀！系统异常了。</h3>
+            <p th:text="${exception}"></p>
+            <p th:text="${message}"></p>
+            <p>
+                我们正在修复它！请稍后重试或联系管理员。<br/>
+            </p>
+            <p>
+                <a href="/">返回主页</a>　或者　<a href="javascript:void(0)" onclick="history.back();">返回上一页</a>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- BEGIN FOOTER -->
+<span th:replace="error/errorFoot"></span>
+<!-- END FOOTER -->
+</body>
+
+</html>

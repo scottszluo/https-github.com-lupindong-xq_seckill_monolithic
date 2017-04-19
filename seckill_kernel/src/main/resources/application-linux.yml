@@ -1,0 +1,79 @@
+## LOGGING
+logging:
+  path: /home/lupindong/Development/logfile/xq-blog
+#  config: classpath:config/logback.xml
+  level:
+    org.springframework: INFO
+    org.hibernate: INFO
+    com.alibaba.druid: DEBUG
+    com.gcidesign: DEBUG
+
+## EMBEDDED SERVER CONFIGURATION (ServerProperties)
+server:
+  address: 127.0.0.1 # Network address to which the server should bind to.
+  port: 8888 # Server HTTP port.
+  compression:
+    enabled: true # If response compression is enabled.
+    mime-types: text/html,text/xml,text/css,application/json,application/xml # Comma-separated list of MIME types that should be compressed. For instance `text/html,text/css,application/json`
+    min-response-size: 1024 # Minimum response size that is required for compression to be performed. For instance 2048
+  session-timeout: 3600 # Session timeout in seconds.
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+  ## THYMELEAF (ThymeleafAutoConfiguration)
+  thymeleaf:
+    cache: false # Enable template caching.
+    check-template: true # Check that the template exists before rendering it.
+    check-template-location: true # Check that the templates location exists.
+    content-type: text/html # Content-Type value.
+    enabled: true # Enable MVC Thymeleaf view resolution.
+    encoding: UTF-8 # Template encoding.
+    mode: HTML5 # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
+    prefix: classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
+    suffix: .html # Suffix that gets appended to view names when building a URL.
+
+  ## DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+  datasource:
+    name: MasterSource
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://${masterSource.host}/${masterSource.name}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
+    username: blogapp
+    password: app@blog
+    # 初始化大小，最小，最大
+    initialSize: 5
+    minIdle: 5
+    maxActive: 30
+    # 配置获取连接等待超时的时间
+    maxWait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,log4j
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.logSlowSql=rue;druid.stat.slowSqlMillis=5000;druid.log.conn=truedruid.log.rs=false;druid.log.stmt=false;druid.log.stmt.executableSql=true;
+    # 合并多个DruidDataSource的监控数据
+    useGlobalDataSourceStat: true
+
+  ## JPA (JpaBaseConfiguration, HibernateJpaAutoConfiguration)
+  data:
+    jpa:
+      repositories:
+        enabled: true
+  jpa:
+    database: MYSQL
+
+## DATASOURCE
+masterSource:
+  host: 127.0.0.1:33006
+  name: xq-blog

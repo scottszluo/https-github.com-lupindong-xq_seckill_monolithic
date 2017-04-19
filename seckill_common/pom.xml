@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>xq-seckill-common</artifactId>
+    <packaging>jar</packaging>
+
+    <name>XQ_SecKill_Monolithic Common</name>
+
+    <parent>
+        <groupId>net.lovexq.seckill</groupId>
+        <artifactId>xq-seckill-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../seckill_parent/pom.xml</relativePath>
+    </parent>
+
+    <dependencies>
+        <!-- SpringBoot官方依赖-->
+
+        <!-- 第三方依赖 -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
