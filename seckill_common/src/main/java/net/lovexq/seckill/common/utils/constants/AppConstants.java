@@ -41,4 +41,19 @@ public class AppConstants {
      * 设置会话中的登录用户属性
      */
     public static final String RANDOM_NUMBER = "randomNumber";
+
+    /**
+     * 字符集编码：UTF-8
+     */
+    public static final String CHARSET_UTF8 = "UTF-8";
+
+    /**
+     * 广州链家网址
+     */
+    public static final String URL_GZ = "http://gz.lianjia.com";
+
+    /**
+     * 频道：二手房
+     */
+    public static final String CHANNEL_ERSHOUFANG = "/ershoufang/";
 }

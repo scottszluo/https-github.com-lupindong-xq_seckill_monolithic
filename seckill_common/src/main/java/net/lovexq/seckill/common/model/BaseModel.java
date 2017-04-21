@@ -1,5 +1,6 @@
 package net.lovexq.seckill.common.model;
 
+import net.lovexq.seckill.common.LocalDateTimeType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;

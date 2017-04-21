@@ -1,4 +1,4 @@
-package net.lovexq.seckill.kernel.core.config;
+package net.lovexq.seckill.core.config;
 
 import com.alibaba.druid.filter.logging.Slf4jLogFilter;
 import com.alibaba.druid.filter.stat.StatFilter;
@@ -14,6 +14,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by 品冬 on 2017-2-15.
+ * Created by LuPindong on 2017-2-15.
  */
 @Configuration
 public class DruidConfiguration {
@@ -31,6 +32,7 @@ public class DruidConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(DruidConfiguration.class);
 
     @Bean
+    @Primary
     public DataSource masterDataSource(@Value("${app.dataSource.master.name}") String dsName, @Value("${app.dataSource.master.driverClass}") String driver, @Value("${app.dataSource.master.url}") String url,
                                        @Value("${app.dataSource.master.username}") String username, @Value("${app.dataSource.master.password}") String password) throws SQLException {
         return getDataSource(dsName, driver, url, username, password);
@@ -67,7 +69,7 @@ public class DruidConfiguration {
         slf4jLogFilter.setConnectionLogErrorEnabled(true);
         slf4jLogFilter.setResultSetLogEnabled(false);
         slf4jLogFilter.setResultSetLogErrorEnabled(true);
-        slf4jLogFilter.setStatementLogEnabled(true);
+        slf4jLogFilter.setStatementLogEnabled(false);
         slf4jLogFilter.setStatementExecutableSqlLogEnable(true);
         slf4jLogFilter.setStatementSqlFormatOption(new SQLUtils.FormatOption(false, false));
 

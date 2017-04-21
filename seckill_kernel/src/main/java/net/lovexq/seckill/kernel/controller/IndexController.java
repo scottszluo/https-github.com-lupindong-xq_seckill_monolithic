@@ -1,5 +1,6 @@
 package net.lovexq.seckill.kernel.controller;
 
+import net.lovexq.seckill.core.controller.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @time 2017-04-19 09:25
  */
 @Controller
-public class IndexController {
+public class IndexController extends BaseController {
 
     @GetMapping("/")
     public String index() {

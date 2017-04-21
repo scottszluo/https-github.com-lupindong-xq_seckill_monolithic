@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by 品冬 on 2017-4-19.
+ * Created by LuPindong on 2017-4-19.
  */
 public class IdWorkerTest {
 

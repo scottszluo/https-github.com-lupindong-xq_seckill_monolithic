@@ -1,4 +1,4 @@
-package net.lovexq.seckill.common.model;
+package net.lovexq.seckill.common;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;

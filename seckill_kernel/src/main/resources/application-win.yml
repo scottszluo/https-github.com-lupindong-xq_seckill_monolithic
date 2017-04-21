@@ -13,6 +13,8 @@ app:
       url: jdbc:mysql://${app.masterDB.host}/${app.masterDB.name}?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
       username: ${app.masterDB.username}
       password: ${app.masterDB.password}
+      filters: stat,wall,slf4j
+      connectionProperties: druid.log.stmt.executableSql=true;druid.stat.logSlowSql=true;
 
 ## EMBEDDED SERVER CONFIGURATION (ServerProperties)
 server:
@@ -39,15 +41,37 @@ logging:
     #druid.sql.Statement: DEBUG
     #druid.sql.ResultSet: DEBUG
     net.lovexq.seckill: DEBUG
+    org.apache.activemq: WARN
+    org.apache.http: WARN
     org.hibernate: WARN
     org.springframework: WARN
+    org.springframework.boot: INFO
     org.thymeleaf: WARN
 
 ## SPRING CONFIGURATION
 spring:
+  ## ACTIVEMQ
+  activemq:
+    broker-url: failover:(tcp://127.0.0.1:61616)
+    user: mquser
+    password: mqpwd
   devtools:
     restart:
       enabled: true
+  ## DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+#  datasource:
+#      name: MasterSource
+#      type: com.alibaba.druid.pool.DruidDataSource
+#      driverClass: com.mysql.jdbc.Driver
+#      url: jdbc:mysql://${app.masterDB.host}/${app.masterDB.name}?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
+#      username: ${app.masterDB.username}
+#      password: ${app.masterDB.password}
+  ## JPA CONFIGURATION
+#  jpa:
+#    show-sql: true
+#    generate-ddl: false # ignored by Hibernate, might be useful for other vendors
+#    hibernate:
+#      ddl-auto: update # defaults to create-drop for embedded dbs
   ## THYMELEAF (ThymeleafAutoConfiguration)
   thymeleaf:
     cache: false # Enable template caching.

@@ -1,4 +1,4 @@
-package net.lovexq.seckill.kernel;
+package net.lovexq.seckill;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
