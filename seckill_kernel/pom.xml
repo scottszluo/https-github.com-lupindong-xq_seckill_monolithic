@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xq-seckill-kernel</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>XQ_SecKill_Monolithic Kernel</name>
 

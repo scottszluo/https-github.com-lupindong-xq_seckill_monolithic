@@ -13,7 +13,9 @@ import java.util.List;
  */
 public class EstateItemDto extends EstateItem {
 
-    List<EstateImage> estateImageList;
+    private List<EstateImage> estateImageList;
+
+    private String detailHref;
 
     public EstateItemDto() {
         super();
@@ -29,5 +31,13 @@ public class EstateItemDto extends EstateItem {
 
     public void setEstateImageList(List<EstateImage> estateImageList) {
         this.estateImageList = estateImageList;
+    }
+
+    public String getDetailHref() {
+        return detailHref;
+    }
+
+    public void setDetailHref(String detailHref) {
+        this.detailHref = detailHref;
     }
 }

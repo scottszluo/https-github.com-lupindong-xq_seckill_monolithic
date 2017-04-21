@@ -67,7 +67,7 @@ public enum LianJiaCrawler {
      * @param url
      * @return
      */
-    public static String doGet(String url) {
+    public static String doGet(String url, String cookieValue) {
         // url必须以"/"结尾
         if (!url.endsWith("/")) url += "/";
 
@@ -77,7 +77,7 @@ public enum LianJiaCrawler {
         Header headerCache = new BasicHeader("Cache-Control", "max-age=0");
         Header headerConnection = new BasicHeader("Connection", "keep-alive");
         Header headerUpgrade = new BasicHeader("Upgrade-Insecure-Requests", "1");
-        Header headerCookie = new BasicHeader("","");
+        Header headerCookie = new BasicHeader("Cookie", cookieValue);
 
         Header headerAgent = agentHeaderArr[new Random().nextInt(14)];
         Header[] headerArray = new Header[]{headerAccept, headerEncoding, headerLanguage, headerCache, headerConnection, headerUpgrade, headerCookie, headerAgent};
@@ -162,14 +162,11 @@ public enum LianJiaCrawler {
             if (matcherWatch.find()) {
                 estateItemDto.setWatchNum(Integer.valueOf(matcherWatch.group().replaceAll("\\D", "")));// 看房人数
             }
+
+            estateItemDto.setDetailHref(contentElement.select("div[class='title'] > a").first().attr("href")); // 详情链接
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-
-        String detailHref = contentElement.select("div[class='title'] > a").first().attr("href");
-
-        // 解析详情数据
-        parseDetailData(estateItemDto, detailHref);
 
         return estateItemDto;
     }
@@ -178,10 +175,10 @@ public enum LianJiaCrawler {
      * 解析详情数据
      *
      * @param estateItemDto
-     * @param detailHref
+     * @param cookieValue
      */
-    private static void parseDetailData(EstateItemDto estateItemDto, String detailHref) throws Exception {
-        String detailHtml = doGet(detailHref);
+    public static EstateItemDto parseDetailData(EstateItemDto estateItemDto, String cookieValue) throws Exception {
+        String detailHtml = doGet(estateItemDto.getDetailHref(), cookieValue);
         Document document = Jsoup.parse(detailHtml);
         if (checkValidHtml(document)) {
             // 获取页面数据
@@ -230,6 +227,7 @@ public enum LianJiaCrawler {
                 }
             }
         }
+        return estateItemDto;
     }
 
     /**
@@ -258,6 +256,5 @@ public enum LianJiaCrawler {
         }
         return "";
     }
-
 
 }

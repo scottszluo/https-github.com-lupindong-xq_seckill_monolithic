@@ -2,6 +2,7 @@ package net.lovexq.seckill.kernel.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
+import net.lovexq.seckill.core.config.AppProperties;
 import net.lovexq.seckill.core.support.LianJiaCrawler;
 import net.lovexq.seckill.core.support.activemq.MqProducer;
 import net.lovexq.seckill.kernel.dto.EstateItemDto;
@@ -45,10 +46,13 @@ public class EstateServiceImpl implements EstateService {
     @Autowired
     private MqProducer mqProducer;
 
+    @Autowired
+    private AppProperties appProperties;
+
     @Override
     public void invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception {
         try {
-            String regionHtml = LianJiaCrawler.INSTANCE.doGet(baseUrl + AppConstants.CHANNEL_ERSHOUFANG + region);
+            String regionHtml = LianJiaCrawler.INSTANCE.doGet(baseUrl + AppConstants.CHANNEL_ERSHOUFANG + region, appProperties.getLiaJiaCookie());
             Document document = Jsoup.parse(regionHtml);
             if (LianJiaCrawler.INSTANCE.checkValidHtml(document)) {
                 Element pageElement = document.select("div[comp-module='page']").first();
@@ -58,7 +62,7 @@ public class EstateServiceImpl implements EstateService {
                 // 抓取每页数据
                 while (curPage <= totalPage) {
                     String curPageUrl = pageUrl.replace("{page}", String.valueOf(curPage));
-                    String listHtml = LianJiaCrawler.INSTANCE.doGet(baseUrl + curPageUrl);
+                    String listHtml = LianJiaCrawler.INSTANCE.doGet(baseUrl + curPageUrl, appProperties.getLiaJiaCookie());
                     document = Jsoup.parse(listHtml);
                     if (LianJiaCrawler.INSTANCE.checkValidHtml(document)) {
                         int count = 1;
@@ -66,19 +70,24 @@ public class EstateServiceImpl implements EstateService {
 
                         for (Element contentElement : contentElements) {
                             LOGGER.info("开始处理第{}页，第{}条记录", curPage, count);
+                            // 解析列表数据
                             EstateItemDto dto = LianJiaCrawler.INSTANCE.parseListData(contentElement);
+                            // 解析详情数据
+                            dto = LianJiaCrawler.INSTANCE.parseDetailData(dto, appProperties.getLiaJiaCookie());
+                            // 转换为json格式
                             String jsonText = JSON.toJSONString(dto);
+                            // 发送消息
                             mqProducer.sendQueueMessage(jsonText);
                             count++;
 
-                            Thread.sleep(new Random().nextInt(15000));
+                            Thread.sleep(new Random().nextInt(20000));
                         }
                     }
                     curPage++;
                     if (curPage % 3 == 0) {
-                        Thread.sleep(120000);
+                        Thread.sleep(100000);
                     } else {
-                        Thread.sleep(60000);
+                        Thread.sleep(50000);
                     }
                 }
             }

@@ -16,6 +16,8 @@ app:
       filters: stat,wall,slf4j
       connectionProperties: druid.log.stmt.executableSql=true;druid.stat.logSlowSql=true;
 
+  liaJiaCookie:
+
 ## EMBEDDED SERVER CONFIGURATION (ServerProperties)
 server:
   address: 127.0.0.1 # Network address to which the server should bind to.
@@ -52,7 +54,8 @@ logging:
 spring:
   ## ACTIVEMQ
   activemq:
-    broker-url: failover:(tcp://127.0.0.1:61616)
+#    broker-url: failover:(tcp://127.0.0.1:61616)
+    broker-url: failover:(tcp://192.168.9.101:62626)
     user: mquser
     password: mqpwd
   devtools:
@@ -80,6 +83,6 @@ spring:
     content-type: text/html # Content-Type value.
     enabled: true # Enable MVC Thymeleaf view resolution.
     encoding: UTF-8 # Template encoding.
-    mode: HTML5 # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
+    mode: HTML # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
     prefix: classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
     suffix: .html # Suffix that gets appended to view names when building a URL.
