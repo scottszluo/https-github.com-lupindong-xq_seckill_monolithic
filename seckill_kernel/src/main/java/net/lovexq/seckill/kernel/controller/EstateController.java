@@ -5,7 +5,10 @@ import net.lovexq.seckill.core.controller.BaseController;
 import net.lovexq.seckill.kernel.service.EstateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +40,9 @@ public class EstateController extends BaseController {
             String region = request.getParameter("region");
             Integer curPage = Integer.valueOf(request.getParameter("curPage"));
             Integer totalPage = Integer.valueOf(request.getParameter("totalPage"));
-            estateService.invokeCrawler(baseUrl, region, curPage, totalPage);
+            result = estateService.invokeCrawler(baseUrl, region, curPage, totalPage);
         } catch (Exception e) {
-            result.setStatus(400);
-            result.setMessage(e.getMessage());
+            result = new JsonResult(400, e.getMessage());
         }
         return result;
     }

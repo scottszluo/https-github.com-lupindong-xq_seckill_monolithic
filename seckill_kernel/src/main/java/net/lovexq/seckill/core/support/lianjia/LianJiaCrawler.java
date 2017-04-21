@@ -1,4 +1,4 @@
-package net.lovexq.seckill.core.support;
+package net.lovexq.seckill.core.support.lianjia;
 
 import com.alibaba.fastjson.JSON;
 import net.lovexq.seckill.common.utils.IdWorker;
@@ -138,7 +138,7 @@ public enum LianJiaCrawler {
      * @param contentElement
      */
     public static EstateItemDto parseListData(Element contentElement) throws Exception {
-        EstateItemDto estateItemDto = new EstateItemDto(IdWorker.get().nextId());
+        EstateItemDto estateItemDto = new EstateItemDto(IdWorker.INSTANCE.nextId());
         try {
             String title = contentElement.select("div[class='title'] > a").first().text();
             estateItemDto.setTitle(title);// 标题

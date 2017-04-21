@@ -1,5 +1,7 @@
 package net.lovexq.seckill.kernel.service;
 
+import net.lovexq.seckill.common.model.JsonResult;
+
 /**
  * 房产业务层抽象类
  *
@@ -8,7 +10,7 @@ package net.lovexq.seckill.kernel.service;
  */
 public interface EstateService {
 
-    void invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception;
+    JsonResult invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception;
 
     void saveCrawlerData(String msgText) throws Exception;
 }

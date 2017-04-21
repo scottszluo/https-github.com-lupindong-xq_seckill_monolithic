@@ -3,99 +3,85 @@ package net.lovexq.seckill.common.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IdWorker {
+/**
+ * 高性能ID生成器
+ *
+ * @author LuPindong
+ * @time 2017-04-22 00:41
+ */
+public enum IdWorker {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IdWorker.class);
+    INSTANCE(1, 1);
 
+    private final Logger LOG = LoggerFactory.getLogger(IdWorker.class);
+    //开始该类生成ID的时间截，1288834974657 (Thu, 04 Nov 2010 01:42:54 GMT) 这一时刻到当前时间所经过的毫秒数，占 41 位（还有一位是符号位，永远为 0）。
+    private final long startTime = 1288834974657L;
+    //机器id所占的位数
+    private long workerIdBits = 5L;
+    //数据标识id所占的位数
+    private long dataCenterIdBits = 5L;
+    //支持的最大机器id，结果是31,这个移位算法可以很快的计算出几位二进制数所能表示的最大十进制数（不信的话可以自己算一下，记住，计算机中存储一个数都是存储的补码，结果是负数要从补码得到原码）
+    private long maxWorkerId = -1L ^ (-1L << workerIdBits);
+    //支持的最大数据标识id
+    private long maxDataCenterId = -1L ^ (-1L << dataCenterIdBits);
+    //序列在id中占的位数
+    private long sequenceBits = 12L;
+    //机器id向左移12位
+    private long workerIdLeftShift = sequenceBits;
+    //数据标识id向左移17位
+    private long dataCenterIdLeftShift = workerIdBits + workerIdLeftShift;
+    //时间截向左移5+5+12=22位
+    private long timestampLeftShift = dataCenterIdBits + dataCenterIdLeftShift;
+    //生成序列的掩码，这里为1111 1111 1111
+    private long sequenceMask = -1 ^ (-1 << sequenceBits);
     private long workerId;
-
-    private long datacenterId;
-
+    private long dataCenterId;
+    //同一个时间截内生成的序列数，初始值是0，从0开始
     private long sequence = 0L;
-
-    private long twepoch = 1492567686845L; //计算标记时间
-
-    /**
-     * 部署节点上限由2的（datacenterIdBits+workerIdBits）次方决定
-     */
-    private long workerIdBits = 5L; //节点ID长度，默认5
-
-    private long datacenterIdBits = 5L; //数据中心ID长度，默认5
-
-    private long maxWorkerId = -1L ^ (-1L << workerIdBits); //最大支持机器节点数0~31，一共32个
-
-    private long maxDatacenterId = -1L ^ (-1L << datacenterIdBits); //最大支持数据中心节点数0~31，一共32个
-
-    /**
-     * 每毫秒生产ID数由2的（sequenceBits）次方决定
-     */
-    private long sequenceBits = 12L; //序列号长度，默认12
-
-    private long workerIdShift = sequenceBits; //机器节点左移12位
-
-    private long datacenterIdShift = sequenceBits + workerIdBits; //数据中心节点左移17位
-
-    private long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits; //时间毫秒数左移22位
-
-    private long sequenceMask = -1L ^ (-1L << sequenceBits); //4095
-
+    //上次生成id的时间截
     private long lastTimestamp = -1L;
 
-    public IdWorker() {
-        this(1L, 1L);
-    }
-
-    public IdWorker(long workerId, long datacenterId) {
-        // sanity check for workerId
-        if (workerId > maxWorkerId || workerId < 0) {
-            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
+    IdWorker(long workerId, long dataCenterId) {
+        if (workerId < 0 || workerId > maxWorkerId) {
+            throw new IllegalArgumentException(String.format("workerId[%d] is less than 0 or greater than maxWorkerId[%d].", workerId, maxWorkerId));
         }
-        if (datacenterId > maxDatacenterId || datacenterId < 0) {
-            throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
+        if (dataCenterId < 0 || dataCenterId > maxDataCenterId) {
+            throw new IllegalArgumentException(String.format("dataCenterId[%d] is less than 0 or greater than maxDataCenterId[%d].", dataCenterId, maxDataCenterId));
         }
         this.workerId = workerId;
-        this.datacenterId = datacenterId;
-        LOG.info(
-                String.format(
-                        "worker starting. timestamp left shift %d, datacenter id bits %d, worker id bits %d, sequence bits %d, workerid %d",
-                        timestampLeftShift,
-                        datacenterIdBits,
-                        workerIdBits,
-                        sequenceBits,
-                        workerId));
+        this.dataCenterId = dataCenterId;
+
+        LOG.info(String.format("IdWorker Starting. timestampLeftShift:%d, dataCenterIdBits:%d, workerIdBits:%d, sequenceBits:%d, workerId:%d, dataCenterId: %d",
+                timestampLeftShift, dataCenterIdBits, workerIdBits, sequenceBits, workerId, dataCenterId));
     }
 
-    public static IdWorker get() {
-        return IdGenHolder.instance;
-    }
-
+    //生成id
     public synchronized long nextId() {
-        //获取当前毫秒数
         long timestamp = timeGen();
-        //如果服务器时间有问题(时钟后退) 报错。
         if (timestamp < lastTimestamp) {
-            LOG.error(String.format("clock is moving backwards.  Rejecting requests until %d.", lastTimestamp));
             throw new RuntimeException(String.format("Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
         }
-        //如果上次生成时间和当前时间相同,在同一毫秒内
-        if (lastTimestamp == timestamp) {
-            //sequence自增，因为sequence只有12bit，所以和sequenceMask相与一下，去掉高位
+        //如果是同一时间生成的，则自增
+        if (timestamp == lastTimestamp) {
             sequence = (sequence + 1) & sequenceMask;
-            //判断是否溢出,也就是每毫秒内超过4095，当为4096时，与sequenceMask相与，sequence就等于0
             if (sequence == 0) {
-                //自旋等待到下一毫秒
-                timestamp = tilNextMillis(lastTimestamp);
+                //生成下一个毫秒级的序列
+                timestamp = tilNextMillis();
+                //序列从0开始
+                sequence = 0L;
             }
         } else {
-            //如果和上次生成时间不同,重置sequence，就是下一毫秒开始，sequence计数重新从0开始累加
+            //如果发现是下一个时间单位，则自增序列回0，重新自增
             sequence = 0L;
         }
+
         lastTimestamp = timestamp;
-        // 最后按照规则拼出ID。
-        return ((timestamp - twepoch) << timestampLeftShift) | (datacenterId << datacenterIdShift) | (workerId << workerIdShift) | sequence;
+
+        //看本文第二部分的结构图，移位并通过或运算拼到一起组成64位的ID
+        return ((timestamp - startTime) << timestampLeftShift) | (dataCenterId << dataCenterIdLeftShift) | (workerId << workerIdLeftShift) | sequence;
     }
 
-    protected long tilNextMillis(long lastTimestamp) {
+    protected long tilNextMillis() {
         long timestamp = timeGen();
         while (timestamp <= lastTimestamp) {
             timestamp = timeGen();
@@ -109,11 +95,11 @@ public class IdWorker {
 
     @Override
     public String toString() {
-        return "IdWorker [workerId=" + workerId + ", datacenterId=" + datacenterId + ", sequence=" + sequence + "]";
+        final StringBuilder sb = new StringBuilder("IdWorker{");
+        sb.append("workerId=").append(workerId);
+        sb.append(", dataCenterId=").append(dataCenterId);
+        sb.append(", sequence=").append(sequence);
+        sb.append('}');
+        return sb.toString();
     }
-
-    private static class IdGenHolder {
-        private static final IdWorker instance = new IdWorker();
-    }
-
 }

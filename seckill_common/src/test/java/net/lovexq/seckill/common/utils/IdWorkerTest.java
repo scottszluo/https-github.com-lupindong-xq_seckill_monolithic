@@ -19,8 +19,8 @@ public class IdWorkerTest {
         long avg = 0;
         for (int k = 0; k < 10; k++) {
             List<Callable<Long>> partitions = new ArrayList<>();
-            final IdWorker idGen = IdWorker.get();
-            for (int i = 0; i < 2000000; i++) {
+            IdWorker idGen = IdWorker.INSTANCE;
+            for (int i = 0; i < 1000000; i++) {
                 partitions.add(new Callable<Long>() {
                     @Override
                     public Long call() throws Exception {
@@ -43,5 +43,15 @@ public class IdWorkerTest {
             }
         }
         System.out.println("平均完成时间需要: " + avg / 10 / 1.0e3 + "秒");
+    }
+
+    @Test
+    public void getNextId() throws Exception {
+
+        IdWorker idWorker = IdWorker.INSTANCE;
+        IdWorker idWorker2 = IdWorker.INSTANCE;
+
+        System.out.println(idWorker.equals(idWorker2));
+        System.out.println("1:" + idWorker.nextId() + ",2:" + idWorker2.nextId());
     }
 }

@@ -1,10 +1,11 @@
 package net.lovexq.seckill.kernel.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import net.lovexq.seckill.common.utils.constants.AppConstants;
+import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.core.config.AppProperties;
-import net.lovexq.seckill.core.support.LianJiaCrawler;
 import net.lovexq.seckill.core.support.activemq.MqProducer;
+import net.lovexq.seckill.core.support.lianjia.LianJiaCallable;
+import net.lovexq.seckill.core.support.lianjia.LianJiaParam;
 import net.lovexq.seckill.kernel.dto.EstateItemDto;
 import net.lovexq.seckill.kernel.model.EstateImage;
 import net.lovexq.seckill.kernel.model.EstateItem;
@@ -13,18 +14,16 @@ import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.service.EstateService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 房产业务层实现类
@@ -50,54 +49,22 @@ public class EstateServiceImpl implements EstateService {
     private AppProperties appProperties;
 
     @Override
-    public void invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception {
+    public JsonResult invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception {
+        JsonResult result = new JsonResult();
+        ExecutorService exec = Executors.newCachedThreadPool();
         try {
-            String regionHtml = LianJiaCrawler.INSTANCE.doGet(baseUrl + AppConstants.CHANNEL_ERSHOUFANG + region, appProperties.getLiaJiaCookie());
-            Document document = Jsoup.parse(regionHtml);
-            if (LianJiaCrawler.INSTANCE.checkValidHtml(document)) {
-                Element pageElement = document.select("div[comp-module='page']").first();
-                // 获取当前页链接
-                String pageUrl = pageElement.attr("page-url");
-
-                // 抓取每页数据
-                while (curPage <= totalPage) {
-                    String curPageUrl = pageUrl.replace("{page}", String.valueOf(curPage));
-                    String listHtml = LianJiaCrawler.INSTANCE.doGet(baseUrl + curPageUrl, appProperties.getLiaJiaCookie());
-                    document = Jsoup.parse(listHtml);
-                    if (LianJiaCrawler.INSTANCE.checkValidHtml(document)) {
-                        int count = 1;
-                        Elements contentElements = document.select("ul[class='sellListContent'] > li");
-
-                        for (Element contentElement : contentElements) {
-                            LOGGER.info("开始处理第{}页，第{}条记录", curPage, count);
-                            // 解析列表数据
-                            EstateItemDto dto = LianJiaCrawler.INSTANCE.parseListData(contentElement);
-                            // 解析详情数据
-                            dto = LianJiaCrawler.INSTANCE.parseDetailData(dto, appProperties.getLiaJiaCookie());
-                            // 转换为json格式
-                            String jsonText = JSON.toJSONString(dto);
-                            // 发送消息
-                            mqProducer.sendQueueMessage(jsonText);
-                            count++;
-
-                            Thread.sleep(new Random().nextInt(20000));
-                        }
-                    }
-                    curPage++;
-                    if (curPage % 3 == 0) {
-                        Thread.sleep(100000);
-                    } else {
-                        Thread.sleep(50000);
-                    }
-                }
-            }
-
+            LianJiaParam lianJiaParam = new LianJiaParam(mqProducer, appProperties, baseUrl, region, curPage, totalPage);
+            exec.submit(new LianJiaCallable(lianJiaParam));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
+            exec.shutdownNow();
+            result = new JsonResult(500, e.getMessage());
         }
+        return result;
     }
 
     @Override
+    @Transactional
     public void saveCrawlerData(String msgText) throws Exception {
         try {
             EstateItemDto dto = JSON.parseObject(msgText, EstateItemDto.class);
