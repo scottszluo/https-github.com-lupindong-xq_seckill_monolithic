@@ -1,7 +1,7 @@
 package net.lovexq.seckill.core.support.lianjia;
 
-import com.alibaba.fastjson.JSON;
 import net.lovexq.seckill.common.model.JsonResult;
+import net.lovexq.seckill.common.utils.ProtoStuffUtil;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import net.lovexq.seckill.kernel.dto.EstateItemDto;
 import org.jsoup.Jsoup;
@@ -54,25 +54,25 @@ public class LianJiaCallable implements Callable<JsonResult> {
                         Elements contentElements = document.select("ul[class='sellListContent'] > li");
 
                         for (Element contentElement : contentElements) {
-                            LOGGER.info("开始处理第{}页，第{}条记录", curPage, count);
+                            LOGGER.info("开始处理{}：第{}页，第{}条记录", lianJiaParam.getRegion(), curPage, count);
                             // 解析列表数据
                             EstateItemDto dto = LianJiaCrawler.INSTANCE.parseListData(contentElement);
                             // 解析详情数据
                             dto = LianJiaCrawler.INSTANCE.parseDetailData(dto, lianJiaParam.getAppProperties().getLiaJiaCookie());
-                            // 转换为json格式
-                            String jsonText = JSON.toJSONString(dto);
+                            // 转为二进制数据
+                            byte[] dataArray =  ProtoStuffUtil.serialize(dto);
                             // 发送消息
-                            lianJiaParam.getMqProducer().sendQueueMessage(jsonText);
+                            lianJiaParam.getMqProducer().sendQueueMessage(dataArray);
                             count++;
 
-                            Thread.sleep(new Random().nextInt(20000));
+                            Thread.sleep(new Random().nextInt(10000));
                         }
                     }
                     curPage++;
                     if (curPage % 3 == 0) {
-                        Thread.sleep(120000);
+                        Thread.sleep(180000);
                     } else {
-                        Thread.sleep(60000);
+                        Thread.sleep(90000);
                     }
                 }
             }

@@ -22,10 +22,10 @@ public class MqProducer {
     @Autowired
     private Queue queue;
 
-    public void sendQueueMessage(String jsonMsg) {
+    public void sendQueueMessage(byte[] dataArray) {
         try {
-            LOGGER.info("【发送消息】>>>队列目的地：{}，消息正文{}", queue.getQueueName(), jsonMsg);
-            jmsMessagingTemplate.convertAndSend(queue, jsonMsg);
+            LOGGER.info("【发送消息】>>>队列目的地：{}，消息正文{}", queue.getQueueName(), dataArray);
+            jmsMessagingTemplate.convertAndSend(queue, dataArray);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

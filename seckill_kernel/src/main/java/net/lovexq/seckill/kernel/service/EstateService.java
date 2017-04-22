@@ -12,5 +12,5 @@ public interface EstateService {
 
     JsonResult invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception;
 
-    void saveCrawlerData(String msgText) throws Exception;
+    void saveCrawlerData(byte[] dataArray) throws Exception;
 }

@@ -1,7 +1,7 @@
 package net.lovexq.seckill.kernel.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import net.lovexq.seckill.common.model.JsonResult;
+import net.lovexq.seckill.common.utils.ProtoStuffUtil;
 import net.lovexq.seckill.core.config.AppProperties;
 import net.lovexq.seckill.core.support.activemq.MqProducer;
 import net.lovexq.seckill.core.support.lianjia.LianJiaCallable;
@@ -12,7 +12,6 @@ import net.lovexq.seckill.kernel.model.EstateItem;
 import net.lovexq.seckill.kernel.repository.EstateImageRepository;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.service.EstateService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -65,9 +65,9 @@ public class EstateServiceImpl implements EstateService {
 
     @Override
     @Transactional
-    public void saveCrawlerData(String msgText) throws Exception {
+    public void saveCrawlerData(byte[] dataArray) throws Exception {
         try {
-            EstateItemDto dto = JSON.parseObject(msgText, EstateItemDto.class);
+            EstateItemDto dto = ProtoStuffUtil.deserialize(dataArray, EstateItemDto.class);
             // 先查看数据库是否已存在该记录
             EstateItem entity = estateItemRepository.findByHouseId(dto.getHouseId());
             if (entity != null) {
