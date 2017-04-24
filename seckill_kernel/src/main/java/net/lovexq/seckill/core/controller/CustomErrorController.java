@@ -33,14 +33,17 @@ public class CustomErrorController extends BasicErrorController {
     @Override
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
         Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
-        LOGGER.error("捕获的Json异常信息为：" + body);
+        LOGGER.error("捕获的Json异常信息为：{}", body);
         HttpStatus status = getStatus(request);
 
         //输出自定义的Json格式
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", false);
-        map.put("msg", body.get("message"));
-        return new ResponseEntity<Map<String, Object>>(map, status);
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", status.value());
+        map.put("message", body.get("message"));
+        map.put("data", body.get("error"));
+        map.put("timestamp", body.get("timestamp"));
+
+        return new ResponseEntity<>(map, status);
     }
 
     /**
@@ -49,7 +52,7 @@ public class CustomErrorController extends BasicErrorController {
     @Override
     public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> model = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.TEXT_HTML));
-        LOGGER.error("捕获的Html异常信息为：" + model);
+        LOGGER.error("捕获的Html异常信息为：{}", model);
         response.setStatus(getStatus(request).value());
 
         //根据状态码指定自定义的视图

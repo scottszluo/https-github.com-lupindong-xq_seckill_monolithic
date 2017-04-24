@@ -1,5 +1,6 @@
 package net.lovexq.seckill.kernel.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Objects;
@@ -14,10 +15,12 @@ import java.util.Objects;
 public class EstateImage {
     @Id
     private String picture_id;
-    private String house_code;
+    @Column(name = "house_code")
+    private String houseCode;
     private String picture_url;
     private String picture_source_url;
-    private int picture_type;
+    @Column(name = "picture_type")
+    private int pictureType;
     private String appid;
     private String app_pkid;
     private String upload_user_id;
@@ -38,12 +41,12 @@ public class EstateImage {
         this.picture_id = picture_id;
     }
 
-    public String getHouse_code() {
-        return house_code;
+    public String getHouseCode() {
+        return houseCode;
     }
 
-    public void setHouse_code(String house_code) {
-        this.house_code = house_code;
+    public void setHouseCode(String houseCode) {
+        this.houseCode = houseCode;
     }
 
     public String getPicture_url() {
@@ -62,12 +65,12 @@ public class EstateImage {
         this.picture_source_url = picture_source_url;
     }
 
-    public int getPicture_type() {
-        return picture_type;
+    public int getPictureType() {
+        return pictureType;
     }
 
-    public void setPicture_type(int picture_type) {
-        this.picture_type = picture_type;
+    public void setPictureType(int pictureType) {
+        this.pictureType = pictureType;
     }
 
     public String getAppid() {
@@ -164,19 +167,19 @@ public class EstateImage {
         if (!(o instanceof EstateImage)) return false;
         EstateImage that = (EstateImage) o;
         return Objects.equals(picture_id, that.picture_id) &&
-                Objects.equals(house_code, that.house_code);
+                Objects.equals(houseCode, that.houseCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(picture_id, house_code);
+        return Objects.hash(picture_id, houseCode);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("EstateImage{");
         sb.append("picture_id='").append(picture_id).append('\'');
-        sb.append(", house_code='").append(house_code).append('\'');
+        sb.append(", house_code='").append(houseCode).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -3,6 +3,7 @@ package net.lovexq.seckill.kernel.dto;
 import net.lovexq.seckill.kernel.model.EstateImage;
 import net.lovexq.seckill.kernel.model.EstateItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,9 @@ import java.util.List;
  */
 public class EstateItemDto extends EstateItem {
 
-    private List<EstateImage> estateImageList;
+    private String coverUrl = "/component/porto/img/blank.jpg";
+
+    private List<EstateImage> estateImageList = new ArrayList<>();
 
     private String detailHref;
 
@@ -23,6 +26,14 @@ public class EstateItemDto extends EstateItem {
 
     public EstateItemDto(Long id) {
         super(id);
+    }
+
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
     }
 
     public List<EstateImage> getEstateImageList() {

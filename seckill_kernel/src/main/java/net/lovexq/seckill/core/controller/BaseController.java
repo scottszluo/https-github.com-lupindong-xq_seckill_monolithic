@@ -7,6 +7,7 @@ package net.lovexq.seckill.core.controller;
 import net.lovexq.seckill.common.model.JsonResult;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,7 +21,7 @@ public class BaseController {
 
     protected JsonResult result = new JsonResult();
 
-    protected Pageable pageRequest;
+    protected Pageable pageable;
 
     public JsonResult getResult() {
         return result;
@@ -34,8 +35,17 @@ public class BaseController {
      * 创建分页请求.
      */
     protected PageRequest buildPageRequest(HttpServletRequest request) {
-        int pageNumber = Integer.parseInt(request.getParameter("pageNumber") == "" ? "0" : request.getParameter("pageNumber"));
-        int pageSize = Integer.parseInt(request.getParameter("pageSize") == "" ? "0" : request.getParameter("pageSize"));
-        return new PageRequest(pageNumber - 1, pageSize);
+        int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
+        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "9");
+        return new PageRequest(page - 1, size);
+    }
+
+    /**
+     * 创建分页请求.
+     */
+    protected PageRequest buildPageRequest(HttpServletRequest request, Sort sort) {
+        int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
+        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "9");
+        return new PageRequest(page - 1, size, sort);
     }
 }

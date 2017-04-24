@@ -65,14 +65,14 @@ public class LianJiaCallable implements Callable<JsonResult> {
                             lianJiaParam.getMqProducer().sendQueueMessage(dataArray);
                             count++;
 
-                            Thread.sleep(new Random().nextInt(10000));
+                            Thread.sleep(new Random().nextInt(20000));
                         }
                     }
                     curPage++;
                     if (curPage % 3 == 0) {
-                        Thread.sleep(180000);
+                        Thread.sleep(120000);
                     } else {
-                        Thread.sleep(90000);
+                        Thread.sleep(new Random().nextInt(60000));
                     }
                 }
             }

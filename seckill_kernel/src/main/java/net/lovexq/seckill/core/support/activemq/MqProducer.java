@@ -24,7 +24,7 @@ public class MqProducer {
 
     public void sendQueueMessage(byte[] dataArray) {
         try {
-            LOGGER.info("【发送消息】>>>队列目的地：{}，消息正文{}", queue.getQueueName(), dataArray);
+            LOGGER.info("【发送消息】>>>队列目的地：{}", queue.getQueueName());
             jmsMessagingTemplate.convertAndSend(queue, dataArray);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

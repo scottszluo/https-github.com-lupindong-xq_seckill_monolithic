@@ -17,10 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,20 +39,18 @@ import java.util.concurrent.Executors;
 public class EstateServiceImpl implements EstateService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EstateServiceImpl.class);
-
+    private static final String QUERY_COVER_URL_SQL = "SELECT url from estate_image WHERE picture_type = 1 and house_code = ? limit 1";
     @Autowired
     private EstateItemRepository estateItemRepository;
-
     @Autowired
     private EstateImageRepository estateImageRepository;
-
     @Autowired
     private MqProducer mqProducer;
-
     @Autowired
     private AppProperties appProperties;
 
     @Override
+    @Transactional
     public JsonResult invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception {
         JsonResult result = new JsonResult();
         ExecutorService exec = Executors.newCachedThreadPool();
@@ -90,5 +92,35 @@ public class EstateServiceImpl implements EstateService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<EstateItemDto> findSaleList(Pageable pageable) {
+
+        Page<EstateItemDto> targetItemPage;
+        List<EstateItemDto> targetItemList = new ArrayList<>();
+
+        Page<EstateItem> sourceItemPage = estateItemRepository.findBySaleStatus("在售", pageable);
+        List<EstateItem> sourceItemList = sourceItemPage.getContent();
+
+        if (CollectionUtils.isEmpty(sourceItemList)) {
+            targetItemPage = new PageImpl<>(targetItemList);
+            return targetItemPage;
+        }
+
+        for (EstateItem sourceItem : sourceItemList) {
+            EstateItemDto targetItem = new EstateItemDto();
+            BeanUtils.copyProperties(sourceItem, targetItem);
+            // 获取默认封面链接
+            String url = String.valueOf(estateImageRepository.queryForObject(QUERY_COVER_URL_SQL, targetItem.getHouseId()));
+            if (StringUtils.isNotBlank(url) && !"null".equals(url)) {
+                targetItem.setCoverUrl(url);
+            }
+            targetItemList.add(targetItem);
+        }
+
+        targetItemPage = new PageImpl<>(targetItemList, pageable, sourceItemPage.getTotalElements());
+        return targetItemPage;
     }
 }

@@ -56,4 +56,19 @@ public class AppConstants {
      * 频道：二手房
      */
     public static final String CHANNEL_ERSHOUFANG = "/ershoufang/";
+
+    /**
+     * 未作错误
+     */
+    public static final Long UNKNOWN_ERROR = -1L;
+
+    /**
+     * 默认系统错误
+     */
+    public static final Long DEFAULT_SYS_ERROR = 10000L;
+
+    /**
+     * 默认应用程序错误
+     */
+    public static final Long DEFAULT_APP_ERROR = 20000L;
 }

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head th:include="common/pageHead :: head('特价秒杀 | lovexq.net')"></head>
+<!-- END HEAD -->
+<!--<body>-->
+<body class="loading-overlay-showing" data-loading-overlay>
+<div class="loading-overlay">
+    <div class="bounce-loader">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+</div>
+
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <span th:replace="common/pageHeader"></span>
+    <!-- END HEADER -->
+    <div role="main" class="main">
+
+        <section class="page-header page-header-light page-header-more-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>特价秒杀<span class="font-red">原价几百万、几千万的房产，现在统统只要9.9，抢到即赚到</span></h1>
+                    </div>
+                </div>
+                <div class="row mt-lg">
+                    <div class="col-md-12">
+                        <form id="propertiesForm" action="" method="POST">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <input type="text" value="" data-msg-required="Please enter the subject." maxlength="100" class="form-control" name="subject" id="subject" required="" aria-required="true">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="submit" value="点击搜索" class="btn btn-secondary btn-lg btn-block text-uppercase font-size-sm">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="row mb-lg">
+                <ul class="properties-listing sort-destination p-none" id="content"></ul>
+            </div>
+
+            <div class="row mt-lg mb-xlg">
+                <div class="col-md-12 center" id="pagination"></div>
+            </div>
+        </div>
+
+        <!-- BEGIN FOOTER -->
+        <span th:replace="common/pageFooter"></span>
+        <!-- END FOOTER -->
+    </div>
+</div>
+<!-- BEGIN FOOT -->
+<span th:replace="common/pageFoot"></span>
+<!-- END FOOT -->
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
+        $('#pagination').bootpag({
+            total: 5,
+            page: 1,
+            maxVisible: 5,
+            leaps: true,
+            firstLastUse: true,
+            first: '首页',
+            last: '尾页',
+        }).on('page', function (event, num) {
+            loadList(num, 15);
+        });
+
+        // 加载列表
+        loadList(1, 15);
+    })
+
+    // 加载列表
+    var loadList = function (page, size) {
+        $.get('/estate/data', {page: page, size: size})
+            .done(function (response) {
+                var pageData = response.data;
+                // 清空原数据
+                $("#content").empty();
+                // 生成页面
+                $.each(pageData.content, function (index, obj) {
+                    $("#content").append(createHtml(obj));
+                });
+                // 分页信息
+                pagination(pageData);
+            })
+            .fail(function (response) {
+                alert(response.responseJSON.data);
+            });
+    }
+
+    // 生成页面
+    var createHtml = function (obj) {
+        var html = '<li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item"><div class="listing-item"><a href="/estate/' + obj.houseId + '" class="text-decoration-none"><span class="thumb-info thumb-info-lighten"><span class="thumb-info-wrapper m-none"><img src="' + obj.coverUrl + '" class="img-responsive" alt=""> <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md">' + obj.saleStatus + '</span></span> <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md"><sapn class="font-red">' + obj.totalPrice + '万</sapn><br/><span class="text-sm">单价' + obj.unitPrice + '/平米</span><i class="fa fa-caret-right text-color-secondary pull-right"></i></span> <span class="custom-thumb-info-title b-normal p-lg"><b><span class="thumb-info-inner text-md">' + obj.title + '</span></b><ul class="accommodations text-uppercase font-weight-bold p-none text-sm"><li><span class="accomodation-value custom-color-1">' + obj.model + '</span></li><li><span class="accomodation-value custom-color-1">' + obj.area + '平米</span></li><li><span class="accomodation-value custom-color-1">' + obj.direction + '</span></li></ul><ul class="accommodations text-uppercase font-weight-bold p-none text-sm"><li><span class="accomodation-value custom-color-1">' + obj.floor + '</span></li><li><span class="accomodation-value custom-color-1">' + obj.buildingAge + '</span></li><li><span class="accomodation-value custom-color-1">' + obj.decoration + '</span></li></ul></span></span></a></div></li>';
+        return html;
+    };
+
+    // 分页信息
+    var pagination = function (pageData) {
+        $('#pagination').bootpag({
+            total: pageData.totalPages,
+            page: pageData.number + 1
+        });
+    };
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

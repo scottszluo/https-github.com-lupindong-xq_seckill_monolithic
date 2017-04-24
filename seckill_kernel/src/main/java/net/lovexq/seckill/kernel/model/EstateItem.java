@@ -46,6 +46,7 @@ public class EstateItem {
      */
     private Integer focusNum;      //关注人数x
     private Integer watchNum;      //看房人数x
+    private String saleStatus;         //销售状态：在售，售罄
 
     public EstateItem() {
     }
@@ -230,6 +231,14 @@ public class EstateItem {
         this.watchNum = watchNum;
     }
 
+    public String getSaleStatus() {
+        return saleStatus;
+    }
+
+    public void setSaleStatus(String saleStatus) {
+        this.saleStatus = saleStatus;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -248,8 +257,7 @@ public class EstateItem {
         final StringBuilder sb = new StringBuilder("EstateItem{");
         sb.append("id=").append(id);
         sb.append(", title='").append(title).append('\'');
-        sb.append(", totalPrice=").append(totalPrice);
-        sb.append(", unitPrice=").append(unitPrice);
+        sb.append(", houseId='").append(houseId).append('\'');
         sb.append('}');
         return sb.toString();
     }

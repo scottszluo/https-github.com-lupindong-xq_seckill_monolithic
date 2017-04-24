@@ -32,7 +32,7 @@ public class MqCustomer {
             try {
                 ActiveMQQueue queue = (ActiveMQQueue) bytesMessage.getJMSDestination();
                 byte[] dataArray = bytesMessage.getContent().getData();
-                LOGGER.info("【接收消息】>>>队列目的地：{}，消息正文{}", queue.getQueueName(), dataArray);
+                LOGGER.info("【接收消息】>>>队列目的地：{}", queue.getQueueName());
                 estateService.saveCrawlerData(dataArray);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
