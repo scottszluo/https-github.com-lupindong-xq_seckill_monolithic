@@ -1,7 +1,7 @@
 package net.lovexq.seckill.kernel.controller;
 
 import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.seckill.core.controller.BaseController;
+import net.lovexq.seckill.core.controller.BasicController;
 import net.lovexq.seckill.kernel.service.EstateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  * @time 2017-04-19 07:42
  */
 @Controller
-public class EstateController extends BaseController {
+public class EstateController extends BasicController {
 
     @Autowired
     private EstateService estateService;

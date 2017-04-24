@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author LuPindong
  * @date 2016-12-15
  */
-public class BaseController {
+public class BasicController {
 
     protected JsonResult result = new JsonResult();
 

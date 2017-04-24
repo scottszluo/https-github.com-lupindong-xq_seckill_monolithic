@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
 <!-- BEGIN HEAD -->
-<head th:include="common/pageHead :: head('特价秒杀 | lovexq.net')"></head>
+<head th:include="common/fgHead :: head('特价秒杀 | lovexq.net')"></head>
 <!-- END HEAD -->
 <!--<body>-->
 <body class="loading-overlay-showing" data-loading-overlay>
@@ -15,8 +15,9 @@
 
 <div class="body">
     <!-- BEGIN HEADER -->
-    <span th:replace="common/pageHeader"></span>
+    <span th:replace="common/coHeader"></span>
     <!-- END HEADER -->
+
     <div role="main" class="main">
 
         <section class="page-header page-header-light page-header-more-padding">
@@ -53,14 +54,16 @@
             </div>
         </div>
 
-        <!-- BEGIN FOOTER -->
-        <span th:replace="common/pageFooter"></span>
-        <!-- END FOOTER -->
     </div>
+
+    <!-- BEGIN FOOTER -->
+    <span th:replace="common/coFooter"></span>
+    <!-- END FOOTER -->
 </div>
 <!-- BEGIN FOOT -->
-<span th:replace="common/pageFoot"></span>
+<span th:replace="common/fgFoot"></span>
 <!-- END FOOT -->
+
 <!-- BEGIN PAGESCRIPT -->
 <script>
     $(function () {
@@ -73,15 +76,15 @@
             first: '首页',
             last: '尾页',
         }).on('page', function (event, num) {
-            loadList(num, 15);
+            loadData(num, 15);
         });
 
-        // 加载列表
-        loadList(1, 15);
+        // 加载数据
+        loadData(1, 15);
     })
 
-    // 加载列表
-    var loadList = function (page, size) {
+    // 加载数据
+    var loadData = function (page, size) {
         $.get('/estate/data', {page: page, size: size})
             .done(function (response) {
                 var pageData = response.data;
@@ -95,7 +98,7 @@
                 pagination(pageData);
             })
             .fail(function (response) {
-                alert(response.responseJSON.data);
+                Common.PNotice.error(response.responseJSON.data, response.responseJSON.message);
             });
     }
 

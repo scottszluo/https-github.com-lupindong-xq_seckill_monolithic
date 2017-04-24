@@ -1,5 +1,7 @@
 target/
-src/main/resources/static/component/porto_v5.6.0/
+src/main/resources/static/component/porto/
+src/main/resources/static/component/porto-admin/
+src/main/resources/application*.yml
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

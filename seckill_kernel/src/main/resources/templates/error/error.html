@@ -1,32 +1,50 @@
 <!DOCTYPE html>
-<!--[if IE 8]>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN" class="ie9 no-js"> <![endif]-->
-<!--[if !IE]><!-->
 <html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
-<!--<![endif]-->
 <!-- BEGIN HEAD -->
-<head th:include="error/errorHead :: head('ERROR Page | XQ博客')"></head>
+<head th:include="common/erHead :: head('ERROR | lovexq.net')"></head>
 <!-- END HEAD -->
-<body class=" page-404-3">
-<div class="page-inner">
-    <img src="/component/metronic_v4.6/assets/pages/media/pages/earth.jpg" class="img-responsive"/>
+<!--<body>-->
+<body>
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <span th:replace="common/coHeader"></span>
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+
+        <div class="container">
+
+            <section class="page-not-found">
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-1">
+                        <div class="page-not-found-main">
+                            <h2>ERROR <i class="fa fa-frown-o"></i></h2>
+                            <p th:text="${error}"></p>
+                            <p th:text="${message}"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="heading-secondary">你可以：</h4>
+                        <ul class="nav nav-list">
+                            <li><a href="/">返回主页</a></li>
+                            <li><a href="javascript:void(0)" onclick="history.back();">返回上一页</a></li>
+                            <li><a href="#">联系我们</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- BEGIN FOOTER -->
+    <span th:replace="common/coFooter"></span>
+    <!-- END FOOTER -->
 </div>
-<div class="container error-404">
-    <h1>ERROR</h1>
-    <p th:text="${exception}"></p>
-    <p th:text="${message}"></p>
-    <p>
-        我们正在修复它！请稍后重试或联系管理员。<br/>
-    </p>
-    <p>
-        <a href="/">返回主页</a>　或者　<a href="javascript:void(0)" onclick="history.back();">返回上一页</a>
-    </p>
-</div>
-<!-- BEGIN FOOTER -->
-<span th:replace="error/errorFoot"></span>
-<!-- END FOOTER -->
+<!-- BEGIN FOOT -->
+<span th:replace="common/erFoot"></span>
+<!-- END FOOT -->
 </body>
 
 </html>

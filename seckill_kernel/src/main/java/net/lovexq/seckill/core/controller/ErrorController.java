@@ -18,12 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-public class CustomErrorController extends BasicErrorController {
+public class ErrorController extends BasicErrorController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomErrorController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorController.class);
 
     @Autowired
-    public CustomErrorController(ServerProperties serverProperties) {
+    public ErrorController(ServerProperties serverProperties) {
         super(new DefaultErrorAttributes(), serverProperties.getError());
     }
 
