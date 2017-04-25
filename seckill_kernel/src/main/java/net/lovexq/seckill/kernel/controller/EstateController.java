@@ -6,7 +6,6 @@ import net.lovexq.seckill.kernel.dto.EstateItemDto;
 import net.lovexq.seckill.kernel.service.EstateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 房产控制层
+ * 房源控制层
  *
  * @author LuPindong
  * @time 2017-04-19 07:42
@@ -35,17 +34,24 @@ public class EstateController extends BasicController {
         String region = request.getParameter("region");
         Integer curPage = Integer.valueOf(request.getParameter("curPage"));
         Integer totalPage = Integer.valueOf(request.getParameter("totalPage"));
-
-        result = estateService.invokeCrawler(baseUrl, region, curPage, totalPage);
-        return result;
+        return result = estateService.invokeCrawler(baseUrl, region, curPage, totalPage);
     }
 
-    @GetMapping("/estate")
-    public String listUI(HttpServletRequest request, Model model) throws Exception {
-        Sort sort = new Sort(Sort.Direction.DESC, "totalPrice");
-        pageable = buildPageRequest(request, sort);
-        Page<EstateItemDto> itemPage = estateService.findForSaleList(pageable);
+    @GetMapping("/estate/list")
+    public String listWithGetUI(HttpServletRequest request, Model model) throws Exception {
+        pageable = buildPageRequest(request);
+        Page<EstateItemDto> itemPage = estateService.findForSaleList(pageable, null);
         model.addAttribute("itemPage", itemPage);
+        return "/estate/listUI";
+    }
+
+    @PostMapping("/estate/list")
+    public String listWithPostUI(HttpServletRequest request, Model model) throws Exception {
+        pageable = buildPageRequest(request);
+        paramMap = buildParamMap(request);
+        Page<EstateItemDto> itemPage = estateService.findForSaleList(pageable, paramMap);
+        model.addAttribute("itemPage", itemPage);
+        model.addAllAttributes(paramMap);
         return "/estate/listUI";
     }
 

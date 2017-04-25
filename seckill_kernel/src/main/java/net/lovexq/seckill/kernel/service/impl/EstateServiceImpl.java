@@ -11,6 +11,7 @@ import net.lovexq.seckill.kernel.model.EstateImage;
 import net.lovexq.seckill.kernel.model.EstateItem;
 import net.lovexq.seckill.kernel.repository.EstateImageRepository;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
+import net.lovexq.seckill.kernel.repository.EstateItemSpecification;
 import net.lovexq.seckill.kernel.service.EstateService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,11 +25,12 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 房产业务层实现类
+ * 房源业务层实现类
  *
  * @author LuPindong
  * @time 2017-04-20 23:05
@@ -94,14 +96,11 @@ public class EstateServiceImpl implements EstateService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<EstateItemDto> findForSaleList(Pageable pageable) {
+    public Page<EstateItemDto> findForSaleList(Pageable pageable, Map<String, String> paramMap) {
         Page<EstateItemDto> targetItemPage;
         List<EstateItemDto> targetItemList = new ArrayList<>();
 
-        EstateItem condition = new EstateItem();
-        condition.setSaleStatus("在售");
-
-        Page<EstateItem> sourceItemPage = estateItemRepository.findAll(Example.of(condition), pageable);
+        Page<EstateItem> sourceItemPage = estateItemRepository.findAll(EstateItemSpecification.getForSaleListSpec(paramMap), pageable);
         List<EstateItem> sourceItemList = sourceItemPage.getContent();
 
         if (CollectionUtils.isEmpty(sourceItemList)) {
@@ -125,6 +124,7 @@ public class EstateServiceImpl implements EstateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EstateItemDto findByHouseId(String id) {
         EstateItemDto targetItem = new EstateItemDto();
         EstateItem sourceItem = estateItemRepository.findByHouseId(id);

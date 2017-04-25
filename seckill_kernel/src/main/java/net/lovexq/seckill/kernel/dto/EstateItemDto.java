@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 房产条目DTO
+ * 房源条目DTO
  *
  * @author LuPindong
  * @time 2017-04-20 16:40

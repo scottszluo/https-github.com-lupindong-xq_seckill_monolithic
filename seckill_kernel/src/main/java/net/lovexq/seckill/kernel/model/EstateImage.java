@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 /**
- * 房产图片
+ * 房源图片
  *
  * @author LuPindong
  * @time 2017-04-20 16:25

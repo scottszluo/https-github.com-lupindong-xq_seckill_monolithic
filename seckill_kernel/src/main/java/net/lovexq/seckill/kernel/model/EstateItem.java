@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
- * 房产条目
+ * 房源条目
  *
  * @author LuPindong
  * @time 2017-04-19 23:35

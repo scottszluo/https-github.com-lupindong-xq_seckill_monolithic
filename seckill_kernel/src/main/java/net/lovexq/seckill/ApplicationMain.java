@@ -1,6 +1,6 @@
 package net.lovexq.seckill;
 
-import net.lovexq.seckill.core.repository.impl.BaseJpaRepositoryImpl;
+import net.lovexq.seckill.core.repository.impl.BasicRepositoryImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @time 2017-04-19 06:53
  */
 @SpringBootApplication
-@EnableJpaRepositories(repositoryBaseClass = BaseJpaRepositoryImpl.class)
+@EnableJpaRepositories(repositoryBaseClass = BasicRepositoryImpl.class)
 public class ApplicationMain {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationMain.class, args);

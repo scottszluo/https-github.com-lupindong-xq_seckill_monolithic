@@ -15,6 +15,6 @@ public class IndexController extends BasicController {
 
     @GetMapping("/")
     public String index() {
-        return "forward:/estate";
+        return "forward:/estate/list";
     }
 }

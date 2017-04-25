@@ -1,6 +1,6 @@
 package net.lovexq.seckill.core.repository.impl;
 
-import net.lovexq.seckill.core.repository.BaseJpaRepository;
+import net.lovexq.seckill.core.repository.BasicRepository;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -19,12 +19,12 @@ import java.util.Map;
  * @author "LuPindong"
  * @date 2016年6月2日 下午9:15:49
  */
-public class BaseJpaRepositoryImpl<T, PK extends Serializable> extends SimpleJpaRepository<T, PK> implements BaseJpaRepository<T, PK> {
+public class BasicRepositoryImpl<T, PK extends Serializable> extends SimpleJpaRepository<T, PK> implements BasicRepository<T, PK> {
 
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public BaseJpaRepositoryImpl(JpaEntityInformation entityInformation, EntityManager entityManager) {
+    public BasicRepositoryImpl(JpaEntityInformation entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.entityManager = entityManager;
     }
@@ -80,6 +80,7 @@ public class BaseJpaRepositoryImpl<T, PK extends Serializable> extends SimpleJpa
                 nativeQuery.setParameter(i, params[i]);
             }
         }
+
         return nativeQuery.list();
     }
 

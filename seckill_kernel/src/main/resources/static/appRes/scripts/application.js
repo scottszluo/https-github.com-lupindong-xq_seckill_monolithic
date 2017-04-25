@@ -6,12 +6,11 @@ $(function () {
     var pathname = window.location.pathname;
     var channels = pathname.split("/");
     var channel = "#index";
-    if (channels.length >= 2 && channels[1] != "") {
+    if (channels.length >= 2 && Common.StringUtil.isNotBlank(channels[1])) {
         channel = "#" + channels[1];
     }
     $("#mainNav > li").removeClass("active");
     $(channel).addClass("active");
-
 });
 
 var Common = (function () {
@@ -21,15 +20,16 @@ var Common = (function () {
     var stack_bar_top = {"dir1": "down", "dir2": "right", "push": "top", "spacing1": 0, "spacing2": 0};
     var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 0, "spacing2": 0};
 
-    PNotice = {
+    var PNotice = {
+        // 消息提示
         common: function (title, text, type, addClass, stack) {
             new PNotify({
                 title: title,
                 text: text,
                 type: type,
                 addclass: addClass,
-                stack: stack,
-                hide: false //是否自动关闭
+                stack: stack
+                // hide: false //是否自动关闭
             });
         },
         info: function (title, text) {
@@ -49,7 +49,94 @@ var Common = (function () {
         }
     }
 
+    var Bootpag = {
+        // 初始化分页信息（Get提交）
+        initWithGet: function (url, total, page) {
+            $('#pagination').bootpag({
+                total: total,
+                page: page,
+                maxVisible: 5,
+                leaps: true,
+                firstLastUse: true,
+                first: '首页',
+                last: '尾页',
+            }).on('page', function (event, num) {
+                if (url.indexOf('page=') != -1) {
+                    window.location.href = url + num;
+                } else {
+                    window.location.href = url + "?page=" + num;
+                }
+            });
+        },
+        // 初始化分页信息（Post提交）
+        initWithPost: function (formId, url, total, page) {
+            $('#pagination').bootpag({
+                total: total,
+                page: page,
+                maxVisible: 5,
+                leaps: true,
+                firstLastUse: true,
+                first: '首页',
+                last: '尾页',
+            }).on('page', function (event, num) {
+                $("#page").val(num);
+                $("#" + formId).attr("action", url).submit();
+            });
+        }
+    }
+
+    var Lazyload = {
+        // 初始化图片延迟加载
+        init: function () {
+            $("img.lazyload").lazyload({
+                effect: "fadeIn"
+            });
+        }
+    }
+
+    var StringUtil = {
+        isBlank: function (strVal) {
+            if (typeof(strVal) == "undefined" || "" == strVal || strVal.length < 1) {
+                return true;
+            }
+            return false;
+        },
+        isNotBlank: function (strVal) {
+            return !StringUtil.isBlank(strVal);
+        }
+    }
+
     return {
-        PNotice: PNotice
+        PNotice: PNotice,
+        Bootpag: Bootpag,
+        Lazyload: Lazyload,
+        StringUtil: StringUtil
+    }
+})();
+
+var Estate = (function () {
+    var List = {
+        url: function () {
+            return "/estate/list";
+        },
+        filterData: function () {
+            $("#estatesForm").attr("action", Estate.List.url()).submit();
+
+            /*var pageUrl = List.url() + "?page=" + page;
+             $.each($("select"), function () {
+             var name = (this).name;
+             var val = (this).value;
+             if (Common.StringUtil.isNotBlank(val)) {
+             pageUrl += ("&" + name + "=" + val);
+             }
+             })
+             pageUrl += "&orderField=totalPrice,model";
+             window.location.href = encodeURI(pageUrl);
+             $("#estatesForm").post()*/
+        }
+    }
+
+    return {
+        List: List
     }
 })();

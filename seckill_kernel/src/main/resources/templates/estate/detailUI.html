@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
 <!-- BEGIN HEAD -->
-<head th:include="common/fgHead :: head('特价秒杀 | lovexq.net')"></head>
+<head th:include="common/fgHead :: head('房源信息 | lovexq.net')"></head>
 <!-- END HEAD -->
 <body>
 
@@ -35,10 +35,10 @@
                                 <div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
                                     <div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
                                         <div th:if="${not #lists.isEmpty(itemDto.estateImageList)}" th:each="iamge, iamgeStat : ${itemDto.estateImageList}">
-                                            <a href="/" th:href="${iamge.picture_source_url}">
+                                            <a href="/" th:href="${iamge.picture_source_url}?:'/component/porto/img/blank.jpg'">
                                                 <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
                                                     <span class="thumb-info-wrapper font-size-xl">
-                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" th:src="${iamge.picture_source_url}">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" th:src="${iamge.picture_source_url}?:'/component/porto/img/blank.jpg'">
                                                         <span class="thumb-info-title font-size-xl">
                                                             <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
                                                         </span>
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="owl-carousel owl-theme manual thumb-gallery-thumbs mt" id="thumbGalleryThumbs">
                                     <div th:if="${not #lists.isEmpty(itemDto.estateImageList)}" th:each="iamge, iamgeStat : ${itemDto.estateImageList}">
-                                        <img alt="房源缩略图" class="img-responsive cur-pointer" th:src="${iamge.url}">
+                                        <img alt="房源缩略图" class="img-responsive cur-pointer" th:src="${iamge.url}?:'/component/porto/img/blank.jpg'">
                                     </div>
                                 </div>
                             </div>
@@ -119,6 +119,8 @@
                     <div class="row">
                         <div class="col-md-12">
 
+                            <hr class="solid tall">
+
                             <h4 class="mt-md mb-md">房源描述</h4>
                             <p>
                                 <b>装修描述</b>：整幢别墅都是台湾出名大师设计，宫殿般装修，部是进口材料，音响系统：为世界Boss音响系统，房间、洗手间及花园音响系统，均有自行控制开关，互不干扰
@@ -157,7 +159,9 @@
                             <hr class="solid tall">
 
                             <h4 class="mt-md mb-md" id="map">小区位置</h4>
-                            <div id="googlemaps" class="google-map m-none mb-xlg"></div>
+                            <div class="google-map m-none mb-xlg">
+                                <img alt="小区位置" class="lazyload" data-original="/component/porto/img/map.jpg">
+                            </div>
                         </div>
                     </div>
 
@@ -274,7 +278,7 @@
 <!-- BEGIN PAGESCRIPT -->
 <script>
     $(function () {
-
+        Common.Lazyload.init();
     })
 </script>
 <!-- END PAGESCRIPT -->

@@ -5,11 +5,15 @@ package net.lovexq.seckill.core.controller;
  */
 
 import net.lovexq.seckill.common.model.JsonResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 基类控制类
@@ -19,9 +23,54 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BasicController {
 
-    protected JsonResult result = new JsonResult();
-
     protected Pageable pageable;
+    protected JsonResult result = new JsonResult();
+    protected Map<String, String> paramMap = new HashMap<>();
+    private int defaultPage = 1;
+    private int defaultSize = 15;
+
+    /**
+     * 创建分页请求.
+     */
+    protected PageRequest buildPageRequest(HttpServletRequest request) {
+
+        String pageStr = request.getParameter("page");
+        String sizeStr = request.getParameter("size");
+        String sortStr = request.getParameter("sort");
+
+        int page = Integer.parseInt(pageStr != null ? pageStr : String.valueOf(defaultPage));
+        int size = Integer.parseInt(sizeStr != null ? sizeStr : String.valueOf(defaultSize));
+
+        if (page < 1) page = defaultPage;
+        if (size < 1) size = defaultSize;
+
+        if (StringUtils.isNotBlank(sortStr)) {
+            Sort sort;
+            String[] sortArray = sortStr.split(":");
+            String orderField = sortArray[0];
+            String orderType = sortArray[1];
+            if (StringUtils.isNotBlank(orderType)) {
+                if (Sort.Direction.DESC.equals(orderType.toUpperCase())) {
+                    sort = new Sort(Sort.Direction.DESC, orderField);
+                } else {
+                    sort = new Sort(Sort.Direction.ASC, orderField);
+                }
+            } else {
+                sort = new Sort(Sort.DEFAULT_DIRECTION, orderField);
+            }
+            return new PageRequest(page - 1, size, sort);
+        } else {
+            return new PageRequest(page - 1, size);
+        }
+    }
+
+    protected Map<String, String> buildParamMap(HttpServletRequest request) {
+        Map<String, String[]> maps = request.getParameterMap();
+        if (!CollectionUtils.isEmpty(maps)) {
+            maps.forEach((key, value) -> paramMap.put(key, value[0]));
+        }
+        return paramMap;
+    }
 
     public JsonResult getResult() {
         return result;
@@ -31,21 +80,11 @@ public class BasicController {
         this.result = result;
     }
 
-    /**
-     * 创建分页请求.
-     */
-    protected PageRequest buildPageRequest(HttpServletRequest request) {
-        int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
-        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "15");
-        return new PageRequest(page - 1, size);
+    public Map<String, String> getParamMap() {
+        return paramMap;
     }
 
-    /**
-     * 创建分页请求.
-     */
-    protected PageRequest buildPageRequest(HttpServletRequest request, Sort sort) {
-        int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
-        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "15");
-        return new PageRequest(page - 1, size, sort);
+    public void setParamMap(Map<String, String> paramMap) {
+        this.paramMap = paramMap;
     }
 }
