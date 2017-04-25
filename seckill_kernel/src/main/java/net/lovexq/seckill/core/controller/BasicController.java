@@ -36,7 +36,7 @@ public class BasicController {
      */
     protected PageRequest buildPageRequest(HttpServletRequest request) {
         int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
-        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "9");
+        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "15");
         return new PageRequest(page - 1, size);
     }
 
@@ -45,7 +45,7 @@ public class BasicController {
      */
     protected PageRequest buildPageRequest(HttpServletRequest request, Sort sort) {
         int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
-        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "9");
+        int size = Integer.parseInt(request.getParameter("size") != null ? request.getParameter("size") : "15");
         return new PageRequest(page - 1, size, sort);
     }
 }

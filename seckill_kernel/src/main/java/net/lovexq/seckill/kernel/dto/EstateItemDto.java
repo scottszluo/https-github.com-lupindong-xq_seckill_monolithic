@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class EstateItemDto extends EstateItem {
 
-    private String coverUrl = "/component/porto/img/blank.jpg";
+    private String coverUrl;
 
     private List<EstateImage> estateImageList = new ArrayList<>();
 

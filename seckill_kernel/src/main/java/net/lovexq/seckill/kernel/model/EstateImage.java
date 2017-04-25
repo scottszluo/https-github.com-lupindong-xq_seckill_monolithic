@@ -20,7 +20,7 @@ public class EstateImage {
     private String picture_url;
     private String picture_source_url;
     @Column(name = "picture_type")
-    private int pictureType;
+    private Integer pictureType;
     private String appid;
     private String app_pkid;
     private String upload_user_id;
@@ -32,6 +32,14 @@ public class EstateImage {
     private String url;
     private String uri;
     private String type;
+
+    public EstateImage() {
+    }
+
+    public EstateImage(String picture_id, String houseCode) {
+        this.picture_id = picture_id;
+        this.houseCode = houseCode;
+    }
 
     public String getPicture_id() {
         return picture_id;
@@ -65,11 +73,11 @@ public class EstateImage {
         this.picture_source_url = picture_source_url;
     }
 
-    public int getPictureType() {
+    public Integer getPictureType() {
         return pictureType;
     }
 
-    public void setPictureType(int pictureType) {
+    public void setPictureType(Integer pictureType) {
         this.pictureType = pictureType;
     }
 

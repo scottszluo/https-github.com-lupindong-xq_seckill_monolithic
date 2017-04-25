@@ -17,5 +17,8 @@ public interface EstateService {
 
     void saveCrawlerData(byte[] dataArray) throws Exception;
 
-    Page<EstateItemDto> findSaleList(Pageable pageable);
+    Page<EstateItemDto> findForSaleList(Pageable pageable);
+
+    EstateItemDto findByHouseId(String id);
+
 }

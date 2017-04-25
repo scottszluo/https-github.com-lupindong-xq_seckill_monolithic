@@ -4,12 +4,14 @@
 $(function () {
     // 激活对应频道
     var pathname = window.location.pathname;
-    var channel = "#" + pathname.substr(1);
-    if ("#" === channel) {
-        channel = "#index";
+    var channels = pathname.split("/");
+    var channel = "#index";
+    if (channels.length >= 2 && channels[1] != "") {
+        channel = "#" + channels[1];
     }
     $("#mainNav > li").removeClass("active");
     $(channel).addClass("active");
+
 });
 
 var Common = (function () {

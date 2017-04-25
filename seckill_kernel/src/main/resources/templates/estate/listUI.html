@@ -3,15 +3,15 @@
 <!-- BEGIN HEAD -->
 <head th:include="common/fgHead :: head('特价秒杀 | lovexq.net')"></head>
 <!-- END HEAD -->
-<!--<body>-->
-<body class="loading-overlay-showing" data-loading-overlay>
+<body>
+<!--<body class="loading-overlay-showing" data-loading-overlay>
 <div class="loading-overlay">
     <div class="bounce-loader">
         <div class="bounce1"></div>
         <div class="bounce2"></div>
         <div class="bounce3"></div>
     </div>
-</div>
+</div>-->
 
 <div class="body">
     <!-- BEGIN HEADER -->
@@ -46,7 +46,38 @@
 
         <div class="container">
             <div class="row mb-lg">
-                <ul class="properties-listing sort-destination p-none" id="content"></ul>
+                <ul class="properties-listing sort-destination p-none">
+                    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(itemPage.content)}" th:each="item, itemStat : ${itemPage.content}">
+                        <div class="listing-item">
+                            <a href="/" class="text-decoration-none" th:href="'/estate/'+${item.houseId}">
+                                <span class="thumb-info thumb-info-lighten">
+                                    <span class="thumb-info-wrapper m-none">
+                                        <img class="lazyload img-responsive" style="height: 240px" th:attr="data-original=${item.coverUrl}?:'/component/porto/img/blank.jpg'">
+                                        <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md" th:text="${item.saleStatus}">saleStatus</span>
+                                    </span>
+                                    <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
+                                        <sapn class="font-red" th:text="${item.totalPrice}+'万'">totalPrice</sapn><br/>
+                                        <span class="text-sm">单价[[${item.unitPrice}]]/平米&nbsp&nbsp&nbsp&nbsp首付[[${#numbers.formatDecimal(item.totalPrice * 0.3, 1, 2)}]]万</span>
+                                        <i class="fa fa-caret-right text-color-secondary pull-right"></i>
+                                    </span>
+                                    <span class="custom-thumb-info-title b-normal p-lg">
+                                        <span class="thumb-info-inner text-md" th:text="${item.title}">title</span>
+                                        <ul class="accommodations text-uppercase font-weight-bold p-none text-sm">
+                                            <li><span class="accomodation-value custom-color-1" th:text="${item.model}">model</span></li>
+                                            <li><span class="accomodation-value custom-color-1" th:text="${item.area}+'平米'">area</span></li>
+                                            <li><span class="accomodation-value custom-color-1" th:text="${item.direction}">direction</span></li>
+                                        </ul>
+                                        <ul class="accommodations text-uppercase font-weight-bold p-none text-sm">
+                                            <li><span class="accomodation-value custom-color-1" th:text="${item.floor}">floor</span></li>
+                                            <li><span class="accomodation-value custom-color-1" th:text="${item.buildingAge}?:'暂无数据'">buildingAge</span></li>
+                                            <li><span class="accomodation-value custom-color-1" th:text="${item.decoration}">decoration</span></li>
+                                        </ul>
+                                    </span>
+                                </span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
             <div class="row mt-lg mb-xlg">
@@ -67,54 +98,24 @@
 <!-- BEGIN PAGESCRIPT -->
 <script>
     $(function () {
+        // 图片懒加载
+        $("img.lazyload").lazyload({
+            effect: "fadeIn"
+        });
+
+        // 分页信息
         $('#pagination').bootpag({
-            total: 5,
-            page: 1,
+            total: [[${itemPage.totalPages}]],
+            page: [[${itemPage.number}]] + 1,
             maxVisible: 5,
             leaps: true,
             firstLastUse: true,
             first: '首页',
             last: '尾页',
         }).on('page', function (event, num) {
-            loadData(num, 15);
+            window.location.href = "/estate?page=" + num;
         });
-
-        // 加载数据
-        loadData(1, 15);
     })
-
-    // 加载数据
-    var loadData = function (page, size) {
-        $.get('/estate/data', {page: page, size: size})
-            .done(function (response) {
-                var pageData = response.data;
-                // 清空原数据
-                $("#content").empty();
-                // 生成页面
-                $.each(pageData.content, function (index, obj) {
-                    $("#content").append(createHtml(obj));
-                });
-                // 分页信息
-                pagination(pageData);
-            })
-            .fail(function (response) {
-                Common.PNotice.error(response.responseJSON.data, response.responseJSON.message);
-            });
-    }
-
-    // 生成页面
-    var createHtml = function (obj) {
-        var html = '<li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item"><div class="listing-item"><a href="/estate/' + obj.houseId + '" class="text-decoration-none"><span class="thumb-info thumb-info-lighten"><span class="thumb-info-wrapper m-none"><img src="' + obj.coverUrl + '" class="img-responsive" alt=""> <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md">' + obj.saleStatus + '</span></span> <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md"><sapn class="font-red">' + obj.totalPrice + '万</sapn><br/><span class="text-sm">单价' + obj.unitPrice + '/平米</span><i class="fa fa-caret-right text-color-secondary pull-right"></i></span> <span class="custom-thumb-info-title b-normal p-lg"><b><span class="thumb-info-inner text-md">' + obj.title + '</span></b><ul class="accommodations text-uppercase font-weight-bold p-none text-sm"><li><span class="accomodation-value custom-color-1">' + obj.model + '</span></li><li><span class="accomodation-value custom-color-1">' + obj.area + '平米</span></li><li><span class="accomodation-value custom-color-1">' + obj.direction + '</span></li></ul><ul class="accommodations text-uppercase font-weight-bold p-none text-sm"><li><span class="accomodation-value custom-color-1">' + obj.floor + '</span></li><li><span class="accomodation-value custom-color-1">' + obj.buildingAge + '</span></li><li><span class="accomodation-value custom-color-1">' + obj.decoration + '</span></li></ul></span></span></a></div></li>';
-        return html;
-    };
-
-    // 分页信息
-    var pagination = function (pageData) {
-        $('#pagination').bootpag({
-            total: pageData.totalPages,
-            page: pageData.number + 1
-        });
-    };
 </script>
 <!-- END PAGESCRIPT -->
 </body>

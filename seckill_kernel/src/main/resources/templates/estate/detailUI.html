@@ -1,851 +1,283 @@
 <!DOCTYPE html>
-<html data-style-switcher-options="{'changeLogo': false, 'borderRadius': 0, 'colorPrimary': '#333b48', 'colorSecondary': '#219cd2', 'colorTertiary': '#2bca6e', 'colorQuaternary': '#FFF'}">
-	
-<!-- Mirrored from preview.oklerthemes.com/porto/5.6.0/detailUI.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 23 Mar 2017 23:34:04 GMT -->
-<head>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head th:include="common/fgHead :: head('特价秒杀 | lovexq.net')"></head>
+<!-- END HEAD -->
+<body>
 
-		<!-- Basic -->
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">	
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <span th:replace="common/coHeader"></span>
+    <!-- END HEADER -->
 
-		<title>Porto - Responsive HTML5 Template 5.6.0</title>	
+    <div role="main" class="main">
 
-		<meta name="keywords" content="HTML5 Template" />
-		<meta name="description" content="Porto - Responsive HTML5 Template">
-		<meta name="author" content="okler.net">
+        <section class="page-header page-header-light page-header-more-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>[[${itemDto.title}]]<span>[[${itemDto.cityName}]] - [[${itemDto.regionAName}]] - [[${itemDto.regionBName}]]</span></h1>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-		<!-- Favicon -->
-		<link rel="shortcut icon" href="/component/porto/img/favicon.ico" type="image/x-icon" />
-		<link rel="apple-touch-icon" href="/component/porto/img/apple-touch-icon.png">
+        <div class="container">
 
-		<!-- Mobile Metas -->
-		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+            <div class="row pb-xl pt-md">
+                <div class="col-md-9">
 
-		<!-- Web Fonts  -->
-		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CShadows+Into+Light" rel="stylesheet" type="text/css">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <span class="thumb-info-listing-type thumb-info-listing-type-detail background-color-secondary text-uppercase text-color-light font-weight-semibold p-sm pl-md pr-md"
+                                  th:text="${itemDto.saleStatus}">saleStatus</span>
+                            <div class="thumb-gallery">
+                                <div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
+                                    <div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
+                                        <div th:if="${not #lists.isEmpty(itemDto.estateImageList)}" th:each="iamge, iamgeStat : ${itemDto.estateImageList}">
+                                            <a href="/" th:href="${iamge.picture_source_url}">
+                                                <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
+                                                    <span class="thumb-info-wrapper font-size-xl">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" th:src="${iamge.picture_source_url}">
+                                                        <span class="thumb-info-title font-size-xl">
+                                                            <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="owl-carousel owl-theme manual thumb-gallery-thumbs mt" id="thumbGalleryThumbs">
+                                    <div th:if="${not #lists.isEmpty(itemDto.estateImageList)}" th:each="iamge, iamgeStat : ${itemDto.estateImageList}">
+                                        <img alt="房源缩略图" class="img-responsive cur-pointer" th:src="${iamge.url}">
+                                    </div>
+                                </div>
+                            </div>
 
-		<!-- Vendor CSS -->
-		<link rel="stylesheet" href="/component/porto/vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="/component/porto/vendor/font-awesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="/component/porto/vendor/animate/animate.min.css">
-		<link rel="stylesheet" href="/component/porto/vendor/simple-line-icons/css/simple-line-icons.min.css">
-		<link rel="stylesheet" href="/component/porto/vendor/owl.carousel/assets/owl.carousel.min.css">
-		<link rel="stylesheet" href="/component/porto/vendor/owl.carousel/assets/owl.theme.default.min.css">
-		<link rel="stylesheet" href="/component/porto/vendor/magnific-popup/magnific-popup.min.css">
+                        </div>
+                        <div class="col-md-5">
+                            <table class="table table-striped">
+                                <colgroup>
+                                    <col width="38%">
+                                    <col width="62%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <td class="font-weight-bold pt-md pb-md background-color-primary text-light font-red" style="font-size: 2em" colspan="2">
+                                        [[${itemDto.totalPrice}]]万
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-size-md pt-sm pb-sm background-color-primary text-light" colspan="2">
+                                        单价[[${itemDto.unitPrice}]]/平米&nbsp&nbsp&nbsp&nbsp
+                                        首付[[${#numbers.formatDecimal(itemDto.totalPrice * 0.3, 1, 2)}]]万
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>房源编号</td>
+                                    <td>[[${itemDto.houseId}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>小区名称</td>
+                                    <td>[[${itemDto.resBlockName}]]&nbsp&nbsp<a href="#map" class="font-size-sm" data-hash data-hash-offset="100">(地图)</a></td>
+                                </tr>
+                                <tr>
+                                    <td>所在区域</td>
+                                    <td>[[${itemDto.regionAName}]] - [[${itemDto.regionBName}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>房屋户型</td>
+                                    <td>[[${itemDto.model}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>房屋朝向</td>
+                                    <td>[[${itemDto.direction}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>建筑面积</td>
+                                    <td>[[${itemDto.area}]]平米</td>
+                                </tr>
+                                <tr>
+                                    <td>所在楼层</td>
+                                    <td>[[${itemDto.floor}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>建筑年代</td>
+                                    <td>[[${itemDto.buildingAge?:'暂无数据'}]]年</td>
+                                </tr>
+                                <tr>
+                                    <td>装修情况</td>
+                                    <td>[[${itemDto.decoration}]]</td>
+                                </tr>
+                                </tbody>
+                            </table>
 
-		<!-- Theme CSS -->
-		<link rel="stylesheet" href="/component/porto/css/theme.css">
-		<link rel="stylesheet" href="/component/porto/css/theme-elements.css">
+                        </div>
+                    </div>
 
-		<!-- Current Page CSS -->
-		<link rel="stylesheet" href="/component/porto/vendor/rs-plugin/css/settings.css">
-		<link rel="stylesheet" href="/component/porto/vendor/rs-plugin/css/layers.css">
-		<link rel="stylesheet" href="/component/porto/vendor/rs-plugin/css/navigation.css">
+                    <div class="row">
+                        <div class="col-md-12">
 
-		<!-- Skin CSS -->
-		<link rel="stylesheet" href="/component/porto/css/skins/default.css">
+                            <h4 class="mt-md mb-md">房源描述</h4>
+                            <p>
+                                <b>装修描述</b>：整幢别墅都是台湾出名大师设计，宫殿般装修，部是进口材料，音响系统：为世界Boss音响系统，房间、洗手间及花园音响系统，均有自行控制开关，互不干扰
+                            </p>
+                            <p>
+                                <b>户型介绍</b>：住房三层，建筑实用面积：600平方米，花园占地面积：601平方米，主人卧室、孩子住房及客厅均正南方向；欧式客厅层高6.5米，客厅临院漂出锦鲤鱼池，带私家独立花园，奢华泳池，大师手笔打造品质大宅，台湾有名设计师设计，耗资一千万，历近二年时间完成，土建增加防震及避雷系统。
+                            </p>
+                            <p>
+                                <b>小区介绍</b>：汇景新城全国十大明星楼盘之一，广州都市内花园！现代化都市中配套成熟完善，且交通便捷宁静的‘城中花园’。本‘独立’别墅朝向正东南，是别墅区内占地面积最大，装修奢华的传世别墅之一！
+                            </p>
+                            <p>
+                                <b>周边配套</b>：亚太盛汇商场、高尔夫球场、山顶公园、亚太国际俱乐部、潮皇汇、品善餐饮、健身房、儿童游乐场、歌舞厅、咖啡厅、篮球场、网球场、洗衣店、美发美容、羽毛球场、游泳池、阅览室、餐厅。
+                            </p>
+                            <p>
+                                <b>交通出行</b>：汇景新城周边交通主道有南门出广园快速，北门有汇景北路接驳五山路，东门有科韵路，西门有华南干线。社区内还有电瓶车接送点，进出非常方便。
+                            </p>
 
-		<!-- Theme Custom CSS -->
-		<link rel="stylesheet" href="/component/porto/css/custom.css">
+                            <hr class="solid tall">
 
-		<!-- Head Libs -->
-		<script src="/component/porto/vendor/modernizr/modernizr.min.js"></script>
+                            <h4 class="mt-md mb-md">房源特色</h4>
+                            <ul class="list list-icons list-secondary row m-none">
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>中央空调</i></a></li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>家庭影院</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>中央供暖</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>洗衣机</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>阳台</li>
+                                <li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i>仓库</li>
+                                <li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i>车库</li>
+                                <li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i>院子</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>电热水器</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>木地板</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>健身房</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>海景</li>
+                            </ul>
 
-	</head>
-	<body class="loading-overlay-showing">
-		<div class="loading-overlay">
-			<div class="bounce-loader">
-				<div class="bounce1"></div>
-				<div class="bounce2"></div>
-				<div class="bounce3"></div>
-			</div>
-		</div>
+                            <hr class="solid tall">
 
-		<div class="body">
-			<header id="header" class="header-narrow" data-plugin-options="{'stickyEnabled': true, 'stickyEnableOnBoxed': true, 'stickyEnableOnMobile': true, 'stickyStartAt': 37, 'stickySetTop': '-37px', 'stickyChangeLogo': false}">
-				<div class="header-body background-color-primary pt-none pb-none">
-					<div class="header-top header-top header-top-style-3 header-top-custom background-color-primary m-none">
-						<div class="container">
-							<nav class="header-nav-top pull-left">
-								<ul class="nav nav-pills">
-									<li class="hidden-xs">
-										<span class="ws-nowrap"><i class="icon-location-pin icons"></i> 1234 Street Name, City Name</span>
-									</li>
-									<li>
-										<span class="ws-nowrap"><i class="icon-call-out icons"></i> (800) 123-4567</span>
-									</li>
-									<li class="hidden-xs">
-										<span class="ws-nowrap"><i class="icon-envelope-open icons"></i> <a class="text-decoration-none" href="mailto:mail@example.com">mail@example.com</a></span>
-									</li>
-								</ul>
-							</nav>
-							<nav class="header-nav-top langs pull-right mr-none">
-								<ul class="nav nav-pills">
-									<li>
-										<a href="#" class="dropdown-menu-toggle" id="dropdownLanguage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-											English
-											<i class="fa fa-sort-down"></i>
-										</a>
-										<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownLanguage">
-											<li>
-												<a href="#english"><img src="img/blank.gif" class="flag flag-us" alt="English"> English</a>
-											</li>
-											<li>
-												<a href="#espanol"><img src="img/blank.gif" class="flag flag-es" alt="Español"> Español</a>
-											</li>
-											<li>
-												<a href="#francaise"><img src="img/blank.gif" class="flag flag-fr" alt="Française"> Française</a>
-											</li>
-										</ul>
-									</li>
-									<li class="blog">
-										<a href="#">
-											Blog
-										</a>
-									</li>
-								</ul>
-							</nav>
-						</div>
-					</div>
-					<div class="header-container container custom-position-initial">
-						<div class="header-row">
-							<div class="header-column">
-								<div class="header-logo">
-									<a href="demo-real-estate.html">
-										<img alt="Porto" width="143" height="40" src="img/real-estate/logo-real-estate.png">
-									</a>
-								</div>
-							</div>
-							<div class="header-column">
-								<div class="header-row">
-									<div class="header-nav">
-										<button class="btn header-btn-collapse-nav" data-toggle="collapse" data-target=".header-nav-main">
-											<i class="fa fa-bars"></i>
-										</button>
-										<div class="header-nav-main header-nav-main-effect-1 header-nav-main-sub-effect-1 collapse m-none">
-											<nav>
-												<ul class="nav nav-pills" id="mainNav">
-													<li class="dropdown-full-color dropdown-quaternary">
-														<a href="demo-real-estate.html">
-															Home
-														</a>
-													</li>
-													<li class="dropdown-full-color dropdown-quaternary active">
-														<a href="listUI.html">
-															Properties
-														</a>
-													</li>
+                            <h4 class="mt-md mb-md" id="map">小区位置</h4>
+                            <div id="googlemaps" class="google-map m-none mb-xlg"></div>
+                        </div>
+                    </div>
 
-													<li class="dropdown dropdown-full-color dropdown-quaternary">
-														<a class="dropdown-toggle" href="demo-real-estate-who-we-are.html">
-															About
-														</a>
-														<ul class="dropdown-menu">
-															<li><a href="demo-real-estate-agents.html">Agents</a></li>
-															<li><a href="demo-real-estate-who-we-are.html">Who We Are</a></li>
-														</ul>
-													</li>
-													<li class="dropdown-full-color dropdown-quaternary">
-														<a href="demo-real-estate-contact.html">
-															Contact
-														</a>
-													</li>
-													<li class="dropdown dropdown-full-color dropdown-quaternary dropdown-mega" id="headerSearchProperties">
-														<a class="dropdown-toggle" href="#">
-															Search <i class="fa fa-search"></i>
-														</a>
-														<ul class="dropdown-menu custom-fullwidth-dropdown-menu">
-															<li>
-																<div class="dropdown-mega-content">
-																	<form id="propertiesFormHeader" action="http://preview.oklerthemes.com/porto/5.6.0/demo-real-estate-properties.html" method="POST">
-																		<div class="container p-none">
-																			<div class="row">
-																				<div class="col-md-2">
-																					<div class="form-control-custom">
-																						<select class="form-control text-uppercase font-size-sm" name="propertiesPropertyType" data-msg-required="This field is required." id="propertiesPropertyType" required="">
-																							<option value="">Property Type</option>
-																							<option value="1">Apartment</option>
-																							<option value="2">House</option>
-																						</select>
-																					</div>
-																				</div>
-																				<div class="col-md-2">
-																					<div class="form-control-custom">
-																						<select class="form-control text-uppercase font-size-sm" name="propertiesLocation" data-msg-required="This field is required." id="propertiesLocation" required="">
-																							<option value="">Location</option>
-																							<option value="1">Miami</option>
-																							<option value="2">New York</option>
-																							<option value="3">Houston</option>
-																							<option value="4">Los Angeles</option>
-																						</select>
-																					</div>
-																				</div>
-																				<div class="col-md-2">
-																					<div class="form-control-custom">
-																						<select class="form-control text-uppercase font-size-sm" name="propertiesMinBeds" data-msg-required="This field is required." id="propertiesMinBeds" required="">
-																							<option value="">Min Beds</option>
-																							<option value="1">1</option>
-																							<option value="2">2</option>
-																							<option value="3">3</option>
-																							<option value="4">4</option>
-																						</select>
-																					</div>
-																				</div>
-																				<div class="col-md-2">
-																					<div class="form-control-custom">
-																						<select class="form-control text-uppercase font-size-sm" name="propertiesMinPrice" data-msg-required="This field is required." id="propertiesMinPrice" required="">
-																							<option value="">Min Price</option>
-																							<option value="150000">$150,000</option>
-																							<option value="200000">$200,000</option>
-																							<option value="250000">$250,000</option>
-																							<option value="300000">$300,000</option>
-																							<option value="350000">$350,000</option>
-																							<option value="400000">$400,000</option>
-																							<option value="450000">$450,000</option>
-																							<option value="500000">$500,000</option>
-																							<option value="550000">$550,000</option>
-																							<option value="600000">$600,000</option>
-																							<option value="650000">$650,000</option>
-																							<option value="700000">$700,000</option>
-																							<option value="750000">$750,000</option>
-																							<option value="800000">$800,000</option>
-																							<option value="850000">$850,000</option>
-																							<option value="900000">$900,000</option>
-																							<option value="950000">$950,000</option>
-																							<option value="1000000">$1,000,000</option>
-																							<option value="1250000">$1,250,000</option>
-																							<option value="1500000">$1,500,000</option>
-																							<option value="1750000">$1,750,000</option>
-																							<option value="2000000">$2,000,000</option>
-																							<option value="2250000">$2,250,000</option>
-																							<option value="2500000">$2,500,000</option>
-																							<option value="2750000">$2,750,000</option>
-																							<option value="3000000">$3,000,000</option>
-																							<option value="3250000">$3,250,000</option>
-																							<option value="3500000">$3,500,000</option>
-																							<option value="3750000">$3,750,000</option>
-																							<option value="4000000">$4,000,000</option>
-																							<option value="4250000">$4,250,000</option>
-																							<option value="4500000">$4,500,000</option>
-																							<option value="4750000">$4,750,000</option>
-																							<option value="5000000">$5,000,000</option>
-																							<option value="6000000">$6,000,000</option>
-																							<option value="7000000">$7,000,000</option>
-																							<option value="8000000">$8,000,000</option>
-																							<option value="9000000">$9,000,000</option>
-																							<option value="10000000">$10,000,000</option>
-																						</select>
-																					</div>
-																				</div>
-																				<div class="col-md-2">
-																					<div class="form-control-custom">
-																						<select class="form-control text-uppercase font-size-sm" name="propertiesMaxPrice" data-msg-required="This field is required." id="propertiesMaxPrice" required="">
-																							<option value="">Max Price</option>
-																							<option value="150000">$150,000</option>
-																							<option value="200000">$200,000</option>
-																							<option value="250000">$250,000</option>
-																							<option value="300000">$300,000</option>
-																							<option value="350000">$350,000</option>
-																							<option value="400000">$400,000</option>
-																							<option value="450000">$450,000</option>
-																							<option value="500000">$500,000</option>
-																							<option value="550000">$550,000</option>
-																							<option value="600000">$600,000</option>
-																							<option value="650000">$650,000</option>
-																							<option value="700000">$700,000</option>
-																							<option value="750000">$750,000</option>
-																							<option value="800000">$800,000</option>
-																							<option value="850000">$850,000</option>
-																							<option value="900000">$900,000</option>
-																							<option value="950000">$950,000</option>
-																							<option value="1000000">$1,000,000</option>
-																							<option value="1250000">$1,250,000</option>
-																							<option value="1500000">$1,500,000</option>
-																							<option value="1750000">$1,750,000</option>
-																							<option value="2000000">$2,000,000</option>
-																							<option value="2250000">$2,250,000</option>
-																							<option value="2500000">$2,500,000</option>
-																							<option value="2750000">$2,750,000</option>
-																							<option value="3000000">$3,000,000</option>
-																							<option value="3250000">$3,250,000</option>
-																							<option value="3500000">$3,500,000</option>
-																							<option value="3750000">$3,750,000</option>
-																							<option value="4000000">$4,000,000</option>
-																							<option value="4250000">$4,250,000</option>
-																							<option value="4500000">$4,500,000</option>
-																							<option value="4750000">$4,750,000</option>
-																							<option value="5000000">$5,000,000</option>
-																							<option value="6000000">$6,000,000</option>
-																							<option value="7000000">$7,000,000</option>
-																							<option value="8000000">$8,000,000</option>
-																							<option value="9000000">$9,000,000</option>
-																							<option value="10000000">$10,000,000</option>
-																						</select>
-																					</div>
-																				</div>
-																				<div class="col-md-2">
-																					<input type="submit" value="Search Now" class="btn btn-secondary btn-lg btn-block text-uppercase font-size-sm">
-																				</div>
-																			</div>
-																		</div>
-																	</form>
-																</div>
-															</li>
-														</ul>
-													</li>
-												</ul>
-											</nav>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</header>
-			<div role="main" class="main">
-				
-				<section class="page-header page-header-light page-header-more-padding">
-					<div class="container">
-						<div class="row">
-							<div class="col-md-12">
-								<h1>1234 SW 63rd Ave<span>South Miami - <a href="#map" data-hash data-hash-offset="100">(Map Location)</a></span></h1>
-								<ul class="breadcrumb breadcrumb-valign-mid">
-									<li><a href="demo-real-estate.html">Home</a></li>
-									<li><a href="listUI.html">Properties</a></li>
-									<li class="active">Detail</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</section>
+                </div>
+                <div class="col-md-3">
+                    <aside class="sidebar">
+                        <div class="agents text-color-light center">
+                            <h4 class="text-light pt-xl m-none">经纪人</h4>
+                            <div class="owl-carousel owl-theme nav-bottom rounded-nav pl-xs pr-xs pt-md m-none" data-plugin-options="{'items': 1, 'loop': false, 'dots': false, 'nav': true}">
+                                <div class="pr-sm pl-sm">
+                                    <a href="#" class="text-decoration-none">
+                                        <span class="agent-thumb">
+                                            <img class="img-responsive img-circle" src="/component/porto/img/team/team-11.jpg" alt/>
+                                        </span>
+                                        <span class="agent-infos text-light pt-md">
+                                            <strong class="text-uppercase font-weight-bold">张三</strong>
+                                            <span class="font-weight-light">123-456-789</span>
+                                            <span class="font-weight-light">zs@lovexq.net</span>
+                                        </span>
+                                    </a>
+                                </div>
+                                <div class="pr-sm pl-sm">
+                                    <a href="#" class="text-decoration-none">
+                                        <span class="agent-thumb">
+                                            <img class="img-responsive img-circle" src="/component/porto/img/team/team-12.jpg" alt/>
+                                        </span>
+                                        <span class="agent-infos text-light pt-md">
+                                            <strong class="text-uppercase font-weight-bold">李四</strong>
+                                            <span class="font-weight-light">123-456-789</span>
+                                            <span class="font-weight-light">ls@lovexq.net</span>
+                                        </span>
+                                    </a>
+                                </div>
+                                <div class="pr-sm pl-sm">
+                                    <a href="#" class="text-decoration-none">
+                                        <span class="agent-thumb">
+                                            <img class="img-responsive img-circle" src="/component/porto/img/team/team-13.jpg" alt/>
+                                        </span>
+                                        <span class="agent-infos text-light pt-md">
+                                            <strong class="text-uppercase font-weight-bold">王五</strong>
+                                            <span class="font-weight-light">123-456-789</span>
+                                            <span class="font-weight-light">ww@lovexq.net</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
-				<div class="container">
+                        <h4 class="pt-lg mb-md text-color-dark">需求消息</h4>
+                        <p>联系我们或给我们打电话了解更多的信息</p>
 
-					<div class="row pb-xl pt-md">
-						<div class="col-md-9">
-									
-							<div class="row">
-								<div class="col-md-7">
+                        <form id="contactForm" action="#" class="mb-lg">
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>您的名字*</label>
+                                        <input type="text" value="" data-msg-required="Please enter your name." maxlength="100" class="form-control" name="name" id="name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>您的邮箱*</label>
+                                        <input type="email" value="" data-msg-required="Please enter your email address." data-msg-email="Please enter a valid email address."
+                                               maxlength="100" class="form-control" name="email" id="email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>主题</label>
+                                        <input type="text" value="" data-msg-required="Please enter the subject." maxlength="100" class="form-control" name="subject" id="subject" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>消息*</label>
+                                        <textarea maxlength="5000" data-msg-required="Please enter your message." rows="6" class="form-control" name="message" id="message" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input type="submit" value="发送消息" class="btn btn-secondary mb-xl" data-loading-text="加载中...">
+                                    <div class="alert alert-success hidden" id="contactSuccess">
+                                        消息已成功发送
+                                    </div>
+                                    <div class="alert alert-danger hidden" id="contactError">
+                                        发送消息时发送异常
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </aside>
+                </div>
+            </div>
 
-									<span class="thumb-info-listing-type thumb-info-listing-type-detail background-color-secondary text-uppercase text-color-light font-weight-semibold p-sm pl-md pr-md">
-										for sale
-									</span>
+        </div>
+    </div>
 
-									<div class="thumb-gallery">
-										<div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
-											<div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
-												<div>
-													<a href="/component/porto/img/real-estate/listings/listing-detail-1.jpg">
-														<span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
-															<span class="thumb-info-wrapper font-size-xl">
-																<img alt="Property Detail" src="img/real-estate/listings/listing-detail-1.jpg" class="img-responsive">
-																<span class="thumb-info-title font-size-xl">
-																	<span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
-																</span>
-															</span>
-														</span>
-													</a>
-												</div>
-												<div>
-													<a href="/component/porto/img/real-estate/listings/listing-detail-2.jpg">
-														<span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
-															<span class="thumb-info-wrapper font-size-xl">
-																<img alt="Property Detail" src="img/real-estate/listings/listing-detail-2.jpg" class="img-responsive">
-																<span class="thumb-info-title font-size-xl">
-																	<span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
-																</span>
-															</span>
-														</span>
-													</a>
-												</div>
-												<div>
-													<a href="/component/porto/img/real-estate/listings/listing-detail-3.jpg">
-														<span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
-															<span class="thumb-info-wrapper font-size-xl">
-																<img alt="Property Detail" src="img/real-estate/listings/listing-detail-3.jpg" class="img-responsive">
-																<span class="thumb-info-title font-size-xl">
-																	<span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
-																</span>
-															</span>
-														</span>
-													</a>
-												</div>
-												<div>
-													<a href="/component/porto/img/real-estate/listings/listing-detail-4.jpg">
-														<span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
-															<span class="thumb-info-wrapper font-size-xl">
-																<img alt="Property Detail" src="img/real-estate/listings/listing-detail-4.jpg" class="img-responsive">
-																<span class="thumb-info-title font-size-xl">
-																	<span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
-																</span>
-															</span>
-														</span>
-													</a>
-												</div>
-											</div>
-										</div>
+</div>
 
-										<div class="owl-carousel owl-theme manual thumb-gallery-thumbs mt" id="thumbGalleryThumbs">
-											<div>
-												<img alt="Property Detail" src="img/real-estate/listings/listing-detail-1-thumb.jpg" class="img-responsive cur-pointer">
-											</div>
-											<div>
-												<img alt="Property Detail" src="img/real-estate/listings/listing-detail-2-thumb.jpg" class="img-responsive cur-pointer">
-											</div>
-											<div>
-												<img alt="Property Detail" src="img/real-estate/listings/listing-detail-3-thumb.jpg" class="img-responsive cur-pointer">
-											</div>
-											<div>
-												<img alt="Property Detail" src="img/real-estate/listings/listing-detail-4-thumb.jpg" class="img-responsive cur-pointer">
-											</div>
-										</div>
-									</div>
+<!-- BEGIN FOOTER -->
+<span th:replace="common/coFooter"></span>
+<!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<span th:replace="common/fgFoot"></span>
+<!-- END FOOT -->
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
 
-								</div>
-								<div class="col-md-5">
-									
-									<table class="table table-striped">
-										<colgroup>
-											<col width="35%">
-											<col width="65%">
-										</colgroup>
-										<tbody>
-											<tr>
-												<td class="background-color-primary text-light pt-md">
-													Price
-												</td>
-												<td class="font-size-xl font-weight-bold pt-sm pb-sm background-color-primary text-light">
-													$3,595,000
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Listing ID
-												</td>
-												<td>
-													#123456
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Address
-												</td>
-												<td>
-													1234 SW 63rd Ave - South Miami - Florida<br><a href="#map" class="font-size-sm" data-hash data-hash-offset="100">(Map Location)</a>
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Neighborhood
-												</td>
-												<td>
-													Porto Village
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Beds
-												</td>
-												<td>
-													7
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Baths
-												</td>
-												<td>
-													8
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Garages
-												</td>
-												<td>
-													2
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Living Area
-												</td>
-												<td>
-													8,000
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Lot Size
-												</td>
-												<td>
-													20,000
-												</td>
-											</tr>
-											<tr>
-												<td>
-													Year Built
-												</td>
-												<td>
-													1999
-												</td>
-											</tr>
-										</tbody>
-									</table>
+    })
+</script>
+<!-- END PAGESCRIPT -->
+</body>
 
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="col-md-12">
-
-									<h4 class="mt-md mb-md">Description</h4>
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur pellentesque neque eget diam posuere porta. Quisque ut nulla at nunc <a href="#">vehicula</a> lacinia. Proin adipiscing porta tellus, ut feugiat nibh adipiscing sit amet. In eu justo a felis faucibus ornare vel id metus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
-
-									<p>Ctrices posuere cubilia Curae; In eu libero ligula. Fusce eget metus lorem, ac feugiat nibh adipiscing sit amet. In eu juiverra leo. Vestibulum ante ipsum primis in faucibus orci.</p>
-
-									<hr class="solid tall">
-
-									<h4 class="mt-md mb-md">Features</h4>
-
-									<ul class="list list-icons list-secondary row m-none">
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Air conditioning <a href="#" data-plugin-tooltip data-toggle="tooltip" data-placement="top" title="+ Central Heating"><i class="fa fa-info-circle"></i></a></li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Home Theater</li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Central Heating</li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Laundry</li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Balcony</li>
-										<li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i> Storage</li>
-										<li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i> Garage</li>
-										<li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i> Yard</li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Electric Water Heater</li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Deck</li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Gym</li>
-										<li class="col-sm-6 col-md-4"><i class="fa fa-check"></i> Ocean View</li>
-									</ul>
-
-									<hr class="solid tall">
-
-									<h4 class="mt-md mb-md" id="map">Map Location</h4>
-									<div id="googlemaps" class="google-map m-none mb-xlg"></div>
-
-								</div>
-							</div>
-
-						</div>
-						<div class="col-md-3">
-							<aside class="sidebar">
-								<div class="agents text-color-light center">
-									<h4 class="text-light pt-xl m-none">Property Agents</h4>
-									<div class="owl-carousel owl-theme nav-bottom rounded-nav pl-xs pr-xs pt-md m-none" data-plugin-options="{'items': 1, 'loop': false, 'dots': false, 'nav': true}">
-										<div class="pr-sm pl-sm">
-											<a href="demo-real-estate-agents-detail.html" class="text-decoration-none">
-												<span class="agent-thumb">
-													<img class="img-responsive img-circle" src="img/team/team-11.jpg" alt />
-												</span>
-												<span class="agent-infos text-light pt-md">
-													<strong class="text-uppercase font-weight-bold">Bruno Doe</strong>
-													<span class="font-weight-light">123-456-789</span>
-													<span class="font-weight-light">bruno@domain.com</span>
-												</span>
-											</a>
-										</div>
-										<div class="pr-sm pl-sm">
-											<a href="demo-real-estate-agents-detail.html" class="text-decoration-none">
-												<span class="agent-thumb">
-													<img class="img-responsive img-circle" src="img/team/team-12.jpg" alt />
-												</span>
-												<span class="agent-infos text-light pt-md">
-													<strong class="text-uppercase font-weight-bold">Jeff doe</strong>
-													<span class="font-weight-light">123-456-789</span>
-													<span class="font-weight-light">jeffdoe@domain.com</span>
-												</span>
-											</a>
-										</div>
-										<div class="pr-sm pl-sm">
-											<a href="demo-real-estate-agents-detail.html" class="text-decoration-none">
-												<span class="agent-thumb">
-													<img class="img-responsive img-circle" src="img/team/team-13.jpg" alt />
-												</span>
-												<span class="agent-infos text-light pt-md">
-													<strong class="text-uppercase font-weight-bold">Jessica Doe</strong>
-													<span class="font-weight-light">123-456-789</span>
-													<span class="font-weight-light">jessicadoe@domain.com</span>
-												</span>
-											</a>
-										</div>
-									</div>
-								</div>
-
-								<h4 class="pt-lg mb-md text-color-dark">Request Information</h4>
-								<p>Contact us or give us a call to request more information</p>
-
-								<form id="contactForm" action="http://preview.oklerthemes.com/porto/5.6.0/php/contact-form.php" method="POST" class="mb-lg">
-									<div class="row">
-										<div class="form-group">
-											<div class="col-md-12">
-												<label>Your name *</label>
-												<input type="text" value="" data-msg-required="Please enter your name." maxlength="100" class="form-control" name="name" id="name" required>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="form-group">
-											<div class="col-md-12">
-												<label>Your email address *</label>
-												<input type="email" value="" data-msg-required="Please enter your email address." data-msg-email="Please enter a valid email address." maxlength="100" class="form-control" name="email" id="email" required>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="form-group">
-											<div class="col-md-12">
-												<label>Subject</label>
-												<input type="text" value="" data-msg-required="Please enter the subject." maxlength="100" class="form-control" name="subject" id="subject" required>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="form-group">
-											<div class="col-md-12">
-												<label>Message *</label>
-												<textarea maxlength="5000" data-msg-required="Please enter your message." rows="6" class="form-control" name="message" id="message" required></textarea>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-12">
-											<input type="submit" value="Send Message" class="btn btn-secondary mb-xl" data-loading-text="Loading...">
-
-											<div class="alert alert-success hidden" id="contactSuccess">
-												Message has been sent to us.
-											</div>
-
-											<div class="alert alert-danger hidden" id="contactError">
-												Error sending your message.
-											</div>
-										</div>
-									</div>
-								</form>
-
-							</aside>
-						</div>
-					</div>
-
-				</div>
-
-				<footer id="footer" class="m-none custom-background-color-1">
-					<div class="container">
-						<div class="row">
-							<div class="col-md-3">
-								<h4 class="mb-md">Porto Real Estate</h4>
-								<p class="custom-color-2">
-									123 Porto Blvd, Suite 100<br>
-									New York, NY<br>
-									Phone : 123-456-7890<br>
-									Email : <a class="text-color-secondary" href="mailto:mail@example.com">mail@example.com</a>
-								</p>
-							</div>
-							<div class="col-md-2">
-								<h4 class="mb-md">Properties</h4>
-								<nav class="nav-footer">
-									<ul class="custom-list-style-1 pl-lg">
-										<li>
-											<a href="listUI.html" class="custom-color-2 text-decoration-none">
-												For Sale
-											</a>
-										</li>
-										<li>
-											<a href="listUI.html" class="custom-color-2 text-decoration-none">
-												For Rent
-											</a>
-										</li>
-									</ul>
-								</nav>
-							</div>
-							<div class="col-md-2">
-								<h4 class="mb-md">Links</h4>
-								<nav class="nav-footer">
-									<ul class="custom-list-style-1 pl-lg">
-										<li>
-											<a href="demo-real-estate-agents.html" class="custom-color-2 text-decoration-none">
-												Agents
-											</a>
-										</li>
-										<li>
-											<a href="demo-real-estate-who-we-are.html" class="custom-color-2 text-decoration-none">
-												Who We Are
-											</a>
-										</li>
-										<li>
-											<a href="demo-real-estate-contact.html" class="custom-color-2 text-decoration-none">
-												Contact
-											</a>
-										</li>
-									</ul>
-								</nav>
-							</div>
-							<div class="col-md-5">
-								<h4 class="mb-md">Latest Tweet</h4>
-								<div id="tweet" class="twitter" data-plugin-tweets data-plugin-options="{'username': 'oklerthemes', 'count': 1}">
-									<p>Please wait...</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="footer-copyright custom-background-color-1 pb-none">
-						<div class="container">
-							<div class="row pt-md pb-md">
-								<div class="col-md-12 left m-none">
-									<p>© Copyright 2017. All Rights Reserved.</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</footer>
-			</div>
-		</div>
-
-		<!-- Vendor -->
-		<script src="/component/porto/vendor/jquery/jquery.min.js"></script>
-		<script src="/component/porto/vendor/jquery.appear/jquery.appear.min.js"></script>
-		<script src="/component/porto/vendor/jquery.easing/jquery.easing.min.js"></script>
-		<script src="/component/porto/vendor/jquery-cookie/jquery-cookie.min.js"></script>
-		<script src="/component/porto/master/style-switcher/style.switcher.js" id="styleSwitcherScript" data-base-path="" data-skin-src="master/less/skin-real-estate.less"></script>
-		<script src="/component/porto/vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="/component/porto/vendor/common/common.min.js"></script>
-		<script src="/component/porto/vendor/jquery.validation/jquery.validation.min.js"></script>
-		<script src="/component/porto/vendor/jquery.easy-pie-chart/jquery.easy-pie-chart.min.js"></script>
-		<script src="/component/porto/vendor/jquery.gmap/jquery.gmap.min.js"></script>
-		<script src="/component/porto/vendor/jquery.lazyload/jquery.lazyload.min.js"></script>
-		<script src="/component/porto/vendor/isotope/jquery.isotope.min.js"></script>
-		<script src="/component/porto/vendor/owl.carousel/owl.carousel.min.js"></script>
-		<script src="/component/porto/vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
-		<script src="/component/porto/vendor/vide/vide.min.js"></script>
-		
-		<!-- Theme Base, Components and Settings -->
-		<script src="/component/porto/js/theme.js"></script>
-		
-		<!-- Current Page Vendor and Views -->
-		<script src="/component/porto/vendor/rs-plugin/js/jquery.themepunch.tools.min.js"></script>		<script src="/component/porto/vendor/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
-
-		<!-- Current Page Vendor and Views -->
-		<script src="/component/porto/js/views/view.contact.js"></script>
-
-		<!-- Demo -->
-		<script src="/component/porto/js/demos/demo-real-estate.js"></script>
-		
-		<!-- Theme Custom -->
-		<script src="/component/porto/js/custom.js"></script>
-		
-		<!-- Theme Initialization Files -->
-		<script src="/component/porto/js/theme.init.js"></script>
-
-
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhpYHdYRY2U6V_VfyyNtkPHhywLjDkhfg"></script>
-		<script>
-
-			/*
-			Map Settings
-
-				Find the Latitude and Longitude of your address:
-					- http://universimmedia.pagesperso-orange.fr/geo/loc.htm
-					- http://www.findlatitudeandlongitude.com/find-address-from-latitude-and-longitude/
-
-			*/
-
-			// Map Markers
-			var mapMarkers = [{
-				address: "New York, NY 10017",
-				html: "<strong>Porto Real Estate</strong>",
-				icon: {
-					image: "img/real-estate/pin.png",
-					iconsize: [36, 36],
-					iconanchor: [36, 36]
-				},
-				popup: true
-			}];
-
-			// Map Initial Location
-			var initLatitude = 40.75198;
-			var initLongitude = -73.96978;
-
-			// Map Extended Settings
-			var mapSettings = {
-				controls: {
-					draggable: (($.browser.mobile) ? false : true),
-					panControl: true,
-					zoomControl: true,
-					mapTypeControl: true,
-					scaleControl: true,
-					streetViewControl: true,
-					overviewMapControl: true
-				},
-				scrollwheel: false,
-				markers: mapMarkers,
-				latitude: initLatitude,
-				longitude: initLongitude,
-				zoom: 16
-			};
-
-			var map = $('#googlemaps').gMap(mapSettings),
-				mapRef = $('#googlemaps').data('gMap.reference');
-
-			// Map Center At
-			var mapCenterAt = function(options, e) {
-				e.preventDefault();
-				$('#googlemaps').gMap("centerAt", options);
-			}
-
-			// Create an array of styles.
-			var mapColor = "#cfa968";
-
-			var styles = [{
-				stylers: [{
-					hue: mapColor
-				}]
-			}, {
-				featureType: "road",
-				elementType: "geometry",
-				stylers: [{
-					lightness: 0
-				}, {
-					visibility: "simplified"
-				}]
-			}, {
-				featureType: "road",
-				elementType: "labels",
-				stylers: [{
-					visibility: "off"
-				}]
-			}];
-
-			// Styles from https://snazzymaps.com/
-			var styles = [{"featureType":"water","elementType":"geometry","stylers":[{"color":"#e9e9e9"},{"lightness":17}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#f5f5f5"},{"lightness":20}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffffff"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#ffffff"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#ffffff"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#ffffff"},{"lightness":16}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#f5f5f5"},{"lightness":21}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#dedede"},{"lightness":21}]},{"elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#ffffff"},{"lightness":16}]},{"elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#333333"},{"lightness":40}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#f2f2f2"},{"lightness":19}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#fefefe"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#fefefe"},{"lightness":17},{"weight":1.2}]}];
-
-			var styledMap = new google.maps.StyledMapType(styles, {
-				name: 'Styled Map'
-			});
-
-			mapRef.mapTypes.set('map_style', styledMap);
-			mapRef.setMapTypeId('map_style');
-
-		</script>
-
-
-		<script>
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','../../../www.google-analytics.com/analytics.js','ga');
-		
-			ga('create', 'UA-42715764-5', 'auto');
-			ga('send', 'pageview');
-		</script>
-		<script src="/component/porto/master/analytics/analytics.js"></script>
-		<a href="demos.html" class="go-to-demos"><i class="fa fa-arrow-left"></i> More Demos</a>
-
-	</body>
-
-<!-- Mirrored from preview.oklerthemes.com/porto/5.6.0/detailUI.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 23 Mar 2017 23:34:11 GMT -->
 </html>

@@ -17,9 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -96,12 +94,14 @@ public class EstateServiceImpl implements EstateService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<EstateItemDto> findSaleList(Pageable pageable) {
-
+    public Page<EstateItemDto> findForSaleList(Pageable pageable) {
         Page<EstateItemDto> targetItemPage;
         List<EstateItemDto> targetItemList = new ArrayList<>();
 
-        Page<EstateItem> sourceItemPage = estateItemRepository.findBySaleStatus("在售", pageable);
+        EstateItem condition = new EstateItem();
+        condition.setSaleStatus("在售");
+
+        Page<EstateItem> sourceItemPage = estateItemRepository.findAll(Example.of(condition), pageable);
         List<EstateItem> sourceItemList = sourceItemPage.getContent();
 
         if (CollectionUtils.isEmpty(sourceItemList)) {
@@ -123,4 +123,21 @@ public class EstateServiceImpl implements EstateService {
         targetItemPage = new PageImpl<>(targetItemList, pageable, sourceItemPage.getTotalElements());
         return targetItemPage;
     }
+
+    @Override
+    public EstateItemDto findByHouseId(String id) {
+        EstateItemDto targetItem = new EstateItemDto();
+        EstateItem sourceItem = estateItemRepository.findByHouseId(id);
+        if (sourceItem != null) {
+            BeanUtils.copyProperties(sourceItem, targetItem);
+
+            EstateImage image = new EstateImage(null, id);
+            Sort sort = new Sort(Sort.Direction.ASC, "pictureType");
+            List<EstateImage> imageList = estateImageRepository.findAll(Example.of(image), sort);
+            targetItem.setEstateImageList(imageList);
+        }
+
+        return targetItem;
+    }
+
 }
