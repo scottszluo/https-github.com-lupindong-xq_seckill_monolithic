@@ -120,6 +120,12 @@
                                 <li th:class="'sort area ' + (${#strings.contains(#strings.defaultString(sort,'id'),'area')?'active':''})">
                                     <a href="#">房屋面积</a>
                                 </li>
+                                <li th:class="'sort focusNum ' + (${#strings.contains(#strings.defaultString(sort,'id'),'focusNum')?'active':''})">
+                                    <a href="#">关注人数</a>
+                                </li>
+                                <li th:class="'sort watchNum ' + (${#strings.contains(#strings.defaultString(sort,'id'),'watchNum')?'active':''})">
+                                    <a href="#">带看次数</a>
+                                </li>
                             </ul>
                         </form>
                     </div>
@@ -144,16 +150,20 @@
                                         <i class="fa fa-caret-right text-color-secondary pull-right"></i>
                                     </span>
                                     <span class="custom-thumb-info-title b-normal p-lg">
-                                        <span class="thumb-info-inner text-md" th:text="${item.title}">title</span>
-                                        <ul class="accommodations text-uppercase font-weight-bold p-none text-sm">
-                                            <li><span class="accomodation-value custom-color-1" th:text="${item.model}">model</span></li>
-                                            <li><span class="accomodation-value custom-color-1" th:text="${item.area}+'平米'">area</span></li>
-                                            <li><span class="accomodation-value custom-color-1" th:text="${item.direction}">direction</span></li>
+                                        <span class="thumb-info-inner text-md font-weight-bold" th:text="${item.title}">title</span>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${item.model}">model</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.area}+'平米'">area</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.direction}">direction</span></li>
                                         </ul>
-                                        <ul class="accommodations text-uppercase font-weight-bold p-none text-sm">
-                                            <li><span class="accomodation-value custom-color-1" th:text="${item.floor}">floor</span></li>
-                                            <li><span class="accomodation-value custom-color-1" th:text="${item.buildingAge}?:'暂无数据'">buildingAge</span></li>
-                                            <li><span class="accomodation-value custom-color-1" th:text="${item.decoration}">decoration</span></li>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${item.floor}">floor</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.buildingAge}?:'暂无数据'">buildingAge</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.decoration}">decoration</span></li>
+                                        </ul>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${item.focusNum}+'人关注'">focusNum</span></li>
+                                            <li><span class="accomodation-value" th:text="'共'+${item.watchNum}+'次带看'">watchNum</span></li>
                                         </ul>
                                     </span>
                                 </span>

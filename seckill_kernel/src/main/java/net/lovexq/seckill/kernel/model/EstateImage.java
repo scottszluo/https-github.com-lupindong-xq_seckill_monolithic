@@ -1,8 +1,10 @@
 package net.lovexq.seckill.kernel.model;
 
-import javax.persistence.Column;
+import net.lovexq.seckill.common.model.BasicModel;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
 
 /**
@@ -12,41 +14,38 @@ import java.util.Objects;
  * @time 2017-04-20 16:25
  */
 @Entity
-public class EstateImage {
+@Table(name = "estate_image")
+public class EstateImage extends BasicModel {
     @Id
-    private String picture_id;
-    @Column(name = "house_code")
+    private Long pictureId;
     private String houseCode;
-    private String picture_url;
-    private String picture_source_url;
-    @Column(name = "picture_type")
     private Integer pictureType;
-    private String appid;
-    private String app_pkid;
-    private String upload_user_id;
-    private String se_status;
-    private String audit_status;
-    private String bit_status;
-    private String ctime;
-    private String mtime;
+    private String pictureSourceUrl;
     private String url;
-    private String uri;
-    private String type;
 
     public EstateImage() {
     }
 
-    public EstateImage(String picture_id, String houseCode) {
-        this.picture_id = picture_id;
+    public EstateImage(String houseCode) {
         this.houseCode = houseCode;
     }
 
-    public String getPicture_id() {
-        return picture_id;
+    public EstateImage(Long pictureId, String houseCode) {
+        this.pictureId = pictureId;
+        this.houseCode = houseCode;
     }
 
-    public void setPicture_id(String picture_id) {
-        this.picture_id = picture_id;
+    public EstateImage(String houseCode, Integer pictureType) {
+        this.houseCode = houseCode;
+        this.pictureType = pictureType;
+    }
+
+    public Long getPictureId() {
+        return pictureId;
+    }
+
+    public void setPictureId(Long pictureId) {
+        this.pictureId = pictureId;
     }
 
     public String getHouseCode() {
@@ -57,22 +56,6 @@ public class EstateImage {
         this.houseCode = houseCode;
     }
 
-    public String getPicture_url() {
-        return picture_url;
-    }
-
-    public void setPicture_url(String picture_url) {
-        this.picture_url = picture_url;
-    }
-
-    public String getPicture_source_url() {
-        return picture_source_url;
-    }
-
-    public void setPicture_source_url(String picture_source_url) {
-        this.picture_source_url = picture_source_url;
-    }
-
     public Integer getPictureType() {
         return pictureType;
     }
@@ -81,68 +64,12 @@ public class EstateImage {
         this.pictureType = pictureType;
     }
 
-    public String getAppid() {
-        return appid;
+    public String getPictureSourceUrl() {
+        return pictureSourceUrl;
     }
 
-    public void setAppid(String appid) {
-        this.appid = appid;
-    }
-
-    public String getApp_pkid() {
-        return app_pkid;
-    }
-
-    public void setApp_pkid(String app_pkid) {
-        this.app_pkid = app_pkid;
-    }
-
-    public String getUpload_user_id() {
-        return upload_user_id;
-    }
-
-    public void setUpload_user_id(String upload_user_id) {
-        this.upload_user_id = upload_user_id;
-    }
-
-    public String getSe_status() {
-        return se_status;
-    }
-
-    public void setSe_status(String se_status) {
-        this.se_status = se_status;
-    }
-
-    public String getAudit_status() {
-        return audit_status;
-    }
-
-    public void setAudit_status(String audit_status) {
-        this.audit_status = audit_status;
-    }
-
-    public String getBit_status() {
-        return bit_status;
-    }
-
-    public void setBit_status(String bit_status) {
-        this.bit_status = bit_status;
-    }
-
-    public String getCtime() {
-        return ctime;
-    }
-
-    public void setCtime(String ctime) {
-        this.ctime = ctime;
-    }
-
-    public String getMtime() {
-        return mtime;
-    }
-
-    public void setMtime(String mtime) {
-        this.mtime = mtime;
+    public void setPictureSourceUrl(String pictureSourceUrl) {
+        this.pictureSourceUrl = pictureSourceUrl;
     }
 
     public String getUrl() {
@@ -153,41 +80,26 @@ public class EstateImage {
         this.url = url;
     }
 
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof EstateImage)) return false;
         EstateImage that = (EstateImage) o;
-        return Objects.equals(picture_id, that.picture_id) &&
+        return Objects.equals(pictureId, that.pictureId) &&
                 Objects.equals(houseCode, that.houseCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(picture_id, houseCode);
+        return Objects.hash(pictureId, houseCode);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("EstateImage{");
-        sb.append("picture_id='").append(picture_id).append('\'');
-        sb.append(", house_code='").append(houseCode).append('\'');
+        sb.append("pictureId='").append(pictureId).append('\'');
+        sb.append(", houseCode='").append(houseCode).append('\'');
         sb.append('}');
         return sb.toString();
     }

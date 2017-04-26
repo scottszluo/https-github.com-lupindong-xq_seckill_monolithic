@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
         }
 )
 @MappedSuperclass
-public class BaseModel {
+public class BasicModel {
 
     /**
      * 创建时间

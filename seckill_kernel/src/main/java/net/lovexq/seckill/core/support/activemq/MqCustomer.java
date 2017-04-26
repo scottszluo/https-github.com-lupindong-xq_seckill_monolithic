@@ -23,10 +23,10 @@ public class MqCustomer {
     private EstateService estateService;
 
     /**
-     * 处理消息
+     * 处理创建记录消息
      */
-    @JmsListener(destination = "LianJiaCrawler.Queue")
-    public void receiveQueueMessage(Message message) {
+    @JmsListener(destination = "LianJiaCrawler.CreateRecord.Queue")
+    public void receiveCreateQueueMessage(Message message) {
         if (message instanceof ActiveMQBytesMessage) {
             ActiveMQBytesMessage bytesMessage = (ActiveMQBytesMessage) message;
             try {
@@ -39,4 +39,24 @@ public class MqCustomer {
             }
         }
     }
+
+    /**
+     * 处理更新记录消息
+     */
+    @JmsListener(destination = "LianJiaCrawler.UpdateRecord.Queue")
+    public void receiveUpdateQueueMessage(Message message) {
+        if (message instanceof ActiveMQBytesMessage) {
+            ActiveMQBytesMessage bytesMessage = (ActiveMQBytesMessage) message;
+            try {
+                ActiveMQQueue queue = (ActiveMQQueue) bytesMessage.getJMSDestination();
+                byte[] dataArray = bytesMessage.getContent().getData();
+                LOGGER.info("【接收消息】>>>队列目的地：{}", queue.getQueueName());
+                estateService.updateCrawlerData(dataArray);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+
+    }
+
 }

@@ -16,7 +16,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1>[[${itemDto.title}]]<span>[[${itemDto.cityName}]] - [[${itemDto.regionAName}]] - [[${itemDto.regionBName}]]</span></h1>
+                        <h1>[[${itemDto.title}]]<span>[[${itemDto.regionAName}]] - [[${itemDto.regionBName}]]</span></h1>
                     </div>
                 </div>
             </div>
@@ -35,10 +35,10 @@
                                 <div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
                                     <div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
                                         <div th:if="${not #lists.isEmpty(itemDto.estateImageList)}" th:each="iamge, iamgeStat : ${itemDto.estateImageList}">
-                                            <a href="/" th:href="${iamge.picture_source_url}?:'/component/porto/img/blank.jpg'">
+                                            <a href="/" th:href="${iamge.pictureSourceUrl}?:'/component/porto/img/blank.jpg'">
                                                 <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
                                                     <span class="thumb-info-wrapper font-size-xl">
-                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" th:src="${iamge.picture_source_url}?:'/component/porto/img/blank.jpg'">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" th:src="${iamge.pictureSourceUrl}?:'/component/porto/img/blank.jpg'">
                                                         <span class="thumb-info-title font-size-xl">
                                                             <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
                                                         </span>

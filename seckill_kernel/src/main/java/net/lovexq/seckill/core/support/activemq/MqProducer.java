@@ -19,10 +19,7 @@ public class MqProducer {
     @Autowired
     private JmsMessagingTemplate jmsMessagingTemplate;
 
-    @Autowired
-    private Queue queue;
-
-    public void sendQueueMessage(byte[] dataArray) {
+    public void sendQueueMessage(byte[] dataArray, Queue queue) {
         try {
             LOGGER.info("【发送消息】>>>队列目的地：{}", queue.getQueueName());
             jmsMessagingTemplate.convertAndSend(queue, dataArray);

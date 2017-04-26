@@ -1,9 +1,11 @@
 package net.lovexq.seckill.common.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,5 +55,21 @@ public class IdWorkerTest {
 
         System.out.println(idWorker.equals(idWorker2));
         System.out.println("1:" + idWorker.nextId() + ",2:" + idWorker2.nextId());
+    }
+
+    @Test
+    public void testUUID() {
+        String id = UUID.randomUUID().toString();
+        System.out.println(id);
+        System.out.println(StringUtils.substring(id, 25));
+        //149 31 91 80 69 11
+        System.out.println(System.currentTimeMillis());
+    }
+
+    @Test
+    public void testNum() {
+        System.out.println(1 % 3);
+        System.out.println(2 % 3);
+        System.out.println(3 % 3);
     }
 }

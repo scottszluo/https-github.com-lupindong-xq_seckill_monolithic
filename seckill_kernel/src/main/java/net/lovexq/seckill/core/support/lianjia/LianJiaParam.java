@@ -1,7 +1,6 @@
 package net.lovexq.seckill.core.support.lianjia;
 
 import net.lovexq.seckill.core.config.AppProperties;
-import net.lovexq.seckill.core.support.activemq.MqProducer;
 
 /**
  * 链家网参数
@@ -11,15 +10,14 @@ import net.lovexq.seckill.core.support.activemq.MqProducer;
  */
 public class LianJiaParam {
 
-    private MqProducer mqProducer;
     private AppProperties appProperties;
+    private String batch;
     private String baseUrl;
     private String region;
     private Integer curPage;
     private Integer totalPage;
 
-    public LianJiaParam(MqProducer mqProducer, AppProperties appProperties, String baseUrl, String region, Integer curPage, Integer totalPage) {
-        this.mqProducer = mqProducer;
+    public LianJiaParam(AppProperties appProperties, String baseUrl, String region, Integer curPage, Integer totalPage) {
         this.appProperties = appProperties;
         this.baseUrl = baseUrl;
         this.region = region;
@@ -27,12 +25,13 @@ public class LianJiaParam {
         this.totalPage = totalPage;
     }
 
-    public MqProducer getMqProducer() {
-        return mqProducer;
-    }
-
-    public void setMqProducer(MqProducer mqProducer) {
-        this.mqProducer = mqProducer;
+    public LianJiaParam(AppProperties appProperties, String batch, String baseUrl, String region, Integer curPage, Integer totalPage) {
+        this.appProperties = appProperties;
+        this.batch = batch;
+        this.baseUrl = baseUrl;
+        this.region = region;
+        this.curPage = curPage;
+        this.totalPage = totalPage;
     }
 
     public AppProperties getAppProperties() {
@@ -41,6 +40,14 @@ public class LianJiaParam {
 
     public void setAppProperties(AppProperties appProperties) {
         this.appProperties = appProperties;
+    }
+
+    public String getBatch() {
+        return batch;
+    }
+
+    public void setBatch(String batch) {
+        this.batch = batch;
     }
 
     public String getBaseUrl() {

@@ -17,10 +17,14 @@ public interface EstateService {
 
     JsonResult invokeCrawler(String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception;
 
+    JsonResult invokeUpdateCrawler(String batch, String baseUrl, String region, Integer curPage, Integer totalPage) throws Exception;
+
     void saveCrawlerData(byte[] dataArray) throws Exception;
 
-    Page<EstateItemDto> findForSaleList(Pageable pageable, Map<String, String> paramMap);
+    void updateCrawlerData(byte[] dataArray) throws Exception;
 
-    EstateItemDto findByHouseId(String id);
+    Page<EstateItemDto> findForSaleList(Pageable pageable, Map<String, String> paramMap) throws Exception;
+
+    EstateItemDto findByHouseId(String id) throws Exception;
 
 }

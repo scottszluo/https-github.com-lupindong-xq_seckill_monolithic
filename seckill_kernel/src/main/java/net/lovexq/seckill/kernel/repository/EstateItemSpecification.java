@@ -22,7 +22,7 @@ public class EstateItemSpecification {
         return (root, criteriaQuery, criteriaBuilder) -> {
 
             Path<String> path = root.get("saleStatus");
-            Predicate predicate = criteriaBuilder.equal(path, "在售");
+            Predicate predicate = criteriaBuilder.equal(path, "放盘");
 
             if (!CollectionUtils.isEmpty(paramMap)) {
                 // 区域

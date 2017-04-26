@@ -140,8 +140,11 @@ public enum LianJiaCrawler {
     public static EstateItemDto parseListData(Element contentElement) throws Exception {
         EstateItemDto estateItemDto = new EstateItemDto(IdWorker.INSTANCE.nextId());
         try {
-            String title = contentElement.select("div[class='title'] > a").first().text();
-            estateItemDto.setTitle(title);// 标题
+            estateItemDto.setSaleStatus("放盘");
+
+            Element titleElement = contentElement.select("div[class='title'] > a").first();
+            estateItemDto.setTitle(titleElement.text());// 标题
+            estateItemDto.setDetailHref(titleElement.attr("href")); // 详情链接
 
             String positionInfo = contentElement.select("div[class='positionInfo']").first().text();
             Pattern compilePosition = Pattern.compile("\\d+[年]");
@@ -163,7 +166,9 @@ public enum LianJiaCrawler {
                 estateItemDto.setWatchNum(Integer.valueOf(matcherWatch.group().replaceAll("\\D", "")));// 看房人数
             }
 
-            estateItemDto.setDetailHref(contentElement.select("div[class='title'] > a").first().attr("href")); // 详情链接
+            String dataHId = contentElement.select("div[class='priceInfo'] > div[class='unitPrice']").first().attr("data-hid");
+            estateItemDto.setHouseId(dataHId); // 编号
+
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -203,17 +208,14 @@ public enum LianJiaCrawler {
             Elements scriptElements = document.getElementsByTag("script");
             for (Element element : scriptElements) {
                 String elementData = element.data().trim();
-                if (elementData.startsWith("ljConf")) {
-                    estateItemDto.setCityId(getSubValue(elementData, "city_id"));
-                    estateItemDto.setCityAbbr(getSubValue(elementData, "city_abbr"));
-                    estateItemDto.setCityName(getSubValue(elementData, "city_name"));
-                } else if (elementData.startsWith("require(['ershoufang/sellDetail/detailV3']")) {
+                if (elementData.startsWith("require(['ershoufang/sellDetail/detailV3']")) {
                     estateItemDto.setTotalPrice(new BigDecimal(getSubValue(elementData, "totalPrice")));
                     estateItemDto.setUnitPrice(new BigDecimal(getSubValue(elementData, "price")));
                     estateItemDto.setArea(new BigDecimal(getSubValue(elementData, "area")));
-                    estateItemDto.setHouseId(getSubValue(elementData, "houseId"));
+                    //estateItemDto.setHouseId(getSubValue(elementData, "houseId"));
                     estateItemDto.setResBlockId(getSubValue(elementData, "resblockId"));
                     estateItemDto.setResBlockName(getSubValue(elementData, "resblockName"));
+                    estateItemDto.setCityId(getSubValue(elementData, "cityId"));
                     // 处理经纬度
                     String resblockPosition = getSubValue(elementData, "resblockPosition");
                     String[] positionArray = resblockPosition.split(",");
@@ -255,6 +257,22 @@ public enum LianJiaCrawler {
             return subText.trim().replace("'", "");
         }
         return "";
+    }
+
+    /**
+     * 解析默认图片
+     *
+     * @param estateItemDto
+     * @param bigImgElements
+     * @return
+     */
+    public EstateItemDto parseCoverImgData(EstateItemDto estateItemDto, Elements bigImgElements) {
+        Element imgElement = bigImgElements.select("div[class='item'][data-houseid='" + estateItemDto.getHouseId() + "'] > a > img").first();
+        if (imgElement != null) {
+            String original = imgElement.attr("data-original");
+            estateItemDto.setCoverUrl(original);
+        }
+        return estateItemDto;
     }
 
 }

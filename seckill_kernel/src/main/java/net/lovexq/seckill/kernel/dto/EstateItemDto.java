@@ -14,9 +14,9 @@ import java.util.List;
  */
 public class EstateItemDto extends EstateItem {
 
-    private String coverUrl;
-
     private List<EstateImage> estateImageList = new ArrayList<>();
+
+    private String batch;
 
     private String detailHref;
 
@@ -28,20 +28,20 @@ public class EstateItemDto extends EstateItem {
         super(id);
     }
 
-    public String getCoverUrl() {
-        return coverUrl;
-    }
-
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
-    }
-
     public List<EstateImage> getEstateImageList() {
         return estateImageList;
     }
 
     public void setEstateImageList(List<EstateImage> estateImageList) {
         this.estateImageList = estateImageList;
+    }
+
+    public String getBatch() {
+        return batch;
+    }
+
+    public void setBatch(String batch) {
+        this.batch = batch;
     }
 
     public String getDetailHref() {

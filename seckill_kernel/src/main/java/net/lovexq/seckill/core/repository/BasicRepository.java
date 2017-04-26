@@ -52,4 +52,13 @@ public interface BasicRepository<T, PK extends Serializable> extends JpaReposito
      * @return
      */
     List<Object> queryForObjectList(final String querySql, final Object... params);
+
+
+    /**
+     * 根据sql执行变更操作
+     *
+     * @param executeSql
+     * @param params
+     */
+    int executeUpdateBySql(final String executeSql, final Object... params);
 }

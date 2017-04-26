@@ -37,6 +37,17 @@ public class EstateController extends BasicController {
         return result = estateService.invokeCrawler(baseUrl, region, curPage, totalPage);
     }
 
+    @ResponseBody
+    @PostMapping("/estate/crawler/update")
+    public JsonResult invokeUpdateCrawler(HttpServletRequest request) throws Exception {
+        String batch = request.getParameter("batch");
+        String baseUrl = request.getParameter("baseUrl");
+        String region = request.getParameter("region");
+        Integer curPage = Integer.valueOf(request.getParameter("curPage"));
+        Integer totalPage = Integer.valueOf(request.getParameter("totalPage"));
+        return result = estateService.invokeUpdateCrawler(batch, baseUrl, region, curPage, totalPage);
+    }
+
     @GetMapping("/estate/list")
     public String listWithGetUI(HttpServletRequest request, Model model) throws Exception {
         pageable = buildPageRequest(request);
@@ -56,7 +67,7 @@ public class EstateController extends BasicController {
     }
 
     @GetMapping("/estate/{id}")
-    public String detailUI(@PathVariable("id") String id, Model model) {
+    public String detailUI(@PathVariable("id") String id, Model model) throws Exception {
         EstateItemDto itemDto = estateService.findByHouseId(id);
         model.addAttribute("itemDto", itemDto);
         return "/estate/detailUI";

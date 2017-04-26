@@ -84,4 +84,17 @@ public class BasicRepositoryImpl<T, PK extends Serializable> extends SimpleJpaRe
         return nativeQuery.list();
     }
 
+    @Override
+    public int executeUpdateBySql(String executeSql, Object... params) {
+        Query query = entityManager.createNativeQuery(executeSql);
+        SQLQuery nativeQuery = query.unwrap(SQLQuery.class);
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                nativeQuery.setParameter(i, params[i]);
+            }
+        }
+
+        return nativeQuery.executeUpdate();
+    }
+
 }
