@@ -119,20 +119,25 @@ var Estate = (function () {
         url: function () {
             return "/estate/list";
         },
-        filterData: function () {
-            $("#estatesForm").attr("action", Estate.List.url()).submit();
+        filterData: function (obj) {
+            if ("LI" == obj.tagName) {
+                var classNames = obj.className.split(" ");
+                var sortValues = $("#sort").val().split(":");
+                var sortType = List.getNewSortType(sortValues[1]);
+                $("#sort").val(classNames[1] + ":" + sortType);
+            }
 
-            /*var pageUrl = List.url() + "?page=" + page;
-             $.each($("select"), function () {
-             var name = (this).name;
-             var val = (this).value;
-             if (Common.StringUtil.isNotBlank(val)) {
-             pageUrl += ("&" + name + "=" + val);
-             }
-             })
-             pageUrl += "&orderField=totalPrice,model";
-             window.location.href = encodeURI(pageUrl);
-             $("#estatesForm").post()*/
+            $("#estatesForm").attr("action", Estate.List.url()).submit();
+        },
+        getNewSortType: function (sortType) {
+            if (Common.StringUtil.isNotBlank(sortType)) {
+                if ("ASC" == $.trim(sortType)) {
+                    sortType = "DESC";
+                } else {
+                    sortType = "ASC";
+                }
+            }
+            return sortType;
         }
     }
 

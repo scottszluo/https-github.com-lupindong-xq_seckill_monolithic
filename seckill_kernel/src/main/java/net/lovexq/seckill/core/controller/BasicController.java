@@ -47,16 +47,16 @@ public class BasicController {
         if (StringUtils.isNotBlank(sortStr)) {
             Sort sort;
             String[] sortArray = sortStr.split(":");
-            String orderField = sortArray[0];
-            String orderType = sortArray[1];
-            if (StringUtils.isNotBlank(orderType)) {
-                if (Sort.Direction.DESC.equals(orderType.toUpperCase())) {
-                    sort = new Sort(Sort.Direction.DESC, orderField);
+            String sortField = sortArray[0];
+            String sortType = sortArray[1];
+            if (StringUtils.isNotBlank(sortType)) {
+                if ("DESC".equals(sortType.trim())) {
+                    sort = new Sort(Sort.Direction.DESC, sortField);
                 } else {
-                    sort = new Sort(Sort.Direction.ASC, orderField);
+                    sort = new Sort(Sort.Direction.ASC, sortField);
                 }
             } else {
-                sort = new Sort(Sort.DEFAULT_DIRECTION, orderField);
+                sort = new Sort(Sort.DEFAULT_DIRECTION, sortField);
             }
             return new PageRequest(page - 1, size, sort);
         } else {
