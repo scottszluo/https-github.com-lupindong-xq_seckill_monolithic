@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "estate_image")
-public class EstateImage extends BasicModel {
+public class EstateImageModel extends BasicModel {
     @Id
     private Long pictureId;
     private String houseCode;
@@ -23,19 +23,19 @@ public class EstateImage extends BasicModel {
     private String pictureSourceUrl;
     private String url;
 
-    public EstateImage() {
+    public EstateImageModel() {
     }
 
-    public EstateImage(String houseCode) {
+    public EstateImageModel(String houseCode) {
         this.houseCode = houseCode;
     }
 
-    public EstateImage(Long pictureId, String houseCode) {
+    public EstateImageModel(Long pictureId, String houseCode) {
         this.pictureId = pictureId;
         this.houseCode = houseCode;
     }
 
-    public EstateImage(String houseCode, Integer pictureType) {
+    public EstateImageModel(String houseCode, Integer pictureType) {
         this.houseCode = houseCode;
         this.pictureType = pictureType;
     }
@@ -84,8 +84,8 @@ public class EstateImage extends BasicModel {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EstateImage)) return false;
-        EstateImage that = (EstateImage) o;
+        if (!(o instanceof EstateImageModel)) return false;
+        EstateImageModel that = (EstateImageModel) o;
         return Objects.equals(pictureId, that.pictureId) &&
                 Objects.equals(houseCode, that.houseCode);
     }
@@ -97,7 +97,7 @@ public class EstateImage extends BasicModel {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("EstateImage{");
+        final StringBuilder sb = new StringBuilder("EstateImageModel{");
         sb.append("pictureId='").append(pictureId).append('\'');
         sb.append(", houseCode='").append(houseCode).append('\'');
         sb.append('}');

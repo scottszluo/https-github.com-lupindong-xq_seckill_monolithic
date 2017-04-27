@@ -15,12 +15,12 @@ import javax.jms.Queue;
 public class MqConfiguration {
 
     @Bean
-    public Queue createRecordQueue() {
-        return new ActiveMQQueue("LianJiaCrawler.CreateRecord.Queue");
+    public Queue initializeQueue() {
+        return new ActiveMQQueue("LianJiaCrawler.Initialize.Queue");
     }
 
     @Bean
-    public Queue updateRecordQueue() {
-        return new ActiveMQQueue("LianJiaCrawler.UpdateRecord.Queue");
+    public Queue checkQueue() {
+        return new ActiveMQQueue("LianJiaCrawler.Check.Queue");
     }
 }

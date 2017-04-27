@@ -1,8 +1,8 @@
 package net.lovexq.seckill.kernel.controller;
 
 import net.lovexq.seckill.core.controller.BasicController;
-import net.lovexq.seckill.kernel.dto.EstateItemDTO;
-import net.lovexq.seckill.kernel.service.EstateService;
+import net.lovexq.seckill.kernel.dto.SpecialStockDTO;
+import net.lovexq.seckill.kernel.service.SpecialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -14,39 +14,40 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 房源控制层
+ * 特价秒杀控制层
  *
  * @author LuPindong
  * @time 2017-04-19 07:42
  */
 @Controller
-public class EstateController extends BasicController {
+public class SpecialController extends BasicController {
 
     @Autowired
-    private EstateService estateService;
+    private SpecialService specialService;
 
-    @GetMapping("/estate/list")
+
+    @GetMapping("/special/list")
     public String listWithGetUI(HttpServletRequest request, Model model) throws Exception {
         pageable = buildPageRequest(request);
-        Page<EstateItemDTO> estateItemPage = estateService.listForSaleByPage(pageable, null);
-        model.addAttribute("estateItemPage", estateItemPage);
-        return "/estate/listUI";
+        Page<SpecialStockDTO> specialStockPage = specialService.listForSecKillByPage(pageable);
+        model.addAttribute("specialStockPage", specialStockPage);
+        return "/special/listUI";
     }
 
-    @PostMapping("/estate/list")
+    @PostMapping("/special/list")
     public String listWithPostUI(HttpServletRequest request, Model model) throws Exception {
         pageable = buildPageRequest(request);
         paramMap = buildParamMap(request);
-        Page<EstateItemDTO> estateItemPage = estateService.listForSaleByPage(pageable, paramMap);
-        model.addAttribute("estateItemPage", estateItemPage);
+        Page<SpecialStockDTO> specialStockPage = specialService.listForSecKillByPage(pageable);
+        model.addAttribute("specialStockPage", specialStockPage);
         model.addAllAttributes(paramMap);
-        return "/estate/listUI";
+        return "/special/listUI";
     }
 
-    @GetMapping("/estate/{id}")
+    @GetMapping("/special/{id}")
     public String detailUI(@PathVariable("id") String id, Model model) throws Exception {
-        EstateItemDTO estateItem = estateService.getByHouseId(id);
-        model.addAttribute("estateItem", estateItem);
-        return "/estate/detailUI";
+        SpecialStockDTO specialStock = specialService.getByHouseId(id);
+        model.addAttribute("specialStock", specialStock);
+        return "/special/detailUI";
     }
 }

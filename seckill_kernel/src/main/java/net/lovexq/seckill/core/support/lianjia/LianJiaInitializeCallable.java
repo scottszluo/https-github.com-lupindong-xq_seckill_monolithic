@@ -4,7 +4,7 @@ import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.ProtoStuffUtil;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import net.lovexq.seckill.core.support.activemq.MqProducer;
-import net.lovexq.seckill.kernel.dto.EstateItemDto;
+import net.lovexq.seckill.kernel.dto.EstateItemDTO;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,14 +17,14 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 
 /**
- * 链家网多线程执行
+ * 链家网爬虫多线程执行程序【适用于首次初始化】
  *
  * @author LuPindong
  * @time 2017-04-22 02:02
  */
-public class UpdateCallable implements Callable<JsonResult> {
+public class LianJiaInitializeCallable implements Callable<JsonResult> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateCallable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LianJiaInitializeCallable.class);
 
     private LianJiaParam lianJiaParam;
 
@@ -32,7 +32,7 @@ public class UpdateCallable implements Callable<JsonResult> {
 
     private Queue queue;
 
-    public UpdateCallable(LianJiaParam lianJiaParam, MqProducer mqProducer, Queue queue) {
+    public LianJiaInitializeCallable(LianJiaParam lianJiaParam, MqProducer mqProducer, Queue queue) {
         this.lianJiaParam = lianJiaParam;
         this.mqProducer = mqProducer;
         this.queue = queue;
@@ -41,11 +41,11 @@ public class UpdateCallable implements Callable<JsonResult> {
     @Override
     public JsonResult call() throws Exception {
         JsonResult result = new JsonResult();
+        long beginTime = System.currentTimeMillis();
         try {
             Integer curPage = lianJiaParam.getCurPage();
             Integer totalPage = lianJiaParam.getTotalPage();
             int sleepTime = 0;
-
             String regionHtml = LianJiaCrawler.INSTANCE.doGet(lianJiaParam.getBaseUrl() + AppConstants.CHANNEL_ERSHOUFANG + lianJiaParam.getRegion(), lianJiaParam.getAppProperties().getLiaJiaCookie());
             Document document = Jsoup.parse(regionHtml);
             if (LianJiaCrawler.INSTANCE.checkValidHtml(document)) {
@@ -66,29 +66,29 @@ public class UpdateCallable implements Callable<JsonResult> {
                         for (Element contentElement : contentElements) {
                             LOGGER.info("开始处理{}：第{}页，第{}条记录", lianJiaParam.getRegion(), curPage, count);
                             // 解析列表数据
-                            EstateItemDto dto = LianJiaCrawler.INSTANCE.parseListData(contentElement);
+                            EstateItemDTO dto = LianJiaCrawler.INSTANCE.parseListData(contentElement);
                             // 解析默认图片
                             dto = LianJiaCrawler.INSTANCE.parseCoverImgData(dto, bigImgElements);
-
-                            dto.setBatch(lianJiaParam.getBatch());
+                            // 解析详情数据
+                            dto = LianJiaCrawler.INSTANCE.parseDetailData(dto, lianJiaParam.getAppProperties().getLiaJiaCookie());
                             // 转为二进制数据
                             byte[] dataArray = ProtoStuffUtil.serialize(dto);
                             // 发送消息
                             mqProducer.sendQueueMessage(dataArray, queue);
                             count++;
 
-                            sleepTime = new Random().nextInt(10000);
+                            sleepTime = new Random().nextInt(20000);
                             Thread.sleep(sleepTime);
                             LOGGER.info("休眠了{}秒", sleepTime / 1000);
                         }
                     }
                     curPage++;
                     if (curPage % 3 == 0) {
-                        sleepTime = 120000;
+                        sleepTime = 180000;
                         Thread.sleep(sleepTime);
                         LOGGER.info("休眠了{}秒", sleepTime / 1000);
                     } else {
-                        sleepTime = new Random().nextInt(60000);
+                        sleepTime = new Random().nextInt(90000);
                         Thread.sleep(sleepTime);
                         LOGGER.info("休眠了{}秒", sleepTime / 1000);
                     }
@@ -99,7 +99,8 @@ public class UpdateCallable implements Callable<JsonResult> {
             LOGGER.error(e.getMessage(), e);
             result = new JsonResult(500, e.getMessage());
         }
-        LOGGER.info("执行完毕");
+        long endTime = System.currentTimeMillis();
+        LOGGER.info("执行完毕，累计耗时{}分", (endTime - beginTime) / 1000 / 60);
         return result;
     }
 }

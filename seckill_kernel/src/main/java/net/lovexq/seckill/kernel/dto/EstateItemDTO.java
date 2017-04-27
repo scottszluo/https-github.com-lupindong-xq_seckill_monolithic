@@ -1,7 +1,7 @@
 package net.lovexq.seckill.kernel.dto;
 
-import net.lovexq.seckill.kernel.model.EstateImage;
-import net.lovexq.seckill.kernel.model.EstateItem;
+import net.lovexq.seckill.kernel.model.EstateImageModel;
+import net.lovexq.seckill.kernel.model.EstateItemModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,27 +12,27 @@ import java.util.List;
  * @author LuPindong
  * @time 2017-04-20 16:40
  */
-public class EstateItemDto extends EstateItem {
+public class EstateItemDTO extends EstateItemModel {
 
-    private List<EstateImage> estateImageList = new ArrayList<>();
+    private List<EstateImageModel> estateImageList = new ArrayList<>();
 
     private String batch;
 
     private String detailHref;
 
-    public EstateItemDto() {
+    public EstateItemDTO() {
         super();
     }
 
-    public EstateItemDto(Long id) {
+    public EstateItemDTO(Long id) {
         super(id);
     }
 
-    public List<EstateImage> getEstateImageList() {
+    public List<EstateImageModel> getEstateImageList() {
         return estateImageList;
     }
 
-    public void setEstateImageList(List<EstateImage> estateImageList) {
+    public void setEstateImageList(List<EstateImageModel> estateImageList) {
         this.estateImageList = estateImageList;
     }
 

@@ -1,6 +1,7 @@
 package net.lovexq.seckill.kernel.model;
 
 import net.lovexq.seckill.common.model.BasicModel;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "special_stock")
-public class SpecialStock extends BasicModel {
+public class SpecialStockModel extends BasicModel {
     @Id
     private Long id;              //主键
     private String title;         //标题x
@@ -35,13 +36,15 @@ public class SpecialStock extends BasicModel {
     private String coverUrl;       //默认图片
 
     private Integer number;         //库存数量
+    @Type(type = "localDateTimeType")
     private LocalDateTime startTime;//开始时间
+    @Type(type = "localDateTimeType")
     private LocalDateTime endTime;  //结束时间
 
-    public SpecialStock() {
+    public SpecialStockModel() {
     }
 
-    public SpecialStock(Long id) {
+    public SpecialStockModel(Long id) {
         this.id = id;
     }
 
@@ -176,8 +179,8 @@ public class SpecialStock extends BasicModel {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SpecialStock)) return false;
-        SpecialStock that = (SpecialStock) o;
+        if (!(o instanceof SpecialStockModel)) return false;
+        SpecialStockModel that = (SpecialStockModel) o;
         return Objects.equals(id, that.id);
     }
 
@@ -188,7 +191,7 @@ public class SpecialStock extends BasicModel {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SpecialStock{");
+        final StringBuilder sb = new StringBuilder("SpecialStockModel{");
         sb.append("id=").append(id);
         sb.append(", title='").append(title).append('\'');
         sb.append(", houseId='").append(houseId).append('\'');

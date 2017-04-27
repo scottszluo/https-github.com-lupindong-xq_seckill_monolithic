@@ -15,5 +15,7 @@ public class ApplicationMainTest {
     @Test
     public void genMillis() {
         System.out.println(System.currentTimeMillis());
+
+
     }
 }

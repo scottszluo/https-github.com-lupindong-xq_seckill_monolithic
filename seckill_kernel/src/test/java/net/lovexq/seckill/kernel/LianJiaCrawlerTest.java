@@ -3,7 +3,7 @@ package net.lovexq.seckill.kernel;
 import com.alibaba.fastjson.JSON;
 import net.lovexq.seckill.common.utils.ProtoStuffUtil;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
-import net.lovexq.seckill.kernel.model.EstateItem;
+import net.lovexq.seckill.kernel.model.EstateItemModel;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -52,19 +52,19 @@ public class LianJiaCrawlerTest {
     public long testWRJson() throws IOException {
 
         // 136
-        EstateItem estateItem = estateItemRepository.findByHouseId("GZ0002346888");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002346888");
 
         long begin = System.currentTimeMillis();
 
-        File file = new File("D:\\estateItem.jsonx");
-        String data = JSON.toJSONString(estateItem);
+        File file = new File("D:\\estateItemModel.jsonx");
+        String data = JSON.toJSONString(estateItemModel);
         FileUtils.write(file, data, AppConstants.CHARSET_UTF8);
-        System.out.println("写入的数据为：" + estateItem);
+        System.out.println("写入的数据为：" + estateItemModel);
 
-        File fileB = new File("D:\\estateItem.jsonx");
+        File fileB = new File("D:\\estateItemModel.jsonx");
         String dataB = FileUtils.readFileToString(fileB, AppConstants.CHARSET_UTF8);
-        EstateItem estateItemB = JSON.parseObject(dataB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemB);
+        EstateItemModel estateItemModelB = JSON.parseObject(dataB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelB);
 
         long end = System.currentTimeMillis();
 
@@ -78,28 +78,28 @@ public class LianJiaCrawlerTest {
     public long testWR2Json() throws IOException {
 
         // 370
-        EstateItem estateItem = estateItemRepository.findByHouseId("GZ0002460857");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002460857");
 
         long begin = System.currentTimeMillis();
 
-        File fileB = new File("D:\\estateItem.jsonx");
+        File fileB = new File("D:\\estateItemModel.jsonx");
         String dataB = FileUtils.readFileToString(fileB, AppConstants.CHARSET_UTF8);
-        EstateItem estateItemB = JSON.parseObject(dataB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemB);
+        EstateItemModel estateItemModelB = JSON.parseObject(dataB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelB);
 
-        List<EstateItem> list = new ArrayList<>();
-        list.add(estateItem);
-        list.add(estateItemB);
+        List<EstateItemModel> list = new ArrayList<>();
+        list.add(estateItemModel);
+        list.add(estateItemModelB);
 
-        File file = new File("D:\\estateItem.jsonx");
+        File file = new File("D:\\estateItemModel.jsonx");
         String data = JSON.toJSONString(list);
         FileUtils.write(file, data, AppConstants.CHARSET_UTF8);
         System.out.println("写入的数据为：" + list.size());
 
-        File fileBx = new File("D:\\estateItem.jsonx");
+        File fileBx = new File("D:\\estateItemModel.jsonx");
         String dataBx = FileUtils.readFileToString(fileBx, AppConstants.CHARSET_UTF8);
-        List<EstateItem> estateItemBxList = JSON.parseArray(dataBx, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemBxList.size());
+        List<EstateItemModel> estateItemModelBxList = JSON.parseArray(dataBx, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelBxList.size());
 
         long end = System.currentTimeMillis();
         long time = end - begin;
@@ -112,19 +112,19 @@ public class LianJiaCrawlerTest {
     public long testWRJsonList() throws IOException {
 
         // 254
-        List<EstateItem> estateItemList = estateItemRepository.findAll();
+        List<EstateItemModel> estateItemModelList = estateItemRepository.findAll();
 
         long begin = System.currentTimeMillis();
 
-        File file = new File("D:\\estateItemList.jsonx");
-        String data = JSON.toJSONString(estateItemList);
+        File file = new File("D:\\estateItemModelList.jsonx");
+        String data = JSON.toJSONString(estateItemModelList);
         FileUtils.write(file, data, AppConstants.CHARSET_UTF8);
-        System.out.println("写入的数据为：" + estateItemList.size());
+        System.out.println("写入的数据为：" + estateItemModelList.size());
 
-        File fileB = new File("D:\\estateItemList.jsonx");
+        File fileB = new File("D:\\estateItemModelList.jsonx");
         String dataB = FileUtils.readFileToString(fileB, AppConstants.CHARSET_UTF8);
-        List<EstateItem> estateItemBList = JSON.parseArray(dataB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemBList.size());
+        List<EstateItemModel> estateItemModelBList = JSON.parseArray(dataB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelBList.size());
 
         long end = System.currentTimeMillis();
 
@@ -138,50 +138,50 @@ public class LianJiaCrawlerTest {
     public long testWR2JsonList() throws IOException {
 
         // 331
-        List<EstateItem> estateItemList = estateItemRepository.findAll();
+        List<EstateItemModel> estateItemModelList = estateItemRepository.findAll();
 
         long begin = System.currentTimeMillis();
 
-        File fileB = new File("D:\\estateItemList.jsonx");
+        File fileB = new File("D:\\estateItemModelList.jsonx");
         String dataB = FileUtils.readFileToString(fileB, AppConstants.CHARSET_UTF8);
-        List<EstateItem> estateItemBList = JSON.parseArray(dataB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemBList.size());
+        List<EstateItemModel> estateItemModelBList = JSON.parseArray(dataB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelBList.size());
 
-        List<EstateItem> list = new ArrayList<>();
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
-        list.addAll(estateItemList);
-        list.addAll(estateItemBList);
+        List<EstateItemModel> list = new ArrayList<>();
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
+        list.addAll(estateItemModelList);
+        list.addAll(estateItemModelBList);
 
-        File file = new File("D:\\estateItemList.jsonx");
+        File file = new File("D:\\estateItemModelList.jsonx");
         String data = JSON.toJSONString(list);
         FileUtils.write(file, data, AppConstants.CHARSET_UTF8);
         System.out.println("写入的数据为：" + list.size());
 
-        File fileBx = new File("D:\\estateItemList.jsonx");
+        File fileBx = new File("D:\\estateItemModelList.jsonx");
         String dataBx = FileUtils.readFileToString(fileBx, AppConstants.CHARSET_UTF8);
-        List<EstateItem> estateItemBxList = JSON.parseArray(dataBx, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemBxList.size());
+        List<EstateItemModel> estateItemModelBxList = JSON.parseArray(dataBx, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelBxList.size());
 
         long end = System.currentTimeMillis();
 
@@ -196,20 +196,20 @@ public class LianJiaCrawlerTest {
     public long testWRProtobuf() throws IOException {
 
         // 77
-        EstateItem estateItem = estateItemRepository.findByHouseId("GZ0002346888");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002346888");
 
         long begin = System.currentTimeMillis();
 
-        File file = new File("D:\\estateItem.bytex");
-        byte[] dataArray = ProtoStuffUtil.serialize(estateItem);
+        File file = new File("D:\\estateItemModel.bytex");
+        byte[] dataArray = ProtoStuffUtil.serialize(estateItemModel);
         FileUtils.writeByteArrayToFile(file, dataArray);
-        System.out.println("写入的数据为：" + estateItem);
+        System.out.println("写入的数据为：" + estateItemModel);
 
 
-        File fileB = new File("D:\\estateItem.bytex");
+        File fileB = new File("D:\\estateItemModel.bytex");
         byte[] dataArrayB = FileUtils.readFileToByteArray(fileB);
-        EstateItem estateItemB = ProtoStuffUtil.deserialize(dataArrayB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemB);
+        EstateItemModel estateItemModelB = ProtoStuffUtil.deserialize(dataArrayB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelB);
 
         long end = System.currentTimeMillis();
 
@@ -223,28 +223,28 @@ public class LianJiaCrawlerTest {
     public long testWR2Protobuf() throws IOException {
 
         // 84
-        EstateItem estateItem = estateItemRepository.findByHouseId("GZ0002460857");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002460857");
 
         long begin = System.currentTimeMillis();
 
-        File fileBx = new File("D:\\estateItem.bytex");
+        File fileBx = new File("D:\\estateItemModel.bytex");
         byte[] dataArrayBx = FileUtils.readFileToByteArray(fileBx);
-        EstateItem estateItemBx = ProtoStuffUtil.deserialize(dataArrayBx, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemBx);
+        EstateItemModel estateItemModelBx = ProtoStuffUtil.deserialize(dataArrayBx, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelBx);
 
-        List<EstateItem> list = new ArrayList<>();
-        list.add(estateItem);
-        list.add(estateItemBx);
+        List<EstateItemModel> list = new ArrayList<>();
+        list.add(estateItemModel);
+        list.add(estateItemModelBx);
 
-        File file = new File("D:\\estateItem.bytex");
+        File file = new File("D:\\estateItemModel.bytex");
         byte[] dataArray = ProtoStuffUtil.serializeList(list);
         FileUtils.writeByteArrayToFile(file, dataArray);
         System.out.println("写入的数据为：" + list.size());
 
-        File fileB = new File("D:\\estateItem.bytex");
+        File fileB = new File("D:\\estateItemModel.bytex");
         byte[] dataArrayB = FileUtils.readFileToByteArray(fileB);
-        List<EstateItem> estateItemListB = ProtoStuffUtil.deserializeList(dataArrayB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemListB.size());
+        List<EstateItemModel> estateItemModelListB = ProtoStuffUtil.deserializeList(dataArrayB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelListB.size());
 
         long end = System.currentTimeMillis();
 
@@ -258,19 +258,19 @@ public class LianJiaCrawlerTest {
     public long testWRProtobufList() throws IOException {
         // 138
 
-        List<EstateItem> estateItemList = estateItemRepository.findAll();
+        List<EstateItemModel> estateItemModelList = estateItemRepository.findAll();
 
         long begin = System.currentTimeMillis();
 
-        File file = new File("D:\\estateItemList.bytex");
-        byte[] dataArray = ProtoStuffUtil.serializeList(estateItemList);
+        File file = new File("D:\\estateItemModelList.bytex");
+        byte[] dataArray = ProtoStuffUtil.serializeList(estateItemModelList);
         FileUtils.writeByteArrayToFile(file, dataArray);
-        System.out.println("写入的数据为：" + estateItemList.size());
+        System.out.println("写入的数据为：" + estateItemModelList.size());
 
-        File fileB = new File("D:\\estateItemList.bytex");
+        File fileB = new File("D:\\estateItemModelList.bytex");
         byte[] dataArrayB = FileUtils.readFileToByteArray(fileB);
-        List<EstateItem> estateItemListB = ProtoStuffUtil.deserializeList(dataArrayB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemListB.size());
+        List<EstateItemModel> estateItemModelListB = ProtoStuffUtil.deserializeList(dataArrayB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelListB.size());
 
         long end = System.currentTimeMillis();
 
@@ -283,51 +283,51 @@ public class LianJiaCrawlerTest {
 
     public long testWR2ProtobufList() throws IOException {
 
-        List<EstateItem> estateItemList2 = estateItemRepository.findAll();
+        List<EstateItemModel> estateItemModelList2 = estateItemRepository.findAll();
 
         // 236
         long begin = System.currentTimeMillis();
 
         File fileB = new File("D:\\estateItemList.bytex");
         byte[] dataArrayB = FileUtils.readFileToByteArray(fileB);
-        List<EstateItem> estateItemListB = ProtoStuffUtil.deserializeList(dataArrayB, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemListB.size());
+        List<EstateItemModel> estateItemModelListB = ProtoStuffUtil.deserializeList(dataArrayB, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelListB.size());
 
-        List<EstateItem> list = new ArrayList<>();
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
-        list.addAll(estateItemListB);
-        list.addAll(estateItemList2);
+        List<EstateItemModel> list = new ArrayList<>();
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
+        list.addAll(estateItemModelListB);
+        list.addAll(estateItemModelList2);
 
         File fileC = new File("D:\\estateItemList.bytex");
         byte[] dataArrayC = ProtoStuffUtil.serializeList(list);
         FileUtils.writeByteArrayToFile(fileC, dataArrayC);
-        System.out.println("写入的数据为：" + estateItemListB.size());
+        System.out.println("写入的数据为：" + estateItemModelListB.size());
 
         File fileD = new File("D:\\estateItemList.bytex");
         byte[] dataArrayD = FileUtils.readFileToByteArray(fileD);
-        List<EstateItem> estateItemListD = ProtoStuffUtil.deserializeList(dataArrayD, EstateItem.class);
-        System.out.println("读取的数据为：" + estateItemListD.size());
+        List<EstateItemModel> estateItemModelListD = ProtoStuffUtil.deserializeList(dataArrayD, EstateItemModel.class);
+        System.out.println("读取的数据为：" + estateItemModelListD.size());
 
         long end = System.currentTimeMillis();
 

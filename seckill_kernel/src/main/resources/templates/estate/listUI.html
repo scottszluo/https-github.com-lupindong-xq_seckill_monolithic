@@ -22,9 +22,9 @@
                 <div class="row mt-lg">
                     <div class="col-md-12">
                         <form id="estatesForm" method="POST">
-                            <input type="hidden" name="page" id="page" th:value="${itemPage.number}+1">
-                            <input type="hidden" name="size" id="size" th:value="${itemPage.size}">
-                            <input type="hidden" name="sort" id="sort" th:value="${itemPage.sort}">
+                            <input type="hidden" name="page" id="page" th:value="${estateItemPage.number}+1">
+                            <input type="hidden" name="size" id="size" th:value="${estateItemPage.size}">
+                            <input type="hidden" name="sort" id="sort" th:value="${estateItemPage.sort}">
                             <div class="row">
                                 <div class="col-md-2">
                                     <div class="form-control-custom mb-md">
@@ -136,7 +136,7 @@
         <div class="container">
             <div class="row mb-lg">
                 <ul class="properties-listing sort-destination p-none">
-                    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(itemPage.content)}" th:each="item, itemStat : ${itemPage.content}">
+                    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(estateItemPage.content)}" th:each="item, itemStat : ${estateItemPage.content}">
                         <div class="listing-item">
                             <a href="/" class="text-decoration-none" target="_blank" th:href="'/estate/'+${item.houseId}">
                                 <span class="thumb-info thumb-info-lighten">
@@ -194,7 +194,7 @@
         // 图片懒加载初始化
         Common.Lazyload.init();
         // 分页事件初始化
-        Common.Bootpag.initWithPost("estatesForm", Estate.List.url(), [[${itemPage.totalPages}]], [[${itemPage.number}]] + 1);
+        Common.Bootpag.initWithPost("estatesForm", Estate.List.url(), [[${estateItemPage.totalPages}]], [[${estateItemPage.number}]] + 1);
         // 绑定数据过滤函数
         $("select").on("change", function () {
             Estate.List.filterData(this);

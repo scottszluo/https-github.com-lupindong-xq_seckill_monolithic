@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "estate_item")
-public class EstateItem extends BasicModel {
+public class EstateItemModel extends BasicModel {
     @Id
     private Long id;              //主键
     private String title;         //标题x
@@ -51,10 +51,10 @@ public class EstateItem extends BasicModel {
     private String saleStatus;     //销售状态：放盘，成交，下架
     private String coverUrl;       //默认图片
 
-    public EstateItem() {
+    public EstateItemModel() {
     }
 
-    public EstateItem(Long id) {
+    public EstateItemModel(Long id) {
         this.id = id;
     }
 
@@ -237,8 +237,8 @@ public class EstateItem extends BasicModel {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EstateItem)) return false;
-        EstateItem that = (EstateItem) o;
+        if (!(o instanceof EstateItemModel)) return false;
+        EstateItemModel that = (EstateItemModel) o;
         return Objects.equals(id, that.id);
     }
 
@@ -249,7 +249,7 @@ public class EstateItem extends BasicModel {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("EstateItem{");
+        final StringBuilder sb = new StringBuilder("EstateItemModel{");
         sb.append("id=").append(id);
         sb.append(", title='").append(title).append('\'');
         sb.append(", houseId='").append(houseId).append('\'');

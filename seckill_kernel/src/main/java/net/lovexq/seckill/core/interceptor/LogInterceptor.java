@@ -42,6 +42,22 @@ public class LogInterceptor implements HandlerInterceptor {
         Method method = handlerMethod.getMethod();
         String methodName = method.getName();
         sb.append(ENTER).append(methodName);
+
+        //参数非空则打印参数
+        Map<String, String[]> requestMap = request.getParameterMap();
+        if (requestMap != null && !requestMap.isEmpty()) {
+            sb.append("(");
+            for (Map.Entry<String, String[]> entry : requestMap.entrySet()) {
+                sb.append("[");
+                sb.append(entry.getKey());
+                sb.append("=");
+                String[] valueArr = entry.getValue();
+                sb.append(valueArr[0].toString());
+                sb.append("]");
+            }
+            sb.append(")");
+        }
+
         LOGGER.info(sb.toString());
 
         return true;
@@ -65,20 +81,6 @@ public class LogInterceptor implements HandlerInterceptor {
         sb = new StringBuilder();
 
         sb.append("[方法: ").append(methodName).append("()");
-
-        //参数非空则打印参数
-        Map<String, String[]> requestMap = request.getParameterMap();
-        if (requestMap != null && !requestMap.isEmpty()) {
-            for (Map.Entry<String, String[]> entry : requestMap.entrySet()) {
-                sb.append("[");
-                sb.append(entry.getKey());
-                sb.append("=");
-                String[] valueArr = entry.getValue();
-                sb.append(valueArr[0].toString());
-                sb.append("]");
-            }
-        }
-
         sb.append(", 耗时: ").append(endTime - startTime).append(" ms] ");
         LOGGER.info(sb.toString());
 

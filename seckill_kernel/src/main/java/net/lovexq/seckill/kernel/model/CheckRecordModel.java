@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "check_record")
-public class CheckRecord extends BasicModel {
+public class CheckRecordModel extends BasicModel {
     @Id
     @GeneratedValue
     private Long id;
@@ -26,10 +26,10 @@ public class CheckRecord extends BasicModel {
     private Integer status; // -1初始状态,0删除->下架,1更新-放盘,2插入-放盘
     private byte[] data;
 
-    public CheckRecord() {
+    public CheckRecordModel() {
     }
 
-    public CheckRecord(String batch, String currentCode, Integer status) {
+    public CheckRecordModel(String batch, String currentCode, Integer status) {
         this.batch = batch;
         this.currentCode = currentCode;
         this.status = status;
@@ -86,8 +86,8 @@ public class CheckRecord extends BasicModel {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CheckRecord)) return false;
-        CheckRecord that = (CheckRecord) o;
+        if (!(o instanceof CheckRecordModel)) return false;
+        CheckRecordModel that = (CheckRecordModel) o;
         return Objects.equals(id, that.id);
     }
 
@@ -98,7 +98,7 @@ public class CheckRecord extends BasicModel {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CheckRecord{");
+        final StringBuilder sb = new StringBuilder("CheckRecordModel{");
         sb.append("id=").append(id);
         sb.append(", batch='").append(batch).append('\'');
         sb.append('}');

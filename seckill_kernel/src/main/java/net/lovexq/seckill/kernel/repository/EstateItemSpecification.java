@@ -1,6 +1,6 @@
 package net.lovexq.seckill.kernel.repository;
 
-import net.lovexq.seckill.kernel.model.EstateItem;
+import net.lovexq.seckill.kernel.model.EstateItemModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class EstateItemSpecification {
 
-    public static Specification<EstateItem> getForSaleListSpec(Map<String, String> paramMap) {
+    public static Specification<EstateItemModel> getForSaleSpec(Map<String, String> paramMap) {
         return (root, criteriaQuery, criteriaBuilder) -> {
 
             Path<String> path = root.get("saleStatus");

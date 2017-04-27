@@ -1,6 +1,6 @@
 package net.lovexq.seckill.core.support.activemq;
 
-import net.lovexq.seckill.kernel.service.EstateService;
+import net.lovexq.seckill.kernel.service.CrawlerService;
 import org.apache.activemq.command.ActiveMQBytesMessage;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
@@ -20,20 +20,20 @@ public class MqCustomer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MqCustomer.class);
 
     @Autowired
-    private EstateService estateService;
+    private CrawlerService crawlerService;
 
     /**
      * 处理创建记录消息
      */
-    @JmsListener(destination = "LianJiaCrawler.CreateRecord.Queue")
-    public void receiveCreateQueueMessage(Message message) {
+    @JmsListener(destination = "LianJiaCrawler.Initialize.Queue")
+    public void receiveInitializeQueueMessage(Message message) {
         if (message instanceof ActiveMQBytesMessage) {
             ActiveMQBytesMessage bytesMessage = (ActiveMQBytesMessage) message;
             try {
                 ActiveMQQueue queue = (ActiveMQQueue) bytesMessage.getJMSDestination();
                 byte[] dataArray = bytesMessage.getContent().getData();
                 LOGGER.info("【接收消息】>>>队列目的地：{}", queue.getQueueName());
-                estateService.saveCrawlerData(dataArray);
+                crawlerService.saveInitializeData(dataArray);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
@@ -43,15 +43,15 @@ public class MqCustomer {
     /**
      * 处理更新记录消息
      */
-    @JmsListener(destination = "LianJiaCrawler.UpdateRecord.Queue")
-    public void receiveUpdateQueueMessage(Message message) {
+    @JmsListener(destination = "LianJiaCrawler.Check.Queue")
+    public void receiveCheckQueueMessage(Message message) {
         if (message instanceof ActiveMQBytesMessage) {
             ActiveMQBytesMessage bytesMessage = (ActiveMQBytesMessage) message;
             try {
                 ActiveMQQueue queue = (ActiveMQQueue) bytesMessage.getJMSDestination();
                 byte[] dataArray = bytesMessage.getContent().getData();
                 LOGGER.info("【接收消息】>>>队列目的地：{}", queue.getQueueName());
-                estateService.updateCrawlerData(dataArray);
+                crawlerService.saveCheckData(dataArray);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

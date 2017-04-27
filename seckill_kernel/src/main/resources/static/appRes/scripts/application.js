@@ -103,6 +103,16 @@ var Common = (function () {
         },
         isNotBlank: function (strVal) {
             return !StringUtil.isBlank(strVal);
+        },
+        getNewSortType: function (sortType) {
+            if (Common.StringUtil.isNotBlank(sortType)) {
+                if ("ASC" == $.trim(sortType)) {
+                    sortType = "DESC";
+                } else {
+                    sortType = "ASC";
+                }
+            }
+            return sortType;
         }
     }
 
@@ -123,21 +133,33 @@ var Estate = (function () {
             if ("LI" == obj.tagName) {
                 var classNames = obj.className.split(" ");
                 var sortValues = $("#sort").val().split(":");
-                var sortType = List.getNewSortType(sortValues[1]);
+                var sortType = Common.StringUtil.getNewSortType(sortValues[1]);
                 $("#sort").val(classNames[1] + ":" + sortType);
             }
 
             $("#estatesForm").attr("action", Estate.List.url()).submit();
+        }
+    }
+
+    return {
+        List: List
+    }
+})();
+
+var Special = (function () {
+    var List = {
+        url: function () {
+            return "/special/list";
         },
-        getNewSortType: function (sortType) {
-            if (Common.StringUtil.isNotBlank(sortType)) {
-                if ("ASC" == $.trim(sortType)) {
-                    sortType = "DESC";
-                } else {
-                    sortType = "ASC";
-                }
+        filterData: function (obj) {
+            if ("LI" == obj.tagName) {
+                var classNames = obj.className.split(" ");
+                var sortValues = $("#sort").val().split(":");
+                var sortType = Common.StringUtil.getNewSortType(sortValues[1]);
+                $("#sort").val(classNames[1] + ":" + sortType);
             }
-            return sortType;
+
+            $("#stocksForm").attr("action", Special.List.url()).submit();
         }
     }
 

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xq-seckill-kernel</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>XQ_SecKill_Monolithic Kernel</name>
 
@@ -19,7 +19,7 @@
     <properties>
         <thymeleaf.version>3.0.5.RELEASE</thymeleaf.version>
         <thymeleaf-layout-dialect.version>2.1.2</thymeleaf-layout-dialect.version>
-
+        <tomcat.version>8.0.42</tomcat.version>
     </properties>
 
     <dependencies>
@@ -58,6 +58,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <!-- 这里指定打包的时候不再需要tomcat相关的包 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
