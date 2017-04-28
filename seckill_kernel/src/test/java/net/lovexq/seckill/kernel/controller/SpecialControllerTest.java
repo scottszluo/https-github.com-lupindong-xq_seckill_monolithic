@@ -1,11 +1,13 @@
 package net.lovexq.seckill.kernel.controller;
 
 import net.lovexq.seckill.common.utils.IdWorker;
+import net.lovexq.seckill.kernel.model.EstateItemModel;
 import net.lovexq.seckill.kernel.model.SpecialStockModel;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.repository.SpecialStockRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -55,6 +57,29 @@ public class SpecialControllerTest {
             model.setStartTime(sTime);
             model.setEndTime(eTime);
             specialStockRepository.save(model);
+        }
+    }
+
+    @Test
+    public void randomInsertSpecialStockV2() throws IllegalAccessException, InstantiationException {
+        long targetId = System.currentTimeMillis() % 10000;
+        List<EstateItemModel> estateItemList = estateItemRepository.findByHouseIdLike("%" + targetId + "%");
+        int maxNum = 15;
+        if (maxNum > estateItemList.size()) {
+            maxNum = estateItemList.size();
+        }
+
+        System.out.println("本次生成的特价房源数：" + maxNum);
+        for (int i = 0; i < maxNum; i++) {
+            EstateItemModel estateIteml = estateItemList.get(i);
+            SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
+            BeanUtils.copyProperties(estateIteml, specialStock, "id");
+            specialStock.setNumber(new Random().nextInt(10) + 1);
+            LocalDateTime sTime = LocalDateTime.now();
+            LocalDateTime eTime = sTime.plusDays(3);
+            specialStock.setStartTime(sTime);
+            specialStock.setEndTime(eTime);
+            specialStockRepository.save(specialStock);
         }
     }
 }

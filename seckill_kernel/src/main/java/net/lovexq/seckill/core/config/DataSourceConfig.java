@@ -1,40 +1,33 @@
 package net.lovexq.seckill.core.config;
 
-import com.alibaba.druid.filter.logging.Slf4jLogFilter;
-import com.alibaba.druid.filter.stat.StatFilter;
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
-import com.alibaba.druid.wall.WallFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by LuPindong on 2017-2-15.
  */
 @Configuration
-public class DruidConfiguration {
+public class DataSourceConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DruidConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceConfig.class);
 
-    @Bean
+
+    /*@Bean
     @Primary
-    public DataSource masterDataSource(@Value("${app.dataSource.master.name}") String dsName, @Value("${app.dataSource.master.driverClass}") String driver, @Value("${app.dataSource.master.url}") String url,
-                                       @Value("${app.dataSource.master.username}") String username, @Value("${app.dataSource.master.password}") String password) throws SQLException {
+    public DruidDataSource masterDataSource(@Value("${app.dataSource.master.name}") String dsName,
+                                            @Value("${app.dataSource.master.driverClass}") String driver,
+                                            @Value("${app.dataSource.master.url}") String url,
+                                            @Value("${app.dataSource.master.username}") String username,
+                                            @Value("${app.dataSource.master.password}") String password) throws SQLException {
         return getDataSource(dsName, driver, url, username, password);
     }
 
@@ -45,9 +38,9 @@ public class DruidConfiguration {
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
-        dataSource.setInitialSize(1);
-        dataSource.setMinIdle(1);
-        dataSource.setMaxActive(20);
+        dataSource.setInitialSize(10);
+        dataSource.setMinIdle(10);
+        dataSource.setMaxActive(100);
         dataSource.setMaxWait(90000);
         dataSource.setValidationQuery("SELECT 'x'");
         // 超过时间限制是否回收
@@ -80,7 +73,7 @@ public class DruidConfiguration {
         dataSource.setProxyFilters(filterList);
 
         return dataSource;
-    }
+    }*/
 
     @Bean
     public ServletRegistrationBean druidServlet() {

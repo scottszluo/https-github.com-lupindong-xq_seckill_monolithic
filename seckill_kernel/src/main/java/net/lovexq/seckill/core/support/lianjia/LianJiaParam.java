@@ -1,6 +1,10 @@
 package net.lovexq.seckill.core.support.lianjia;
 
-import net.lovexq.seckill.core.config.AppProperties;
+import net.lovexq.seckill.core.properties.AppProperties;
+import net.lovexq.seckill.kernel.dto.EstateItemDTO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 链家网参数
@@ -10,12 +14,27 @@ import net.lovexq.seckill.core.config.AppProperties;
  */
 public class LianJiaParam {
 
+    private List<EstateItemDTO> estateItemList = new ArrayList<>();
     private AppProperties appProperties;
     private String batch;
     private String baseUrl;
     private String region;
     private Integer curPage;
     private Integer totalPage;
+
+    public LianJiaParam(List<EstateItemDTO> estateItemList, AppProperties appProperties, String batch, Integer curPage) {
+        this.estateItemList = estateItemList;
+        this.appProperties = appProperties;
+        this.batch = batch;
+        this.curPage = curPage;
+    }
+
+    public LianJiaParam(AppProperties appProperties, String batch, String baseUrl, String region) {
+        this.appProperties = appProperties;
+        this.batch = batch;
+        this.baseUrl = baseUrl;
+        this.region = region;
+    }
 
     public LianJiaParam(AppProperties appProperties, String baseUrl, String region, Integer curPage, Integer totalPage) {
         this.appProperties = appProperties;
@@ -25,13 +44,13 @@ public class LianJiaParam {
         this.totalPage = totalPage;
     }
 
-    public LianJiaParam(AppProperties appProperties, String batch, String baseUrl, String region, Integer curPage, Integer totalPage) {
-        this.appProperties = appProperties;
-        this.batch = batch;
-        this.baseUrl = baseUrl;
-        this.region = region;
-        this.curPage = curPage;
-        this.totalPage = totalPage;
+
+    public List<EstateItemDTO> getEstateItemList() {
+        return estateItemList;
+    }
+
+    public void setEstateItemList(List<EstateItemDTO> estateItemList) {
+        this.estateItemList = estateItemList;
     }
 
     public AppProperties getAppProperties() {

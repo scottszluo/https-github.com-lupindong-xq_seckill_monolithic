@@ -41,6 +41,8 @@ public enum LianJiaCrawler {
 
     private static Header[] agentHeaderArr;
 
+    private static Long bodyLength;
+
     static {
 
         Header header00 = new BasicHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36");
@@ -59,6 +61,8 @@ public enum LianJiaCrawler {
         Header header13 = new BasicHeader("User-Agent", "Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11");
 
         agentHeaderArr = new Header[]{header00, header01, header02, header03, header04, header05, header06, header07, header08, header09, header10, header11, header12, header13};
+
+        bodyLength = 0L;
     }
 
     /**
@@ -106,8 +110,12 @@ public enum LianJiaCrawler {
 
             HttpGet httpGet = new HttpGet(url);
             httpGet.setHeaders(headerArray);
-            LOGGER.info("开始执行GET请求：{}", httpGet);
             responseBody = httpClient.execute(httpGet, responseHandler);
+
+            bodyLength += responseBody.length();
+
+            LOGGER.info("执行GET请求:{}", httpGet);
+            LOGGER.info("当前ResponseBody Length:{}K, 累计ResponseBody Length:{}K", responseBody.length() / 1024, bodyLength / 1024);
         } catch (ClientProtocolException e) {
             LOGGER.error(e.getMessage(), e);
         } catch (IOException e) {
@@ -141,7 +149,7 @@ public enum LianJiaCrawler {
     public static EstateItemDTO parseListData(Element contentElement) throws Exception {
         EstateItemDTO estateItem = new EstateItemDTO(IdWorker.INSTANCE.nextId());
         try {
-            estateItem.setSaleStatus("放盘");
+            estateItem.setSaleStatus("在售");
 
             Element titleElement = contentElement.select("div[class='title'] > a").first();
             estateItem.setTitle(titleElement.text());// 标题
@@ -185,6 +193,7 @@ public enum LianJiaCrawler {
      */
     public static EstateItemDTO parseDetailData(EstateItemDTO estateItem, String cookieValue) throws Exception {
         String detailHtml = doGet(estateItem.getDetailHref(), cookieValue);
+        estateItem.setBodyLength(bodyLength);
         Document document = Jsoup.parse(detailHtml);
         if (checkValidHtml(document)) {
             // 获取页面数据

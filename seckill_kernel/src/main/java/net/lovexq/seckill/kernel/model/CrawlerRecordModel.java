@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -15,21 +16,21 @@ import java.util.Objects;
  * @time 2017-04-26 19:36
  */
 @Entity
-@Table(name = "check_record")
-public class CheckRecordModel extends BasicModel {
+@Table(name = "crawler_record")
+public class CrawlerRecordModel extends BasicModel implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
     private String batch;
     private String historyCode;
     private String currentCode;
-    private Integer status; // -1初始状态,0删除->下架,1更新-放盘,2插入-放盘
+    private Integer status; // -1初始状态===》0下架, 1不变, 2新增
     private byte[] data;
 
-    public CheckRecordModel() {
+    public CrawlerRecordModel() {
     }
 
-    public CheckRecordModel(String batch, String currentCode, Integer status) {
+    public CrawlerRecordModel(String batch, String currentCode, Integer status) {
         this.batch = batch;
         this.currentCode = currentCode;
         this.status = status;
@@ -86,8 +87,8 @@ public class CheckRecordModel extends BasicModel {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CheckRecordModel)) return false;
-        CheckRecordModel that = (CheckRecordModel) o;
+        if (!(o instanceof CrawlerRecordModel)) return false;
+        CrawlerRecordModel that = (CrawlerRecordModel) o;
         return Objects.equals(id, that.id);
     }
 
@@ -98,7 +99,7 @@ public class CheckRecordModel extends BasicModel {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CheckRecordModel{");
+        final StringBuilder sb = new StringBuilder("CrawlerRecordModel{");
         sb.append("id=").append(id);
         sb.append(", batch='").append(batch).append('\'');
         sb.append('}');

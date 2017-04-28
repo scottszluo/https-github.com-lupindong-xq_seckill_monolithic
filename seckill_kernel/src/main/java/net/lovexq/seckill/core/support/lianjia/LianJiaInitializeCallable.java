@@ -100,7 +100,7 @@ public class LianJiaInitializeCallable implements Callable<JsonResult> {
             result = new JsonResult(500, e.getMessage());
         }
         long endTime = System.currentTimeMillis();
-        LOGGER.info("执行完毕，累计耗时{}分", (endTime - beginTime) / 1000 / 60);
+        LOGGER.info("初始化执行完毕，累计耗时{}分", (endTime - beginTime) / 1000 / 60);
         return result;
     }
 }

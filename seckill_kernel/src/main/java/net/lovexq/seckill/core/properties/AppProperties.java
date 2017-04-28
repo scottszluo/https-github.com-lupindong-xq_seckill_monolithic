@@ -1,10 +1,10 @@
-package net.lovexq.seckill.core.config;
+package net.lovexq.seckill.core.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * 链家相关属性
+ * APP自定义属性
  *
  * @author LuPindong
  * @time 2017-04-21 20:01
@@ -22,4 +22,5 @@ public class AppProperties {
     public void setLiaJiaCookie(String liaJiaCookie) {
         this.liaJiaCookie = liaJiaCookie;
     }
+
 }

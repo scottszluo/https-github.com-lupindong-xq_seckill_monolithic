@@ -9,14 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,27 +31,8 @@ public class SpecialServiceImpl implements SpecialService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SpecialStockDTO> listForSecKillByPage(Pageable pageable) throws Exception {
-        Page<SpecialStockDTO> targetStockPage;
-        List<SpecialStockDTO> targetStockList = new ArrayList<>();
-
-        Page<SpecialStockModel> sourceStockPage = specialStockRepository.findAll(pageable);
-        List<SpecialStockModel> sourceStockList = sourceStockPage.getContent();
-
-        if (CollectionUtils.isEmpty(sourceStockList)) {
-            targetStockPage = new PageImpl<>(targetStockList);
-            return targetStockPage;
-        }
-
-        for (SpecialStockModel sourceStock : sourceStockList) {
-            SpecialStockDTO targetStock = new SpecialStockDTO();
-            BeanUtils.copyProperties(sourceStock, targetStock);
-
-            targetStockList.add(targetStock);
-        }
-
-        targetStockPage = new PageImpl<>(targetStockList, pageable, sourceStockPage.getTotalElements());
-        return targetStockPage;
+    public List<SpecialStockModel> listForSecKill() throws Exception {
+        return specialStockRepository.findBySaleStatus("在售");
     }
 
     @Override
@@ -68,7 +44,6 @@ public class SpecialServiceImpl implements SpecialService {
             BeanUtils.copyProperties(sourceStock, targetStock);
             targetStock.setEstateImageList(imageService.listByHouseId(id));
         }
-
         return targetStock;
     }
 

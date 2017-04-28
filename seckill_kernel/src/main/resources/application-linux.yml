@@ -1,22 +1,56 @@
 ## APPLICATION CUSTOM CONFIG
 app:
-  masterDB:
-    host: 192.168.9.105:33060
-    name: db_seckill_monolithic
-    username: seckill_app
-    password: secki1105@mysql.COM
+  ## Relational Databases
   dataSource:
     master:
-      name: MasterSource
-      type: com.alibaba.druid.pool.DruidDataSource
+      name: master
       driverClass: com.mysql.jdbc.Driver
-      url: jdbc:mysql://${app.masterDB.host}/${app.masterDB.name}?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
-      username: ${app.masterDB.username}
-      password: ${app.masterDB.password}
-      filters: stat,wall,slf4j
-      connectionProperties: druid.log.stmt.executableSql=true;druid.stat.logSlowSql=true;
+      url: jdbc:mysql://192.168.9.105:33060/db_seckill_monolithic?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
+      username: 
+      password: 
+    slaves:
+      slave1:
+        name: slave1
+        driverClass: com.mysql.jdbc.Driver
+        url: jdbc:mysql://192.168.9.105:33060/db_seckill_monolithic?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
+        username: 
+        password: 
+      slave2:
+        name: slave2
+        driverClass: com.mysql.jdbc.Driver
+        url: jdbc:mysql://192.168.9.106:33060/db_seckill_monolithic?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
+        username: 
+        password: 
 
   liaJiaCookie:
+
+## Druid
+druid:
+  initialSize: 8
+  minIdle: 8
+  maxActive: 64
+  validationQuery: "SELECT 1 FROM DUAL"
+  removeAbandoned: true
+  removeAbandonedTimeout: 1800
+  logAbandoned: 1800
+
+## LOGGING
+logging:
+  path: /opt/net/lovexq/logfile/xq_seckill_monolithic
+  config: classpath:config/logback.xml
+  #OFF、FATAL、ERROR、WARN、INFO、DEBUG、ALL
+  level:
+    application : DEBUG
+    druid.sql: DEBUG
+    net.lovexq.seckill: DEBUG
+    org.apache.activemq: WARN
+    org.apache.http: WARN
+    org.hibernate: WARN
+    org.springframework: WARN
+    org.springframework.boot: WARN
+    org.springframework.cache: WARN
+    org.springframework.data: WARN
+    org.thymeleaf: WARN
 
 ## EMBEDDED SERVER CONFIGURATION (ServerProperties)
 server:
@@ -30,51 +64,17 @@ server:
   tomcat:
     uri-encoding: UTF-8
 
-## LOGGING
-logging:
-  path: /opt/net/lovexq/server/logfile/xq_seckill_monolithic
-  config: classpath:config/logback.xml
-  #OFF、FATAL、ERROR、WARN、INFO、DEBUG、ALL
-  level:
-    application : WARN
-    druid.sql: DEBUG
-    #druid.sql.DataSource: DEBUG
-    #druid.sql.Connection: DEBUG
-    #druid.sql.Statement: DEBUG
-    #druid.sql.ResultSet: DEBUG
-    net.lovexq.seckill: DEBUG
-    org.apache.activemq: WARN
-    org.apache.http: WARN
-    org.hibernate: WARN
-    org.springframework: WARN
-    org.springframework.boot: INFO
-    org.thymeleaf: WARN
-
 ## SPRING CONFIGURATION
 spring:
   ## ACTIVEMQ
   activemq:
-#    broker-url: failover:(tcp://127.0.0.1:61616)
     broker-url: failover:(tcp://192.168.9.101:62626)
     user: mquser
     password: mqpwd
+  ## devtools
   devtools:
     restart:
       enabled: true
-  ## DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
-#  datasource:
-#      name: MasterSource
-#      type: com.alibaba.druid.pool.DruidDataSource
-#      driverClass: com.mysql.jdbc.Driver
-#      url: jdbc:mysql://${app.masterDB.host}/${app.masterDB.name}?useSSL=false&autoReconnect=true&useOldAliasMetadataBehavior=true
-#      username: ${app.masterDB.username}
-#      password: ${app.masterDB.password}
-  ## JPA CONFIGURATION
-#  jpa:
-#    show-sql: true
-#    generate-ddl: false # ignored by Hibernate, might be useful for other vendors
-#    hibernate:
-#      ddl-auto: update # defaults to create-drop for embedded dbs
   ## THYMELEAF (ThymeleafAutoConfiguration)
   thymeleaf:
     cache: false # Enable template caching.
@@ -86,3 +86,15 @@ spring:
     mode: HTML # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
     prefix: classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
     suffix: .html # Suffix that gets appended to view names when building a URL.
+  ## REDIS (RedisProperties)
+  redis:
+    host: 192.168.9.102
+    port: 16379
+    password:
+    database: 1
+    pool:
+      minIdle: 8
+      maxIdle: 64
+      maxActive: 128
+      maxWait: 60000
+    timeout: 10000

@@ -68,8 +68,21 @@ public class IdWorkerTest {
 
     @Test
     public void testNum() {
-        System.out.println(1 % 3);
-        System.out.println(2 % 3);
-        System.out.println(3 % 3);
+        System.out.println(1 % 8);
+        System.out.println(2 % 8);
+        System.out.println(3 % 8);
+        System.out.println(4 % 8);
+        System.out.println(5 % 8);
+        System.out.println(6 % 8);
+        System.out.println(7 % 8);
+        System.out.println(8 % 8);
+        System.out.println(9 % 8);
+        System.out.println(10 % 8);
+        System.out.println(11 % 8);
+        System.out.println(12 % 8);
+        System.out.println(13 % 8);
+        System.out.println(14 % 8);
+        System.out.println(15 % 8);
+        //System.out.println((10 % 8) > 6);
     }
 }

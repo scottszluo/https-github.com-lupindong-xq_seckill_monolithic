@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @time 2017-04-19 09:47
  */
 @Configuration
-public class WebAppConfiguration extends WebMvcConfigurerAdapter {
+public class WebAppConfig extends WebMvcConfigurerAdapter {
 
     //@Autowired
     //private AutowireCapableBeanFactory beanFactory;

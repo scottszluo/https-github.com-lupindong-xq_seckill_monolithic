@@ -5,6 +5,7 @@ import net.lovexq.seckill.common.model.BasicModel;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "estate_item")
-public class EstateItemModel extends BasicModel {
+public class EstateItemModel extends BasicModel implements Serializable {
     @Id
     private Long id;              //主键
     private String title;         //标题x
@@ -48,7 +49,7 @@ public class EstateItemModel extends BasicModel {
      */
     private Integer focusNum;      //关注人数x
     private Integer watchNum;      //看房人数x
-    private String saleStatus;     //销售状态：放盘，成交，下架
+    private String saleStatus;     //销售状态：在售，成交，下架，特价
     private String coverUrl;       //默认图片
 
     public EstateItemModel() {

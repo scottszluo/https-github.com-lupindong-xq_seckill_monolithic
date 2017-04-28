@@ -19,36 +19,13 @@
                         <h1>特价秒杀<span class="font-red">原价几百万，几千万的房产，现在统统一折出售，抢到即赚到！</span></h1>
                     </div>
                 </div>
-                <div class="row mt-lg">
-                    <div class="col-md-12">
-                        <form id="stocksForm" method="POST">
-                            <input type="hidden" name="page" id="page" th:value="${specialStockPage.number}+1">
-                            <input type="hidden" name="size" id="size" th:value="${specialStockPage.size}">
-                            <input type="hidden" name="sort" id="sort" th:value="${specialStockPage.sort}">
-                            <ul class="nav nav-pills sort-source">
-                                <li th:class="'sort id ' + (${#strings.contains(#strings.defaultString(sort,'id'),'id')?'active':''})">
-                                    <a href="#">默认排序</a>
-                                </li>
-                                <li th:class="'sort totalPrice ' + (${#strings.contains(#strings.defaultString(sort,'id'),'totalPrice')?'active':''})">
-                                    <a href="#">房屋总价</a>
-                                </li>
-                                <li th:class="'sort unitPrice ' + (${#strings.contains(#strings.defaultString(sort,'id'),'unitPrice')?'active':''})">
-                                    <a href="#">房屋单价</a>
-                                </li>
-                                <li th:class="'sort area ' + (${#strings.contains(#strings.defaultString(sort,'id'),'area')?'active':''})">
-                                    <a href="#">房屋面积</a>
-                                </li>
-                            </ul>
-                        </form>
-                    </div>
-                </div>
             </div>
         </section>
 
         <div class="container">
             <div class="row mb-lg">
                 <ul class="properties-listing sort-destination p-none">
-                    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(specialStockPage.content)}" th:each="stock, stockStat : ${specialStockPage.content}">
+                    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(specialStockList)}" th:each="stock, stockStat : ${specialStockList}">
                         <div class="listing-item">
                             <a href="/" class="text-decoration-none" target="_blank" th:href="'/special/'+${stock.houseId}">
                                 <span class="thumb-info thumb-info-lighten">
@@ -81,10 +58,6 @@
                     </li>
                 </ul>
             </div>
-
-            <div class="row mt-lg mb-xlg">
-                <div class="col-md-12 center" id="pagination"></div>
-            </div>
         </div>
 
     </div>
@@ -102,12 +75,6 @@
     $(function () {
         // 图片懒加载初始化
         Common.Lazyload.init();
-        // 分页事件初始化
-        Common.Bootpag.initWithPost("stocksForm", Estate.List.url(), [[${specialStockPage.totalPages}]], [[${specialStockPage.number}]] + 1);
-        // 绑定数据过滤函数
-        $(".sort").click(function () {
-            Special.List.filterData(this);
-        })
     })
 </script>
 <!-- END PAGESCRIPT -->

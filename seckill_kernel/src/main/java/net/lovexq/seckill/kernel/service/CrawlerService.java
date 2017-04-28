@@ -8,10 +8,11 @@ import net.lovexq.seckill.common.model.JsonResult;
 public interface CrawlerService {
     JsonResult invokeInitialize(String baseUrl, String region, Integer curPage, Integer totalPage);
 
-    JsonResult invokeCheck(String batch, String baseUrl, Integer curPage, Integer totalPage);
+    JsonResult invokeCheck(String batch, String baseUrl, String region);
+
+    JsonResult invokeUpdate(String batch, Integer curPage);
 
     void saveInitializeData(byte[] dataArray) throws Exception;
 
     void saveCheckData(byte[] dataArray) throws Exception;
-
 }

@@ -34,9 +34,15 @@ public class CrawlerController extends BasicController {
     public JsonResult invokeCheck(HttpServletRequest request) throws Exception {
         String batch = request.getParameter("batch");
         String baseUrl = request.getParameter("baseUrl");
+        String region = request.getParameter("region");
+        return result = crawlerService.invokeCheck(batch, baseUrl, region);
+    }
+
+    @PostMapping("/crawler/update")
+    public JsonResult invokeUpdate(HttpServletRequest request) throws Exception {
+        String batch = request.getParameter("batch");
         Integer curPage = Integer.valueOf(request.getParameter("curPage"));
-        Integer totalPage = Integer.valueOf(request.getParameter("totalPage"));
-        return result = crawlerService.invokeCheck(batch, baseUrl, curPage, totalPage);
+        return result = crawlerService.invokeUpdate(batch, curPage);
     }
 
 }

@@ -10,9 +10,9 @@ import javax.jms.Queue;
 /**
  * Created by LuPindong on 2017-2-15.
  */
-@Configuration
 @EnableJms
-public class MqConfiguration {
+@Configuration
+public class ActiveMQConfig {
 
     @Bean
     public Queue initializeQueue() {

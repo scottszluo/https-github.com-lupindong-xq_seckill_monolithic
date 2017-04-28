@@ -20,6 +20,8 @@ public class EstateItemDTO extends EstateItemModel {
 
     private String detailHref;
 
+    private Long bodyLength;
+
     public EstateItemDTO() {
         super();
     }
@@ -50,5 +52,13 @@ public class EstateItemDTO extends EstateItemModel {
 
     public void setDetailHref(String detailHref) {
         this.detailHref = detailHref;
+    }
+
+    public Long getBodyLength() {
+        return bodyLength;
+    }
+
+    public void setBodyLength(Long bodyLength) {
+        this.bodyLength = bodyLength;
     }
 }

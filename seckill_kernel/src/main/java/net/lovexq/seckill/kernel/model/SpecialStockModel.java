@@ -6,6 +6,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -19,11 +20,14 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "special_stock")
-public class SpecialStockModel extends BasicModel {
+public class SpecialStockModel extends BasicModel implements Serializable {
     @Id
     private Long id;              //主键
     private String title;         //标题x
     private String houseId;       //编号x
+    /**
+     * 基本信息
+     */
     private BigDecimal totalPrice;//总价x
     private BigDecimal unitPrice; //单价x
     private String model;         //房屋户型x
@@ -32,7 +36,23 @@ public class SpecialStockModel extends BasicModel {
     private String floor;         //所在楼层x
     private String decoration;    //装修情况x
     private String buildingAge;   //建筑年代x
-    private String saleStatus;     //销售状态：放盘，成交，下架
+    /**
+     * 小区信息
+     */
+    private String resBlockId;    //小区IDx
+    private String resBlockName;  //小区名称x
+    private BigDecimal latitude;  //纬度x
+    private BigDecimal longitude; //经度x
+    private String cityId;        //城市IDx
+    private String regionAName;      //大区域名称
+    private String regionBName;      //小区域名称
+
+    /**
+     * 其他信息
+     */
+    private Integer focusNum;      //关注人数x
+    private Integer watchNum;      //看房人数x
+    private String saleStatus;     //销售状态：在售，成交，下架
     private String coverUrl;       //默认图片
 
     private Integer number;         //库存数量
@@ -134,6 +154,78 @@ public class SpecialStockModel extends BasicModel {
 
     public void setBuildingAge(String buildingAge) {
         this.buildingAge = buildingAge;
+    }
+
+    public String getResBlockId() {
+        return resBlockId;
+    }
+
+    public void setResBlockId(String resBlockId) {
+        this.resBlockId = resBlockId;
+    }
+
+    public String getResBlockName() {
+        return resBlockName;
+    }
+
+    public void setResBlockName(String resBlockName) {
+        this.resBlockName = resBlockName;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getRegionAName() {
+        return regionAName;
+    }
+
+    public void setRegionAName(String regionAName) {
+        this.regionAName = regionAName;
+    }
+
+    public String getRegionBName() {
+        return regionBName;
+    }
+
+    public void setRegionBName(String regionBName) {
+        this.regionBName = regionBName;
+    }
+
+    public Integer getFocusNum() {
+        return focusNum;
+    }
+
+    public void setFocusNum(Integer focusNum) {
+        this.focusNum = focusNum;
+    }
+
+    public Integer getWatchNum() {
+        return watchNum;
+    }
+
+    public void setWatchNum(Integer watchNum) {
+        this.watchNum = watchNum;
     }
 
     public String getSaleStatus() {

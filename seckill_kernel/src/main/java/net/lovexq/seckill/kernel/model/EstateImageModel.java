@@ -5,6 +5,7 @@ import net.lovexq.seckill.common.model.BasicModel;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "estate_image")
-public class EstateImageModel extends BasicModel {
+public class EstateImageModel extends BasicModel implements Serializable {
     @Id
     private Long pictureId;
     private String houseCode;

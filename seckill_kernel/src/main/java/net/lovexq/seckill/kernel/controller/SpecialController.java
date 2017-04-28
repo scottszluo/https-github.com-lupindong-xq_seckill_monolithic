@@ -2,16 +2,15 @@ package net.lovexq.seckill.kernel.controller;
 
 import net.lovexq.seckill.core.controller.BasicController;
 import net.lovexq.seckill.kernel.dto.SpecialStockDTO;
+import net.lovexq.seckill.kernel.model.SpecialStockModel;
 import net.lovexq.seckill.kernel.service.SpecialService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 特价秒杀控制层
@@ -27,20 +26,9 @@ public class SpecialController extends BasicController {
 
 
     @GetMapping("/special/list")
-    public String listWithGetUI(HttpServletRequest request, Model model) throws Exception {
-        pageable = buildPageRequest(request);
-        Page<SpecialStockDTO> specialStockPage = specialService.listForSecKillByPage(pageable);
-        model.addAttribute("specialStockPage", specialStockPage);
-        return "/special/listUI";
-    }
-
-    @PostMapping("/special/list")
-    public String listWithPostUI(HttpServletRequest request, Model model) throws Exception {
-        pageable = buildPageRequest(request);
-        paramMap = buildParamMap(request);
-        Page<SpecialStockDTO> specialStockPage = specialService.listForSecKillByPage(pageable);
-        model.addAttribute("specialStockPage", specialStockPage);
-        model.addAllAttributes(paramMap);
+    public String listUI(Model model) throws Exception {
+        List<SpecialStockModel> specialStockList = specialService.listForSecKill();
+        model.addAttribute("specialStockList", specialStockList);
         return "/special/listUI";
     }
 

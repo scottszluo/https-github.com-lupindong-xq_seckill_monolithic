@@ -2,16 +2,17 @@ package net.lovexq.seckill.kernel.service.impl;
 
 import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.ProtoStuffUtil;
-import net.lovexq.seckill.core.config.AppProperties;
+import net.lovexq.seckill.core.properties.AppProperties;
 import net.lovexq.seckill.core.support.activemq.MqProducer;
 import net.lovexq.seckill.core.support.lianjia.LianJiaCheckCallable;
 import net.lovexq.seckill.core.support.lianjia.LianJiaInitializeCallable;
 import net.lovexq.seckill.core.support.lianjia.LianJiaParam;
+import net.lovexq.seckill.core.support.lianjia.LianJiaAddCallable;
 import net.lovexq.seckill.kernel.dto.EstateItemDTO;
-import net.lovexq.seckill.kernel.model.CheckRecordModel;
+import net.lovexq.seckill.kernel.model.CrawlerRecordModel;
 import net.lovexq.seckill.kernel.model.EstateImageModel;
 import net.lovexq.seckill.kernel.model.EstateItemModel;
-import net.lovexq.seckill.kernel.repository.CheckRecordRepository;
+import net.lovexq.seckill.kernel.repository.CrawlerRecordRepository;
 import net.lovexq.seckill.kernel.repository.EstateImageRepository;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.service.CrawlerService;
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.jms.Queue;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,7 +45,7 @@ public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
     private EstateImageRepository estateImageRepository;
     @Autowired
-    private CheckRecordRepository checkRecordRepository;
+    private CrawlerRecordRepository crawlerRecordRepository;
     @Autowired
     private AppProperties appProperties;
     @Autowired
@@ -68,11 +71,11 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
 
     @Override
-    public JsonResult invokeCheck(String batch, String baseUrl, Integer curPage, Integer totalPage) {
+    public JsonResult invokeCheck(String batch, String baseUrl, String region) {
         JsonResult result = new JsonResult();
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
-            LianJiaParam lianJiaParam = new LianJiaParam(appProperties, batch, baseUrl, null, curPage, totalPage);
+            LianJiaParam lianJiaParam = new LianJiaParam(appProperties, batch, baseUrl, region);
             exec.submit(new LianJiaCheckCallable(lianJiaParam, mqProducer, checkQueue));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -82,6 +85,36 @@ public class CrawlerServiceImpl implements CrawlerService {
         return result;
     }
 
+    @Override
+    @Transactional
+    public JsonResult invokeUpdate(String batch, Integer curPage) {
+        JsonResult result = new JsonResult();
+        ExecutorService exec = Executors.newCachedThreadPool();
+        try {
+            List<EstateItemDTO> estateItemList = new ArrayList<>();
+            List<CrawlerRecordModel> crawlerRecordList = crawlerRecordRepository.findByBatchAndStatusIn(batch, Arrays.asList(-1, 2));
+            for (CrawlerRecordModel crawlerRecord : crawlerRecordList) {
+                Integer status = crawlerRecord.getStatus();
+                if (-1 == status) {
+                    crawlerRecord.setStatus(0);
+                    crawlerRecordRepository.save(crawlerRecord);
+                    // 下架操作
+                    estateItemRepository.updateStatus(crawlerRecord.getHistoryCode());
+                } else {
+                    // 新增操作
+                    EstateItemDTO estateItemDTO = ProtoStuffUtil.deserialize(crawlerRecord.getData(), EstateItemDTO.class);
+                    estateItemList.add(estateItemDTO);
+                }
+            }
+            LianJiaParam lianJiaParam = new LianJiaParam(estateItemList, appProperties, batch, curPage);
+            exec.submit(new LianJiaAddCallable(lianJiaParam, mqProducer, initializeQueue));
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            exec.shutdownNow();
+            result = new JsonResult(500, e.getMessage());
+        }
+        return result;
+    }
 
     @Override
     @Transactional
@@ -97,6 +130,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             } else {
                 model = new EstateItemModel();
                 BeanUtils.copyProperties(dto, model);
+
             }
             // 保存房源条目
             estateItemRepository.save(model);
@@ -123,7 +157,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                 } else {
                     image.setPictureId(System.currentTimeMillis());
                     image.setHouseCode(dto.getHouseId());
-                    image.setPictureType(0);
+                    image.setPictureType(99);
                     if (StringUtils.isBlank(image.getPictureSourceUrl())) {
                         image.setPictureSourceUrl(image.getUrl());
                     }
@@ -140,18 +174,18 @@ public class CrawlerServiceImpl implements CrawlerService {
             EstateItemDTO dto = ProtoStuffUtil.deserialize(dataArray, EstateItemDTO.class);
             String batch = dto.getBatch();
             String houseId = dto.getHouseId();
-            CheckRecordModel checkRecordModel = checkRecordRepository.findByBatchAndHistoryCode(batch, houseId);
-            if (checkRecordModel != null) {
-                checkRecordModel.setStatus(1);
+            CrawlerRecordModel crawlerRecordModel = crawlerRecordRepository.findByBatchAndHistoryCode(batch, houseId);
+            if (crawlerRecordModel != null) {
+                crawlerRecordModel.setStatus(1);
             } else {
-                checkRecordModel = new CheckRecordModel(batch, houseId, 2);
-                List<CheckRecordModel> list = checkRecordRepository.findByBatchAndCurrentCode(batch, houseId);
+                crawlerRecordModel = new CrawlerRecordModel(batch, houseId, 2);
+                List<CrawlerRecordModel> list = crawlerRecordRepository.findByBatchAndCurrentCode(batch, houseId);
                 if (!CollectionUtils.isEmpty(list)) {
-                    checkRecordRepository.deleteRepeatRecord(batch, houseId);
+                    crawlerRecordRepository.deleteRepeatRecord(batch, houseId);
                 }
             }
-            checkRecordModel.setData(dataArray);
-            checkRecordRepository.save(checkRecordModel);
+            crawlerRecordModel.setData(dataArray);
+            crawlerRecordRepository.save(crawlerRecordModel);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

@@ -1,8 +1,9 @@
 package net.lovexq.seckill.kernel.service;
 
 import net.lovexq.seckill.kernel.dto.SpecialStockDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import net.lovexq.seckill.kernel.model.SpecialStockModel;
+
+import java.util.List;
 
 /**
  * 特价秒杀业务层抽象类
@@ -12,7 +13,7 @@ import org.springframework.data.domain.Pageable;
  */
 public interface SpecialService {
 
-    Page<SpecialStockDTO> listForSecKillByPage(Pageable pageable) throws Exception;
+    List<SpecialStockModel> listForSecKill() throws Exception;
 
     SpecialStockDTO getByHouseId(String id) throws Exception;
 
