@@ -10,4 +10,7 @@ import net.lovexq.seckill.kernel.model.SysUserModel;
  * @time 2017-04-29 23:53
  */
 public interface SysUserRepository extends BasicRepository<SysUserModel, Long> {
+    SysUserModel findByAccount(String account);
+
+    SysUserModel findByEmail(String email);
 }

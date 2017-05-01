@@ -34,6 +34,21 @@ class GeneralException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    /**
+     * 获取最底层的异常
+     *
+     * @param cause 异常
+     * @return 最底层的异常
+     */
+    private static Throwable getFloorThrowable(Throwable cause) {
+        Throwable next = cause.getCause();
+        if (next == null) {
+            return cause;
+        } else {
+            return getFloorThrowable(next);
+        }
+    }
+
     public Long getErrorCode() {
         return errorCode;
     }

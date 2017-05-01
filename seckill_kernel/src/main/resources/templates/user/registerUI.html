@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head th:include="common/fgHead :: head('注册 | lovexq.net')"></head>
+<!-- END HEAD -->
+<!--<body>-->
+<body>
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <span th:replace="common/coHeader"></span>
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+        <div class="container">
+            <div class="featured-box featured-box-primary align-left mt-xlg" style="height: 427px;width: 50%">
+                <div class="box-content">
+                    <h4 class="heading-primary text-uppercase mb-md">注册账号</h4>
+                    <form id="frmSignUp">
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <input type="text" id="account" name="account" class="form-control input-lg" placeholder="用户账号">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <input type="text" id="email" name="email" class="form-control input-lg" placeholder="邮箱地址">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                    <input type="password" id="password" name="password" class="form-control input-lg" placeholder="设置密码">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="password" id="rePassword" name="rePassword" class="form-control input-lg" placeholder="确认密码">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="submit" value="注册" class="btn btn-primary btn-lg pull-right mb-xl" data-loading-text="注册中...">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BEGIN FOOTER -->
+    <span th:replace="common/coFooter"></span>
+    <!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<span th:replace="common/fgFoot"></span>
+<!-- END FOOT -->
+<!-- BEGIN PAGESCRIPT -->
+<script src="https://cdn.bootcss.com/spark-md5/3.0.0/spark-md5.min.js"></script>
+<script>
+    $(function () {
+        SysUser.Register.init();
+    })
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

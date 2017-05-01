@@ -94,7 +94,7 @@ public class SpecialServiceImpl implements SpecialService {
             return result;
             //秒杀开启
         } else {
-            String saltUrl = id + "/" + appProperties.getSalt();
+            String saltUrl = id + "/" + appProperties.getPrivateSalt();
             String md5Url = DigestUtils.md5DigestAsHex(saltUrl.getBytes());
             result.setData(md5Url);
             return result;

@@ -21,31 +21,32 @@ var Common = (function () {
     var stack_bar_bottom = {"dir1": "up", "dir2": "right", "spacing1": 0, "spacing2": 0};
 
     var PNotice = {
-        // 消息提示
-        common: function (title, text, type, addClass, stack) {
+        common: function (text, title, type, addClass, stack) {
+            if (StringUtil.isBlank(title)) {
+                title = '消息';
+            }
             new PNotify({
                 title: title,
                 text: text,
                 type: type,
                 addclass: addClass,
                 stack: stack
-                // hide: false //是否自动关闭
             });
         },
-        info: function (title, text) {
-            PNotice.common(title, text, 'info', 'stack-bottomright', stack_bottomright);
+        primary: function (text, title) {
+            PNotice.common(text, title, 'primary', 'notification-primary stack-bottomright', stack_bottomright);
         },
-        info: function (title, text) {
-            PNotice.common(title, text, 'info', 'stack-bottomright', stack_bottomright);
+        notice: function (text, title) {
+            PNotice.common(text, title, 'notice', 'stack-bottomright', stack_bottomright);
         },
-        info: function (title, text) {
-            PNotice.common(title, text, 'info', 'stack-bottomright', stack_bottomright);
+        success: function (text, title) {
+            PNotice.common(text, title, 'success', 'stack-bottomright', stack_bottomright);
         },
-        info: function (title, text) {
-            PNotice.common(title, text, 'info', 'stack-bottomright', stack_bottomright);
+        info: function (text, title) {
+            PNotice.common(text, title, 'info', 'stack-bottomright', stack_bottomright);
         },
-        error: function (title, text) {
-            PNotice.common(title, text, 'error', 'stack-bottomright', stack_bottomright);
+        error: function (text, title) {
+            PNotice.common(text, title, 'error', 'stack-bottomright', stack_bottomright);
         }
     }
 
@@ -248,5 +249,78 @@ var Special = (function () {
     return {
         List: List,
         Detail: Detail
+    }
+})();
+
+var SysUser = (function () {
+    var Register = {
+        signupUrl: function () {
+            return "/user/signup";
+        },
+        saltUrl: function () {
+            return "/user/salt";
+        },
+        init: function () {
+            $('#frmSignUp').validate({
+                rules: {
+                    account: {required: true, minlength: 4},
+                    email: {required: true, email: true},
+                    password: {required: true, minlength: 6},
+                    rePassword: {required: true, minlength: 6, equalTo: "#password"}
+                },
+                messages: {
+                    account: {required: "请输入用户账号", minlength: "用户账号至少由4个字母组成"},
+                    email: {required: "请输入邮箱地址", email: "请输入一个正确的邮箱地址"},
+                    password: {required: "请输入设置密码", minlength: "密码长度不能小于6个字母"},
+                    rePassword: {required: "请输入确认密码", minlength: "密码长度不能小于6个字母", equalTo: "两次密码输入不一致"}
+                },
+                submitHandler: function (form) {
+                    Register.signup();
+                }
+            });
+
+            $('#frmSignUp input').keypress(function (e) {
+                if (e.which == 13) {
+                    if ($('#frmSignUp').validate().form()) {
+                        Register.signup();
+                    }
+                    return false;
+                }
+            });
+        },
+        signup: function () {
+            var account = $.trim($("#account").val());
+            var email = $.trim($("#email").val());
+            var password = $.trim($("#password").val());
+
+            $.get(Register.saltUrl())
+                .done(function (result) {
+                    var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(email, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
+                    var val2nd = SparkMD5.hash(val1st, false);
+                    var data = {
+                        account: account,
+                        email: email,
+                        cipher: val2nd
+                    }
+
+                    // 执行登录操作
+                    $.post(Register.signupUrl(), data)
+                        .done(function (result) {
+                            if (200 == result.status) {
+                                Common.PNotice.success(result.message);
+                                window.location.href = "/";
+                            } else {
+                                Common.PNotice.error(result.message);
+                            }
+                        })
+                        .fail(function (result) {
+                            Common.PNotice.error(result.message, result.data);
+                        });
+                })
+        }
+    };
+
+    return {
+        Register: Register
     }
 })();

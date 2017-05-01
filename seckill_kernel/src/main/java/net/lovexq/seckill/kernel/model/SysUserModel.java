@@ -2,7 +2,10 @@ package net.lovexq.seckill.kernel.model;
 
 import net.lovexq.seckill.common.model.BasicModel;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -43,12 +46,6 @@ public class SysUserModel extends BasicModel implements Serializable {
     private String name;
 
     /**
-     * 昵称
-     */
-    @Column(name = "nickname", length = 50)
-    private String nickname;
-
-    /**
      * 手机
      */
     @Column(name = "mobile", length = 50)
@@ -74,6 +71,26 @@ public class SysUserModel extends BasicModel implements Serializable {
 
     public SysUserModel() {
         super();
+    }
+
+    public SysUserModel(Long id, String account, String password, String email) {
+        this.id = id;
+        this.account = account;
+        this.password = password;
+        this.name = account;
+        this.email = email;
+        this.locked = false;
+        this.state = true;
+    }
+
+    public SysUserModel(Long id, String account, String password, String name, String email) {
+        this.id = id;
+        this.account = account;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.locked = false;
+        this.state = true;
     }
 
     public Long getId() {
@@ -106,14 +123,6 @@ public class SysUserModel extends BasicModel implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     public String getMobile() {

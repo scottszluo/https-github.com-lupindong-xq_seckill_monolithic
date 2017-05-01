@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 public class AppProperties {
 
     private String liaJiaCookie;
-    private String salt;
+    private String privateSalt;
+    private String publicSalt;
 
     public String getLiaJiaCookie() {
         return liaJiaCookie;
@@ -24,11 +25,19 @@ public class AppProperties {
         this.liaJiaCookie = liaJiaCookie;
     }
 
-    public String getSalt() {
-        return salt;
+    public String getPrivateSalt() {
+        return privateSalt;
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setPrivateSalt(String privateSalt) {
+        this.privateSalt = privateSalt;
+    }
+
+    public String getPublicSalt() {
+        return publicSalt;
+    }
+
+    public void setPublicSalt(String publicSalt) {
+        this.publicSalt = publicSalt;
     }
 }

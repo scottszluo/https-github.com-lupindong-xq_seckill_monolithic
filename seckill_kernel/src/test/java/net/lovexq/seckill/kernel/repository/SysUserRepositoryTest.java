@@ -33,7 +33,6 @@ public class SysUserRepositoryTest {
             newUser.setPassword("57dae71be50ea0849e2f1b6abd243613");
             newUser.setAccount(oldUser.getAccount().replace("4", indexStr));
             newUser.setName(oldUser.getName().replace("4", indexStr));
-            newUser.setNickname(oldUser.getNickname().replace("4", indexStr));
             newUser.setAccount(oldUser.getAccount().replace("4", indexStr));
             newUser.setMobile(String.valueOf(Long.parseLong(oldUser.getMobile()) + index));
             newUser.setEmail(oldUser.getEmail().replace("4", indexStr));
