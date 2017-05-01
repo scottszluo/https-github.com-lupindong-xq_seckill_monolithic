@@ -149,7 +149,7 @@ public enum LianJiaCrawler {
     public static EstateItemDTO parseListData(Element contentElement) throws Exception {
         EstateItemDTO estateItem = new EstateItemDTO(IdWorker.INSTANCE.nextId());
         try {
-            estateItem.setSaleStatus("在售");
+            estateItem.setSaleState("在售");
 
             Element titleElement = contentElement.select("div[class='title'] > a").first();
             estateItem.setTitle(titleElement.text());// 标题

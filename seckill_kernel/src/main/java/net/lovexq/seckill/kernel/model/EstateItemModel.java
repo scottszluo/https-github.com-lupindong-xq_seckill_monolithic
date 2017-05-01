@@ -49,7 +49,7 @@ public class EstateItemModel extends BasicModel implements Serializable {
      */
     private Integer focusNum;      //关注人数x
     private Integer watchNum;      //看房人数x
-    private String saleStatus;     //销售状态：在售，成交，下架，特价
+    private String saleState;     //销售状态：在售，成交，下架，特价
     private String coverUrl;       //默认图片
 
     public EstateItemModel() {
@@ -219,12 +219,12 @@ public class EstateItemModel extends BasicModel implements Serializable {
         this.watchNum = watchNum;
     }
 
-    public String getSaleStatus() {
-        return saleStatus;
+    public String getSaleState() {
+        return saleState;
     }
 
-    public void setSaleStatus(String saleStatus) {
-        this.saleStatus = saleStatus;
+    public void setSaleState(String saleState) {
+        this.saleState = saleState;
     }
 
     public String getCoverUrl() {

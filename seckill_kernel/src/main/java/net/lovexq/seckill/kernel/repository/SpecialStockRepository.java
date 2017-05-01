@@ -13,5 +13,5 @@ public interface SpecialStockRepository extends BasicRepository<SpecialStockMode
 
     SpecialStockModel findByHouseId(String houseId);
 
-    List<SpecialStockModel> findBySaleStatus(String saleStatus);
+    List<SpecialStockModel> findBySaleState(String saleState);
 }

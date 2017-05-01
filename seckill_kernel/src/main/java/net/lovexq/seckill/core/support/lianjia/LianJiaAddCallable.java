@@ -58,9 +58,9 @@ public class LianJiaAddCallable implements Callable<JsonResult> {
                 // 发送消息
                 mqProducer.sendQueueMessage(dataArray, queue);
 
-                if (bodyLength % 9000000 > 7000000) {
-                    Thread.sleep(18000);
-                    LOGGER.info("休眠了{}毫秒", 18000);
+                if ((bodyLength % 9000000) > 6000000) {
+                    Thread.sleep(15000);
+                    LOGGER.info("休眠了{}秒", 15000 / 1000);
                 }
             }
 

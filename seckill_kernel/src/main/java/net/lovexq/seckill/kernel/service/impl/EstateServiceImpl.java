@@ -3,7 +3,7 @@ package net.lovexq.seckill.kernel.service.impl;
 import net.lovexq.seckill.kernel.dto.EstateItemDTO;
 import net.lovexq.seckill.kernel.model.EstateItemModel;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
-import net.lovexq.seckill.kernel.repository.EstateItemSpecification;
+import net.lovexq.seckill.kernel.repository.specification.EstateItemSpecification;
 import net.lovexq.seckill.kernel.service.EstateService;
 import net.lovexq.seckill.kernel.service.ImageService;
 import org.slf4j.Logger;

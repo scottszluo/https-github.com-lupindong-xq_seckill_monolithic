@@ -27,11 +27,6 @@ public class CachingConfig extends CachingConfigurerSupport {
     private RedisProperties redisProperties;
 
     @Bean
-    public CacheManager cacheManager(RedisTemplate redisTemplate) {
-        return new RedisCacheManager(redisTemplate);
-    }
-
-    @Bean
     public KeyGenerator keyGenerator() {
         return (target, method, params) -> {
             StringBuilder sb = new StringBuilder();
@@ -51,8 +46,8 @@ public class CachingConfig extends CachingConfigurerSupport {
         connectionFactory.setPort(redisProperties.getPort());
         connectionFactory.setPassword(redisProperties.getPassword());
         connectionFactory.setDatabase(redisProperties.getDatabase());
+        connectionFactory.setTimeout(12000);
         connectionFactory.afterPropertiesSet();
-
         return connectionFactory;
     }
 
@@ -63,7 +58,12 @@ public class CachingConfig extends CachingConfigurerSupport {
         redisTemplate.setEnableDefaultSerializer(true);
         redisTemplate.setEnableTransactionSupport(true);
         redisTemplate.afterPropertiesSet();
-
         return redisTemplate;
     }
+
+    @Bean
+    public CacheManager cacheManager(RedisTemplate redisTemplate) {
+        return new RedisCacheManager(redisTemplate);
+    }
+
 }

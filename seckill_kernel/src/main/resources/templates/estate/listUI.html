@@ -142,7 +142,7 @@
                                 <span class="thumb-info thumb-info-lighten">
                                     <span class="thumb-info-wrapper m-none">
                                         <img class="lazyload img-responsive" style="height: 240px" th:attr="data-original=${item.coverUrl}?:'/component/porto/img/blank.jpg'">
-                                        <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md" th:text="${item.saleStatus}">saleStatus</span>
+                                        <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md" th:text="${item.saleState}">saleState</span>
                                     </span>
                                     <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
                                         <sapn class="font-red" th:text="${item.totalPrice}+'万'">totalPrice</sapn><br/>

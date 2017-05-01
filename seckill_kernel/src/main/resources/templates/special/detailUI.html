@@ -30,7 +30,7 @@
                     <div class="row">
                         <div class="col-md-7">
                             <span class="thumb-info-listing-type thumb-info-listing-type-detail background-color-secondary text-uppercase text-color-light font-weight-semibold p-sm pl-md pr-md"
-                                  th:text="${specialStock.saleStatus}">saleStatus</span>
+                                  th:text="'仅'+${specialStock.number}+'套'">number</span>
                             <div class="thumb-gallery">
                                 <div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
                                     <div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
@@ -65,7 +65,9 @@
                                 <tbody>
                                 <tr>
                                     <td class="font-weight-bold pt-md pb-md background-color-primary text-light font-red" style="font-size: 2em" colspan="2">
-                                        [[${specialStock.totalPrice}]]万
+                                        <del>原价[[${specialStock.totalPrice}]]万</del>
+                                        <br/>
+                                        <sapn class="font-red" style="font-size: 1.8em" th:text="${#numbers.formatDecimal(specialStock.totalPrice * 0.1, 1, 2)}+'万'">totalPrice</sapn>
                                     </td>
                                 </tr>
                                 <tr>
@@ -118,6 +120,18 @@
 
                     <div class="row">
                         <div class="col-md-12">
+                            <section class="call-to-action with-borders button-centered mb-xl">
+                                <div class="call-to-action-content">
+                                    <h3>
+                                        开始时间：<strong th:text="${startTimeX}">startTimeX</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        结束时间：<strong th:text="${endTimeX}">endTimeX</strong>
+                                    </h3>
+                                    <p id="timeArea"></p>
+                                </div>
+                                <div class="call-to-action-btn" id="execution">
+                                    <!--<a href="/execute" class="btn btn-lg btn-primary">马上抢购!</a>-->
+                                </div>
+                            </section>
 
                             <hr class="solid tall">
 
@@ -276,10 +290,17 @@
 <span th:replace="common/fgFoot"></span>
 <!-- END FOOT -->
 <!-- BEGIN PAGESCRIPT -->
+<script src="http://cdn.bootcss.com/jquery.countdown/2.1.0/jquery.countdown.min.js"></script>
 <script>
     $(function () {
         // 图片懒加载
         Common.Lazyload.init();
+        Special.Detail.init({
+            houseId: '[[${specialStock.houseId}]]',
+            nowTime: '[[${nowTimeX}]]',
+            startTime: '[[${startTimeX}]]',
+            endTime: '[[${endTimeX}]]'
+        });
     })
 </script>
 <!-- END PAGESCRIPT -->

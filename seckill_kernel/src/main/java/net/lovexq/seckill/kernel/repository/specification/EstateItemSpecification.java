@@ -1,4 +1,4 @@
-package net.lovexq.seckill.kernel.repository;
+package net.lovexq.seckill.kernel.repository.specification;
 
 import net.lovexq.seckill.kernel.model.EstateItemModel;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +21,7 @@ public class EstateItemSpecification {
     public static Specification<EstateItemModel> getForSaleSpec(Map<String, String> paramMap) {
         return (root, criteriaQuery, criteriaBuilder) -> {
 
-            Path<String> path = root.get("saleStatus");
+            Path<String> path = root.get("saleState");
             Predicate predicate = criteriaBuilder.equal(path, "在售");
 
             if (!CollectionUtils.isEmpty(paramMap)) {

@@ -162,8 +162,91 @@ var Special = (function () {
             $("#stocksForm").attr("action", Special.List.url()).submit();
         }
     }
+    var Detail = {
+        nowUrl: function () {
+            return "/special/now";
+        },
+        exposure: function (houseId) {
+            return '/special/' + houseId + '/exposure';
+        },
+        execution: function (houseId, key) {
+            return '/special/' + houseId + '/execution/' + key;
+        },
+        init: function (params) {
+            var houseId = params['houseId'];
+            var nowTime = params['nowTime'];
+            var startTime = params['startTime'];
+            var endTime = params['endTime'];
 
+            Detail.countDownX(houseId, nowTime, startTime, endTime);
+        },
+        countDownX: function (houseId, nowTime, startTime, endTime) {
+            var timeArea = $("#timeArea");
+            if (nowTime > endTime) {
+                timeArea.html('<h2 class="font-red">秒杀结束!</h2>');
+            } else if (nowTime < startTime) {
+                var killTime = new Date(startTime);
+                timeArea.countdown(killTime, function (event) {
+                    var format = event.strftime('秒杀倒计时: %D天 %H时 %M分 %S秒 ');
+                    timeArea.html('<h2 class="font-red">' + format + '</h2>');
+                }).on('finish.countdown', function () {
+                    Detail.executeSecKill(houseId, endTime);
+                });
+            } else {
+                Detail.executeSecKill(houseId, endTime);
+            }
+        },
+        executeSecKill: function (houseId, endTime) {
+            var timeArea = $("#timeArea");
+            var execution = $("#execution");
+
+            execution.hide().html('<a href="javascript:void(0)" class="btn btn-lg btn-primary" id="killBtn">开始秒杀!</a>');
+
+            $.get(Detail.exposure(houseId))
+                .done(function (result) {
+                    //在回调函数种执行交互流程
+                    if (200 == result.status) {
+                        var endTimeX = new Date(endTime);
+                        timeArea.countdown(endTimeX, function (event) {
+                            var format = event.strftime('距秒杀结束仅剩: %D天 %H时 %M分 %S秒 ');
+                            timeArea.html('<h2 class="font-red">' + format + '</h2>');
+                        }).on('finish.countdown', function () {
+                            //
+                        });
+
+                        var killUrl = Detail.execution(houseId, result.data);
+                        //绑定一次点击事件
+                        $('#killBtn').one('click', function () {
+                            //执行秒杀请求
+                            //1.先禁用按钮
+                            $(this).addClass('disabled');
+                            //2.发送秒杀请求执行秒杀
+                            $.post(killUrl)
+                                .done(function (result) {
+                                    if (200 == result.status) {
+                                        // var killResult = result['data'];
+                                        // var state = killResult['state'];
+                                        // var stateInfo = killResult['stateInfo'];
+                                        //显示秒杀结果
+                                        //execution.html('<span class="label label-success">' + stateInfo + '</span>');
+                                    }
+                                }).fail(function (result) {
+
+                            });
+                        });
+                        execution.show();
+                    } else {
+                        //未开启秒杀(浏览器计时偏差)
+                        var now = exposer['now'];
+                        var start = exposer['start'];
+                        var end = exposer['end'];
+                        seckill.countDown(seckillId, now, start, end);
+                    }
+                });
+        }
+    }
     return {
-        List: List
+        List: List,
+        Detail: Detail
     }
 })();

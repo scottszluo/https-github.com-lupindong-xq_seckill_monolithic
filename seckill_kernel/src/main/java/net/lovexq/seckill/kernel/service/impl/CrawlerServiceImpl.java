@@ -92,14 +92,14 @@ public class CrawlerServiceImpl implements CrawlerService {
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
             List<EstateItemDTO> estateItemList = new ArrayList<>();
-            List<CrawlerRecordModel> crawlerRecordList = crawlerRecordRepository.findByBatchAndStatusIn(batch, Arrays.asList(-1, 2));
+            List<CrawlerRecordModel> crawlerRecordList = crawlerRecordRepository.findByBatchAndStateIn(batch, Arrays.asList(-1, 2));
             for (CrawlerRecordModel crawlerRecord : crawlerRecordList) {
-                Integer status = crawlerRecord.getStatus();
-                if (-1 == status) {
-                    crawlerRecord.setStatus(0);
+                Integer state = crawlerRecord.getState();
+                if (-1 == state) {
+                    crawlerRecord.setState(0);
                     crawlerRecordRepository.save(crawlerRecord);
                     // 下架操作
-                    estateItemRepository.updateStatus(crawlerRecord.getHistoryCode());
+                    estateItemRepository.updateState(crawlerRecord.getHistoryCode());
                 } else {
                     // 新增操作
                     EstateItemDTO estateItemDTO = ProtoStuffUtil.deserialize(crawlerRecord.getData(), EstateItemDTO.class);
@@ -176,7 +176,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             String houseId = dto.getHouseId();
             CrawlerRecordModel crawlerRecordModel = crawlerRecordRepository.findByBatchAndHistoryCode(batch, houseId);
             if (crawlerRecordModel != null) {
-                crawlerRecordModel.setStatus(1);
+                crawlerRecordModel.setState(1);
             } else {
                 crawlerRecordModel = new CrawlerRecordModel(batch, houseId, 2);
                 List<CrawlerRecordModel> list = crawlerRecordRepository.findByBatchAndCurrentCode(batch, houseId);

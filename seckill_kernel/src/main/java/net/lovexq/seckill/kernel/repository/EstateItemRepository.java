@@ -17,6 +17,6 @@ public interface EstateItemRepository extends BasicRepository<EstateItemModel, L
     List<EstateItemModel> findByHouseIdLike(String houseId);
 
     @Modifying
-    @Query("update EstateItemModel i set saleStatus = '下架' where i.houseId=?1")
-    void updateStatus(String houseId);
+    @Query("update EstateItemModel i set saleState = '下架' where i.houseId=?1")
+    void updateState(String houseId);
 }

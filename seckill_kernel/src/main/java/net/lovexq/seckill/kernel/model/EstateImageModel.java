@@ -2,9 +2,7 @@ package net.lovexq.seckill.kernel.model;
 
 import net.lovexq.seckill.common.model.BasicModel;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -18,6 +16,7 @@ import java.util.Objects;
 @Table(name = "estate_image")
 public class EstateImageModel extends BasicModel implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pictureId;
     private String houseCode;
     private Integer pictureType;

@@ -20,5 +20,5 @@ public interface CrawlerRecordRepository extends BasicRepository<CrawlerRecordMo
     @Query("delete from CrawlerRecordModel c where c.batch = ?1 and c.currentCode=?2")
     void deleteRepeatRecord(String batch, String houseId);
 
-    List<CrawlerRecordModel> findByBatchAndStatusIn(String batch, List<Integer> statusList);
+    List<CrawlerRecordModel> findByBatchAndStateIn(String batch, List<Integer> stateList);
 }
