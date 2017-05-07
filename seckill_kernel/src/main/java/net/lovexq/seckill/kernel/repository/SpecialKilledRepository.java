@@ -9,4 +9,5 @@ import net.lovexq.seckill.kernel.model.SpecialKilledModel;
 
 public interface SpecialKilledRepository extends BasicRepository<SpecialKilledModel, Long> {
 
+    SpecialKilledModel findByHouseCodeAndAccount(String houseCode, String account);
 }

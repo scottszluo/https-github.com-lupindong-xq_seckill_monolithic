@@ -31,7 +31,10 @@
                                 <span class="thumb-info thumb-info-lighten">
                                     <span class="thumb-info-wrapper m-none">
                                         <img class="lazyload img-responsive" style="height: 240px" src="/component/porto/img/blank.jpg" th:attr="data-original=${stock.coverUrl}?:'/component/porto/img/blank.jpg'">
-                                        <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md" th:text="'仅'+${stock.number}+'套'">number</span>
+                                        <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md"
+                                              th:if="${stock.number}>0" th:text="'仅'+${stock.number}+'套'">number</span>
+                                        <span class="thumb-info-listing-type background-color-dark text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md"
+                                              th:if="${stock.number}<=0">售罄</span>
                                     </span>
                                     <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
                                         <del class="font-red"><sapn th:text="'原价'+${stock.totalPrice}+'万'">totalPrice</sapn></del>&nbsp&nbsp

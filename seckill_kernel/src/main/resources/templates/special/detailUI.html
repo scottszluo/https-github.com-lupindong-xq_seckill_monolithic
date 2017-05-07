@@ -30,7 +30,10 @@
                     <div class="row">
                         <div class="col-md-7">
                             <span class="thumb-info-listing-type thumb-info-listing-type-detail background-color-secondary text-uppercase text-color-light font-weight-semibold p-sm pl-md pr-md"
-                                  th:text="'仅'+${specialStock.number}+'套'">number</span>
+                                  th:if="${specialStock.number}>0" th:text="'仅'+${specialStock.number}+'套'">number</span>
+                            <span class="thumb-info-listing-type thumb-info-listing-type-detail background-color-dark text-uppercase text-color-light font-weight-semibold p-sm pl-md pr-md"
+                                  th:if="${specialStock.number}<=0">售罄</span>
+
                             <div class="thumb-gallery">
                                 <div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
                                     <div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
@@ -126,7 +129,8 @@
                                         开始时间：<strong th:text="${startTimeX}">startTimeX</strong>&nbsp;&nbsp;&nbsp;&nbsp;
                                         结束时间：<strong th:text="${endTimeX}">endTimeX</strong>
                                     </h3>
-                                    <p id="timeArea"></p>
+                                    <p id="countDownArea" th:if="${specialStock.number}>0"></p>
+                                    <p th:if="${specialStock.number}<=0"><h2 class="font-red" th:if="${specialStock.number}<=0">秒杀结束</h2></p>
                                 </div>
                                 <div class="call-to-action-btn" id="execution"></div>
                             </section>
@@ -289,16 +293,23 @@
 <!-- END FOOT -->
 <!-- BEGIN PAGESCRIPT -->
 <script src="https://cdn.bootcss.com/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
-<script>
+<script th:if="${specialStock.number}>0">
     $(function () {
         // 图片懒加载
         Common.Lazyload.init();
+        // 详情页初始化
         Special.Detail.init({
             houseCode: '[[${specialStock.houseCode}]]',
             nowTime: '[[${nowTimeX}]]',
             startTime: '[[${startTimeX}]]',
             endTime: '[[${endTimeX}]]'
         });
+    })
+</script>
+<script th:if="${specialStock.number}<=0">
+    $(function () {
+        // 图片懒加载
+        Common.Lazyload.init();
     })
 </script>
 <!-- END PAGESCRIPT -->

@@ -40,7 +40,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String uri = request.getRequestURI();
-        if (uri.contains("execution")) {
+        if (uri.contains("exposure") || uri.contains("execution")) {
             Cookie tokenCookie = CookieUtil.getCookieByName(request, AppConstants.TOKEN);
             Cookie userNameCookie = CookieUtil.getCookieByName(request, AppConstants.USER_NAME);
 

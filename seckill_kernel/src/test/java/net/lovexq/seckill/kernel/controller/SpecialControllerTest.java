@@ -8,7 +8,6 @@ import net.lovexq.seckill.kernel.model.SpecialStockModel;
 import net.lovexq.seckill.kernel.repository.EstateImageRepository;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.repository.SpecialStockRepository;
-import net.lovexq.seckill.kernel.service.impl.SpecialServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -45,8 +45,17 @@ public class SpecialControllerTest {
 
     @Test
     public void clearCache() {
-        String key = CacheKeyGenerator.generate(SpecialServiceImpl.class, "listForSecKill");
+        String key = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
         redisTemplate.delete(key);
+
+        List<String> keysList = new ArrayList<>();
+        List<SpecialStockModel> list = specialStockRepository.findAll();
+        for (SpecialStockModel model : list) {
+            key = CacheKeyGenerator.generate(SpecialStockModel.class, "getByHouseCode", model.getHouseCode());
+            keysList.add(key);
+        }
+
+        redisTemplate.delete(keysList);
     }
 
     @Test
@@ -73,7 +82,7 @@ public class SpecialControllerTest {
             model.setCoverUrl(map.get("cover_url") != null ? map.get("cover_url").toString() : "");
             model.setNumber(random.nextInt(10) + 1);
             LocalDateTime sTime = LocalDateTime.now();
-            LocalDateTime eTime = sTime.plusDays(3);
+            LocalDateTime eTime = sTime.plusDays(1);
             model.setStartTime(sTime);
             model.setEndTime(eTime);
             specialStockRepository.save(model);
@@ -83,7 +92,7 @@ public class SpecialControllerTest {
     @Test
     public void randomInsertSpecialStockV2() throws IllegalAccessException, InstantiationException {
         // 先干掉原有数据
-        String key = CacheKeyGenerator.generate(SpecialServiceImpl.class, "listForSecKill");
+        String key = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
         redisTemplate.delete(key);
         //specialStockRepository.deleteAll();
 
@@ -107,7 +116,7 @@ public class SpecialControllerTest {
                 specialStock.setNumber(random.nextInt(10) + 1);
                 LocalDate.now().atStartOfDay();
                 LocalDateTime sTime = today.atStartOfDay().withHour(random.nextInt(24)).withMinute(0).withSecond(0);
-                LocalDateTime eTime = sTime.plusDays(3);
+                LocalDateTime eTime = sTime.plusDays(1);
                 specialStock.setStartTime(sTime);
                 specialStock.setEndTime(eTime);
                 specialStock.setBatch(batch);
@@ -142,7 +151,7 @@ public class SpecialControllerTest {
                 newModel.setTitle(estateIteml.getTitle() + postfix);
                 newModel.setHouseCode(estateIteml.getHouseCode() + postfix);
                 LocalDateTime sTime = LocalDateTime.now();
-                LocalDateTime eTime = sTime.plusDays(3);
+                LocalDateTime eTime = sTime.plusDays(1);
                 newModel.setCreateTime(sTime);
                 newModel.setUpdateTime(eTime);
                 estateItemRepository.saveAndFlush(newModel);

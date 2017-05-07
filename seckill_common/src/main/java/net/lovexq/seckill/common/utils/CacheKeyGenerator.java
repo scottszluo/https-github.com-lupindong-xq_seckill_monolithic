@@ -20,14 +20,19 @@ public class CacheKeyGenerator {
     private static final int NULL_PARAM_KEY = -1;
 
     public static <T> String generate(Class<T> targetClass, String methodName, Object... params) {
+        String finalKey;
         StringBuilder key = new StringBuilder();
         key.append(targetClass.getSimpleName()).append(".").append(methodName).append(":");
+        // 无参数时
         if (params.length == 0) {
-            return key.append(NO_PARAM_KEY).toString();
+            finalKey = key.append(NO_PARAM_KEY).toString();
+            LOGGER.debug("Using Cache Key={}, HashCode={}", finalKey, finalKey.hashCode());
+            return finalKey;
         }
+        // 有参数时
         for (Object param : params) {
             if (param == null) {
-                LOGGER.warn("input null param for Spring cache, use default key={}", NULL_PARAM_KEY);
+                LOGGER.warn("Input Null Param For Spring Cache, Use Default Key={}", NULL_PARAM_KEY);
                 key.append(NULL_PARAM_KEY);
             } else if (ClassUtils.isPrimitiveArray(param.getClass())) {
                 int length = Array.getLength(param);
@@ -42,8 +47,8 @@ public class CacheKeyGenerator {
             }
             key.append('-');
         }
-        String finalKey = key.toString();
-        LOGGER.debug("using cache key={}, hashCode={}", finalKey, finalKey.hashCode());
+        finalKey = key.toString();
+        LOGGER.debug("Using Cache Key={}, HashCode={}", finalKey, finalKey.hashCode());
         return finalKey;
     }
 

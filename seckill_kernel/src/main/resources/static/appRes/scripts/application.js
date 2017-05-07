@@ -191,74 +191,72 @@ var Special = (function () {
             Detail.countDownX(houseCode, nowTime, startTime, endTime);
         },
         countDownX: function (houseCode, nowTime, startTime, endTime) {
-            var timeArea = $("#timeArea");
+            var countDownArea = $("#countDownArea");
             if (nowTime > endTime) {
-                timeArea.html('<h2 class="font-red">秒杀结束!</h2>');
+                countDownArea.html('<h2 class="font-red">秒杀结束</h2>');
             } else if (nowTime < startTime) {
                 var killTime = new Date(startTime);
-                timeArea.countdown(killTime, function (event) {
-                    var format = event.strftime('秒杀倒计时: %D天 %H时 %M分 %S秒 ');
-                    timeArea.html('<h2 class="font-red">' + format + '</h2>');
+                countDownArea.countdown(killTime, function (event) {
+                    var format = event.strftime('距秒杀开启: %D天 %H时 %M分 %S秒 ');
+                    countDownArea.html('<h2 class="font-red">' + format + '</h2>');
                 }).on('finish.countdown', function () {
-                    Detail.executeSecKill(houseCode, endTime);
+                    Detail.executeSecKill(houseCode, nowTime, startTime, endTime);
                 });
             } else {
-                Detail.executeSecKill(houseCode, endTime);
+                Detail.executeSecKill(houseCode, nowTime, startTime, endTime);
             }
         },
-        executeSecKill: function (houseCode, endTime) {
-            var timeArea = $("#timeArea");
+        executeSecKill: function (houseCode, nowTime, startTime, endTime) {
+            var countDownArea = $("#countDownArea");
             var execution = $("#execution");
 
-            execution.hide().html('<a href="javascript:void(0)" class="btn btn-lg btn-primary" id="killBtn">开始秒杀!</a>');
+            execution.hide().html('<a href="javascript:void(0)" class="btn btn-lg btn-primary" id="killBtn">开始秒杀</a>');
 
-            $.get(Detail.exposure(houseCode))
-                .done(function (result) {
-                    //在回调函数种执行交互流程
-                    if (200 == result.status) {
-                        var endTimeX = new Date(endTime);
-                        timeArea.countdown(endTimeX, function (event) {
-                            var format = event.strftime('距秒杀结束仅剩: %D天 %H时 %M分 %S秒 ');
-                            timeArea.html('<h2 class="font-red">' + format + '</h2>');
-                        }).on('finish.countdown', function () {
-                            //
+            $.get(Detail.exposure(houseCode)).done(function (result) {
+                //在回调函数种执行交互流程
+                if (200 == result.status) {
+                    var endTimeX = new Date(endTime);
+                    countDownArea.countdown(endTimeX, function (event) {
+                        var format = event.strftime('距秒杀结束: %D天 %H时 %M分 %S秒 ');
+                        countDownArea.html('<h2 class="font-red">' + format + '</h2>');
+                    }).on('finish.countdown', function () {
+                        countDownArea.html('<h2 class="font-red">秒杀结束</h2>');
+                        execution.hide();
+                    });
+
+                    var killUrl = Detail.execution(houseCode, result.data);
+
+                    //绑定一次点击事件
+                    $('#killBtn').one('click', function () {
+                        var userName = $.cookie("USER_NAME");
+                        if (Common.StringUtil.isBlank(userName)) {
+                            Common.PNotice.error("受限内容，请登录后再访问！");
+                            return false;
+                        }
+
+                        //执行秒杀请求
+                        //1.先禁用按钮
+                        $(this).hide();
+
+                        //2.发送秒杀请求执行秒杀
+                        $.post(killUrl).done(function (result) {
+                            if (200 == result.status) {
+                                Common.PNotice.success(result.message);
+                            } else {
+                                Common.PNotice.error(result.message);
+                            }
+                        }).fail(function (result) {
+                            Common.PNotice.error(result.responseJSON.message);
                         });
-
-                        var killUrl = Detail.execution(houseCode, result.data);
-                        //绑定一次点击事件
-                        $('#killBtn').one('click', function () {
-                            var userName = $.cookie("USER_NAME");
-                             if (Common.StringUtil.isBlank(userName)) {
-                                Common.PNotice.error("非法请求，禁止访问。请登录后再访问！");
-                                return false;
-                             }
-
-                            //执行秒杀请求
-                            //1.先禁用按钮
-                            $(this).addClass('disabled');
-                            //2.发送秒杀请求执行秒杀
-                            $.post(killUrl)
-                                .done(function (result) {
-                                    if (200 == result.status) {
-                                        execution.html('<a href="javascript:void(0)" class="btn btn-lg btn-tertiary">秒杀成功!</a>');
-                                        Common.PNotice.success(result.message);
-                                    } else {
-                                        Common.PNotice.error(result.message);
-                                    }
-                                })
-                                .fail(function (result) {
-                                    Common.PNotice.error(result.responseJSON.message);
-                                });
-                        });
-                        execution.show();
-                    } else {
-                        //未开启秒杀(浏览器计时偏差)
-                        var now = exposer['now'];
-                        var start = exposer['start'];
-                        var end = exposer['end'];
-                        seckill.countDown(seckillId, now, start, end);
-                    }
-                });
+                    });
+                    execution.show();
+                } else if (403 == result.status) {
+                    countDownArea.html('<h2 class="font-red">秒杀成功</h2>');
+                }
+            }).fail(function (result) {
+                Common.PNotice.error(result.responseJSON.message);
+            });
+            ;
         }
     }
     return {
@@ -308,30 +306,27 @@ var SysUser = (function () {
             var email = $.trim($("#email").val());
             var password = $.trim($("#password").val());
 
-            $.get(saltUrl())
-                .done(function (result) {
-                    var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
-                    var val2nd = SparkMD5.hash(val1st, false);
-                    var data = {
-                        account: window.btoa(account),
-                        email: window.btoa(email),
-                        cipher: window.btoa(val2nd)
-                    }
+            $.get(saltUrl()).done(function (result) {
+                var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
+                var val2nd = SparkMD5.hash(val1st, false);
+                var data = {
+                    account: window.btoa(account),
+                    email: window.btoa(email),
+                    cipher: window.btoa(val2nd)
+                }
 
-                    // 执行登录操作
-                    $.post(Register.signupUrl(), data)
-                        .done(function (result) {
-                            if (200 == result.status) {
-                                Common.PNotice.success(result.message);
-                                window.location.href = "/user/login";
-                            } else {
-                                Common.PNotice.error(result.message);
-                            }
-                        })
-                        .fail(function (result) {
-                            Common.PNotice.error(result.message, result.data);
-                        });
+                // 执行登录操作
+                $.post(Register.signupUrl(), data).done(function (result) {
+                    if (200 == result.status) {
+                        Common.PNotice.success(result.message);
+                        window.location.href = "/user/login";
+                    } else {
+                        Common.PNotice.error(result.message);
+                    }
+                }).fail(function (result) {
+                    Common.PNotice.error(result.message, result.data);
                 });
+            });
         }
     };
     var Login = {
@@ -366,31 +361,26 @@ var SysUser = (function () {
             var account = $.trim($("#account").val());
             var password = $.trim($("#password").val());
 
-            $.get(saltUrl())
-                .done(function (result) {
-                    var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
-                    var val2nd = SparkMD5.hash(val1st, false);
-                    var data = {
-                        account: window.btoa(account),
-                        cipher: window.btoa(val2nd)
+            $.get(saltUrl()).done(function (result) {
+                var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
+                var val2nd = SparkMD5.hash(val1st, false);
+                var data = {
+                    account: window.btoa(account),
+                    cipher: window.btoa(val2nd)
+                }
+
+                // 执行登录操作
+                $.post(Login.signinUrl(), data).done(function (result) {
+                    if (200 == result.status) {
+                        Common.PNotice.success(result.message);
+                        window.location.href = "/";
+                    } else {
+                        Common.PNotice.error(result.message);
                     }
-
-                    // 执行登录操作
-                    $.post(Login.signinUrl(), data)
-                        .done(function (result) {
-                            if (200 == result.status) {
-                                // $.cookie('Token', result.data, { expires: 7 });
-
-                                Common.PNotice.success(result.message);
-                                window.location.href = "/";
-                            } else {
-                                Common.PNotice.error(result.message);
-                            }
-                        })
-                        .fail(function (result) {
-                            Common.PNotice.error(result.message, result.data);
-                        });
+                }).fail(function (result) {
+                    Common.PNotice.error(result.message, result.data);
                 });
+            });
         }
     };
     var Logout = {
@@ -399,18 +389,16 @@ var SysUser = (function () {
         },
         signout: function () {
             // 执行登出操作
-            $.post(Logout.signoutUrl())
-                .done(function (result) {
-                    if (200 == result.status) {
-                        Common.PNotice.success(result.message);
-                        window.location.href = window.location.href;
-                    } else {
-                        Common.PNotice.error(result.message);
-                    }
-                })
-                .fail(function (result) {
-                    Common.PNotice.error(result.message, result.data);
-                });
+            $.post(Logout.signoutUrl()).done(function (result) {
+                if (200 == result.status) {
+                    Common.PNotice.success(result.message);
+                    window.location.href = window.location.href;
+                } else {
+                    Common.PNotice.error(result.message);
+                }
+            }).fail(function (result) {
+                Common.PNotice.error(result.message, result.data);
+            });
         }
     };
     return {

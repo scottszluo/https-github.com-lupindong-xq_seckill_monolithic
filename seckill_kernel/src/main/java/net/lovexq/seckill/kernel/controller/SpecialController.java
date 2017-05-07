@@ -60,13 +60,14 @@ public class SpecialController extends BasicController {
 
     @ResponseBody
     @GetMapping("/special/{houseCode}/exposure")
-    public JsonResult exposure(@PathVariable("houseCode") String houseCode) throws Exception {
-        return specialService.exposureSecKillUrl(houseCode);
+    public JsonResult exposure(HttpServletRequest request, @PathVariable("houseCode") String houseCode) throws Exception {
+        Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
+        return specialService.exposureSecKillUrl(houseCode, claims);
     }
 
     @ResponseBody
     @PostMapping("/special/{houseCode}/execution/{key}")
-    public JsonResult execution(@PathVariable("houseCode") String houseCode, @PathVariable("key") String key, HttpServletRequest request) throws Exception {
+    public JsonResult execution(HttpServletRequest request, @PathVariable("houseCode") String houseCode, @PathVariable("key") String key) throws Exception {
         Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
         result = specialService.executionSecKill(houseCode, key, claims);
         return result;
