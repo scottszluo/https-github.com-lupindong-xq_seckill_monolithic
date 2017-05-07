@@ -62,7 +62,7 @@ public class SpecialController extends BasicController {
     @GetMapping("/special/{houseCode}/exposure")
     public JsonResult exposure(HttpServletRequest request, @PathVariable("houseCode") String houseCode) throws Exception {
         Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
-        return specialService.exposureSecKillUrl(houseCode, claims);
+        return specialService.getExposureSecKillUrl(houseCode, claims);
     }
 
     @ResponseBody

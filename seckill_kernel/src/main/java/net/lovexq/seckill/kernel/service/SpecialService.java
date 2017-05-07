@@ -19,7 +19,7 @@ public interface SpecialService {
 
     SpecialStockDTO getByHouseCode(String houseCode) throws Exception;
 
-    JsonResult exposureSecKillUrl(String houseCode, Claims claims) throws Exception;
+    JsonResult getExposureSecKillUrl(String houseCode, Claims claims) throws Exception;
 
     JsonResult executionSecKill(String houseCode, String key, Claims claims) throws Exception;
 }

@@ -90,7 +90,7 @@ public class SpecialServiceImpl implements SpecialService {
 
     @Override
     @Transactional(readOnly = true)
-    public JsonResult exposureSecKillUrl(String houseCode, Claims claims) throws Exception {
+    public JsonResult getExposureSecKillUrl(String houseCode, Claims claims) throws Exception {
         SpecialStockDTO specialStock = getByHouseCode(houseCode);
 
         LocalDateTime startTime = specialStock.getStartTime(); // 秒杀开始时间

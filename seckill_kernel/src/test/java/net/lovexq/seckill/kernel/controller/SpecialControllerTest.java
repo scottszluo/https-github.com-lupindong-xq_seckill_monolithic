@@ -3,6 +3,7 @@ package net.lovexq.seckill.kernel.controller;
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import net.lovexq.seckill.common.utils.IdWorker;
 import net.lovexq.seckill.common.utils.enums.EstateEnum;
+import net.lovexq.seckill.core.repository.cache.RedisClient;
 import net.lovexq.seckill.kernel.model.EstateImageModel;
 import net.lovexq.seckill.kernel.model.EstateItemModel;
 import net.lovexq.seckill.kernel.model.SpecialStockModel;
@@ -46,6 +47,8 @@ public class SpecialControllerTest {
     private SysConfigRepository sysConfigRepository;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private RedisClient redisClient;
 
     @Test
     public void clearCache() {
@@ -110,12 +113,13 @@ public class SpecialControllerTest {
             LocalDate today = LocalDate.now();
             String batch = maxNum + "@" + today.toString();
             Random random = new Random();
+            int count = 1;
             for (int i = 0; i < maxNum; i++) {
-                EstateItemModel estateIteml = estateItemList.get(i);
-                SpecialStockModel old = specialStockRepository.findByHouseCode(estateIteml.getHouseCode());
-                if (old == null && EstateEnum.FOR_SALE.getValue().equals(estateIteml.getSaleState())) {
+                EstateItemModel estateItem = estateItemList.get(i);
+                SpecialStockModel old = specialStockRepository.findByHouseCode(estateItem.getHouseCode());
+                if (old == null && EstateEnum.FOR_SALE.getValue().equals(estateItem.getSaleState())) {
                     SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
-                    BeanUtils.copyProperties(estateIteml, specialStock, "id");
+                    BeanUtils.copyProperties(estateItem, specialStock, "id");
                     specialStock.setNumber(random.nextInt(10) + 1);
                     LocalDate.now().atStartOfDay();
                     LocalDateTime sTime = today.atStartOfDay().withHour(random.nextInt(24)).withMinute(0).withSecond(0);
@@ -124,6 +128,8 @@ public class SpecialControllerTest {
                     specialStock.setEndTime(eTime);
                     specialStock.setBatch(batch);
                     specialStockRepository.save(specialStock);
+
+                    if (count++ > 20) break;
                 }
             }
 
@@ -135,6 +141,9 @@ public class SpecialControllerTest {
             }
             sysConfigModel.setConfigValue(batch);
             sysConfigRepository.save(sysConfigModel);
+
+            String cacheKey = CacheKeyGenerator.generate(SysConfigModel.class, "getByConfigKey", "special_batch");
+            redisClient.setObj(cacheKey, sysConfigModel);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.assertTrue(false);
