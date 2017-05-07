@@ -1,9 +1,9 @@
 package net.lovexq.seckill.kernel.repository.specification;
 
 import net.lovexq.seckill.kernel.model.EstateItemModel;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -24,7 +24,7 @@ public class EstateItemSpecification {
             Path<String> path = root.get("saleState");
             Predicate predicate = criteriaBuilder.equal(path, "在售");
 
-            if (!CollectionUtils.isEmpty(paramMap)) {
+            if (MapUtils.isNotEmpty(paramMap)) {
                 // 区域
                 String regionAName = paramMap.get("regionAName");
                 if (StringUtils.isNotBlank(regionAName)) {

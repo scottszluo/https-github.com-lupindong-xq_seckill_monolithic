@@ -28,8 +28,9 @@
         <commons-lang3.version>3.5</commons-lang3.version>
         <druid.version>1.0.28</druid.version>
         <fastjson.version>1.2.31</fastjson.version>
-        <jsoup.version>1.10.2</jsoup.version>
+        <jjwt.version>0.7.0</jjwt.version>
         <protostuff.version>1.5.3</protostuff.version>
+        <jsoup.version>1.10.2</jsoup.version>
     </properties>
 
     <dependencyManagement>
@@ -56,9 +57,9 @@
                 <version>${fastjson.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>${jsoup.version}</version>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.protostuff</groupId>
@@ -69,6 +70,11 @@
                 <groupId>io.protostuff</groupId>
                 <artifactId>protostuff-runtime</artifactId>
                 <version>${protostuff.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

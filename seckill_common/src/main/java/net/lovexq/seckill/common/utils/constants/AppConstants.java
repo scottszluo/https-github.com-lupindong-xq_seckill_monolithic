@@ -71,4 +71,14 @@ public class AppConstants {
      * 默认应用程序错误
      */
     public static final Long DEFAULT_APP_ERROR = 20000L;
+
+    /**
+     * Token的key
+     */
+    public static final String TOKEN = "TOKEN";
+
+    /**
+     * 用户名称
+     */
+    public static final String USER_NAME = "USER_NAME";
 }

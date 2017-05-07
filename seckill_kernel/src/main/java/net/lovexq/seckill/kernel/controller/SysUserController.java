@@ -1,6 +1,8 @@
 package net.lovexq.seckill.kernel.controller;
 
 import net.lovexq.seckill.common.model.JsonResult;
+import net.lovexq.seckill.common.utils.CookieUtil;
+import net.lovexq.seckill.common.utils.constants.AppConstants;
 import net.lovexq.seckill.core.controller.BasicController;
 import net.lovexq.seckill.kernel.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 用户控制层
@@ -29,11 +32,6 @@ public class SysUserController extends BasicController {
 
     @Autowired
     private SysUserService sysUserService;
-
-    @GetMapping("/login")
-    public String loginUI() {
-        return "/user/loginUI";
-    }
 
     @GetMapping("/register")
     public String registerUI() {
@@ -56,11 +54,44 @@ public class SysUserController extends BasicController {
             return new JsonResult(400, "用户密码不能为空！");
         }
         try {
-            result = sysUserService.executeSignup(account, email, cipher);
+            result = sysUserService.executeSignUp(account, email, cipher);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new JsonResult(500, e.getMessage(), e);
         }
+        return result;
+    }
+
+    @GetMapping("/login")
+    public String loginUI() {
+        return "/user/loginUI";
+    }
+
+    @ResponseBody
+    @PostMapping("/signin")
+    public JsonResult signin(HttpServletRequest request, HttpServletResponse response) {
+        String account = request.getParameter("account");
+        String cipher = request.getParameter("cipher");
+        if (StringUtils.isBlank(account)) {
+            return new JsonResult(400, "账号/邮箱不能为空！");
+        }
+        if (StringUtils.isBlank(cipher)) {
+            return new JsonResult(400, "密码不能为空！");
+        }
+        try {
+            result = sysUserService.executeSignIn(response, account, cipher);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return new JsonResult(500, e.getMessage(), e);
+        }
+        return result;
+    }
+
+    @ResponseBody
+    @PostMapping("/signout")
+    public JsonResult signout(HttpServletResponse response) {
+        CookieUtil.removeCookie(AppConstants.TOKEN, "127.0.0.1", response);
+        CookieUtil.removeCookie(AppConstants.USER_NAME, "127.0.0.1", response);
         return result;
     }
 

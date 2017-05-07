@@ -23,6 +23,15 @@ import java.util.Objects;
 public class SpecialStockModel extends BasicModel implements Serializable {
     @Id
     private Long id;              //主键
+
+    private String batch;       //批次
+
+    private Integer number;         //库存数量
+    @Type(type = "localDateTimeType")
+    private LocalDateTime startTime;//开始时间
+    @Type(type = "localDateTimeType")
+    private LocalDateTime endTime;  //结束时间
+
     private String title;         //标题x
     private String houseId;       //编号x
     /**
@@ -55,13 +64,6 @@ public class SpecialStockModel extends BasicModel implements Serializable {
     private String saleState;     //销售状态：在售，成交，下架
     private String coverUrl;       //默认图片
 
-    private Integer number;         //库存数量
-    @Type(type = "localDateTimeType")
-    private LocalDateTime startTime;//开始时间
-    @Type(type = "localDateTimeType")
-    private LocalDateTime endTime;  //结束时间
-
-
     public SpecialStockModel() {
     }
 
@@ -75,6 +77,38 @@ public class SpecialStockModel extends BasicModel implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getBatch() {
+        return batch;
+    }
+
+    public void setBatch(String batch) {
+        this.batch = batch;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getTitle() {
@@ -245,30 +279,6 @@ public class SpecialStockModel extends BasicModel implements Serializable {
         this.coverUrl = coverUrl;
     }
 
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -286,9 +296,10 @@ public class SpecialStockModel extends BasicModel implements Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("SpecialStockModel{");
         sb.append("id=").append(id);
+        sb.append(", batch='").append(batch).append('\'');
+        sb.append(", number=").append(number);
         sb.append(", title='").append(title).append('\'');
         sb.append(", houseId='").append(houseId).append('\'');
-        sb.append(", number=").append(number);
         sb.append('}');
         return sb.toString();
     }

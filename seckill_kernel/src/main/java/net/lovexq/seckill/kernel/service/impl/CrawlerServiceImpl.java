@@ -1,13 +1,16 @@
 package net.lovexq.seckill.kernel.service.impl;
 
 import net.lovexq.seckill.common.model.JsonResult;
+import net.lovexq.seckill.common.utils.BeanMapUtil;
 import net.lovexq.seckill.common.utils.ProtoStuffUtil;
+import net.lovexq.seckill.common.utils.enums.CrawlerRecordEnum;
+import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import net.lovexq.seckill.core.properties.AppProperties;
 import net.lovexq.seckill.core.support.activemq.MqProducer;
+import net.lovexq.seckill.core.support.lianjia.LianJiaAddCallable;
 import net.lovexq.seckill.core.support.lianjia.LianJiaCheckCallable;
 import net.lovexq.seckill.core.support.lianjia.LianJiaInitializeCallable;
 import net.lovexq.seckill.core.support.lianjia.LianJiaParam;
-import net.lovexq.seckill.core.support.lianjia.LianJiaAddCallable;
 import net.lovexq.seckill.kernel.dto.EstateItemDTO;
 import net.lovexq.seckill.kernel.model.CrawlerRecordModel;
 import net.lovexq.seckill.kernel.model.EstateImageModel;
@@ -16,6 +19,7 @@ import net.lovexq.seckill.kernel.repository.CrawlerRecordRepository;
 import net.lovexq.seckill.kernel.repository.EstateImageRepository;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.service.CrawlerService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +27,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.jms.Queue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,6 +44,8 @@ import java.util.concurrent.Executors;
 public class CrawlerServiceImpl implements CrawlerService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CrawlerServiceImpl.class);
+    private static final String QUERY_NOT_IMAGE_SQL = "SELECT r.id,r.batch,r.history_code,r.current_code,r.state,r.create_time,r.update_time,r.data FROM crawler_record r " +
+            "LEFT JOIN estate_image i ON i.house_code = r.history_code WHERE r.batch = ? AND r.state = '更新' AND i.house_code IS NULL";
     @Autowired
     private EstateItemRepository estateItemRepository;
     @Autowired
@@ -92,19 +98,31 @@ public class CrawlerServiceImpl implements CrawlerService {
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
             List<EstateItemDTO> estateItemList = new ArrayList<>();
-            List<CrawlerRecordModel> crawlerRecordList = crawlerRecordRepository.findByBatchAndStateIn(batch, Arrays.asList(-1, 2));
+            // 处理下架和更新情况
+            List<CrawlerRecordModel> crawlerRecordList = crawlerRecordRepository.findByBatchAndStateIn(batch, Arrays.asList(CrawlerRecordEnum.DEFAULT.getValue(), CrawlerRecordEnum.CREATE.getValue()));
             for (CrawlerRecordModel crawlerRecord : crawlerRecordList) {
-                Integer state = crawlerRecord.getState();
-                if (-1 == state) {
-                    crawlerRecord.setState(0);
+                String state = crawlerRecord.getState();
+                // 下架操作
+                if (CrawlerRecordEnum.DEFAULT.getValue().equals(state)) {
+                    crawlerRecord.setState(CrawlerRecordEnum.DELETE.getValue());
                     crawlerRecordRepository.save(crawlerRecord);
-                    // 下架操作
                     estateItemRepository.updateState(crawlerRecord.getHistoryCode());
-                } else {
                     // 新增操作
+                } else {
                     EstateItemDTO estateItemDTO = ProtoStuffUtil.deserialize(crawlerRecord.getData(), EstateItemDTO.class);
                     estateItemList.add(estateItemDTO);
                 }
+            }
+
+            // 处理需要更新图片情况
+            List<Map> mapList = crawlerRecordRepository.queryForMapList(QUERY_NOT_IMAGE_SQL, batch);
+            for (Map map : mapList) {
+                CrawlerRecordModel recordModel = new CrawlerRecordModel();
+                BeanMapUtil.mapToBean(map, recordModel);
+                EstateEnum.FOR_SALE.getValue();
+                EstateItemDTO estateItemDTO = ProtoStuffUtil.deserialize(recordModel.getData(), EstateItemDTO.class);
+                estateItemDTO.setCrawlerState(recordModel.getState().toString());
+                estateItemList.add(estateItemDTO);
             }
             LianJiaParam lianJiaParam = new LianJiaParam(estateItemList, appProperties, batch, curPage);
             exec.submit(new LianJiaAddCallable(lianJiaParam, mqProducer, initializeQueue));
@@ -176,9 +194,9 @@ public class CrawlerServiceImpl implements CrawlerService {
             String houseId = dto.getHouseId();
             CrawlerRecordModel crawlerRecordModel = crawlerRecordRepository.findByBatchAndHistoryCode(batch, houseId);
             if (crawlerRecordModel != null) {
-                crawlerRecordModel.setState(1);
+                crawlerRecordModel.setState(CrawlerRecordEnum.UPDATE.getValue());
             } else {
-                crawlerRecordModel = new CrawlerRecordModel(batch, houseId, 2);
+                crawlerRecordModel = new CrawlerRecordModel(batch, houseId, CrawlerRecordEnum.CREATE.getValue());
                 List<CrawlerRecordModel> list = crawlerRecordRepository.findByBatchAndCurrentCode(batch, houseId);
                 if (!CollectionUtils.isEmpty(list)) {
                     crawlerRecordRepository.deleteRepeatRecord(batch, houseId);

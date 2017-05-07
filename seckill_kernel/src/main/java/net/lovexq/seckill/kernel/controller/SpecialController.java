@@ -9,8 +9,12 @@ import net.lovexq.seckill.kernel.service.SpecialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,9 +32,10 @@ public class SpecialController extends BasicController {
 
 
     @GetMapping("/special/list")
-    public String listUI(Model model) throws Exception {
+    public String listUI(HttpServletRequest request, Model model) throws Exception {
         List<SpecialStockModel> specialStockList = specialService.listForSecKill();
         model.addAttribute("specialStockList", specialStockList);
+
         return "/special/listUI";
     }
 

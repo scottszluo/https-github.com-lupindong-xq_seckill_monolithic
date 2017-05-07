@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDateTime;
 
 /**
- * Created by 品冬 on 2017-4-30.
+ * Created by LuPindong on 2017-4-30.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

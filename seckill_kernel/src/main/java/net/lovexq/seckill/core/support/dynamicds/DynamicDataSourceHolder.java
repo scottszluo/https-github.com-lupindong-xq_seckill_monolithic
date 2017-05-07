@@ -25,42 +25,42 @@ public class DynamicDataSourceHolder {
     public static String masterDSKey;
     public static List<String> slaveDSKeys = new ArrayList<>();
 
-    public static Object getDataSourceKey() {
+    public static String getDataSourceKey() {
         return dataSourceHolder.get();
     }
 
-    private void setDataSource(String dataSourceKey) {
-        dataSourceHolder.set(dataSourceKey);
+    public void setDataSourceKey(String key) {
+        dataSourceHolder.set(key);
     }
 
     /**
      * 标记选取slave数据源
      */
     public void markSlave() {
-        if (dataSourceHolder.get() != null) {
+        if (getDataSourceKey() != null) {
             // 从现在的策略来看,不允许标记两次,直接抛异常,优于早发现问题
-            throw new IllegalArgumentException("当前已有选取数据源,不允许覆盖,已选数据源key:" + dataSourceHolder.get());
+            throw new IllegalArgumentException("当前已有选取数据源,不允许覆盖,已选数据源key:" + getDataSourceKey());
         }
         String dataSourceKey = selectFromSlave();
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("获取的Slave数据源Key为：" + dataSourceKey);
+            LOGGER.debug("获取的Slave数据源Key为:{}", dataSourceKey);
         }
-        setDataSource(dataSourceKey);
+        setDataSourceKey(dataSourceKey);
     }
 
     /**
      * 标记选取master数据源
      */
     public void markMaster() {
-        if (dataSourceHolder.get() != null) {
+        if (getDataSourceKey() != null) {
             // 从现在的策略来看,不允许标记两次,直接抛异常,优于早发现问题
-            throw new IllegalArgumentException("当前已有选取数据源,不允许覆盖,已选数据源key:" + dataSourceHolder.get());
+            throw new IllegalArgumentException("当前已有选取数据源,不允许覆盖,已选数据源key:" + getDataSourceKey());
         }
         String dataSourceKey = selectFromMaster();
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("获取的Master数据源Key为：" + dataSourceKey);
+            LOGGER.debug("获取的Master数据源Key为:{}", dataSourceKey);
         }
-        setDataSource(dataSourceKey);
+        setDataSourceKey(dataSourceKey);
     }
 
     /**
@@ -71,21 +71,21 @@ public class DynamicDataSourceHolder {
     }
 
     /**
-     * 是否已经绑定datasource
-     * 绑定：true
-     * 没绑定：false
+     * 是否已经绑定数据源
+     * 绑定:true
+     * 没绑定:false
      *
      * @return
      */
     public boolean hasBindingDataSource() {
-        boolean hasBinding = dataSourceHolder.get() != null;
+        boolean hasBinding = getDataSourceKey() != null;
         return hasBinding;
     }
 
     private String selectFromSlave() {
         if (slaveDSMap == null) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("提供可选取Slave数据源：{},将自动切换从主Master选取数据源", slaveDSMap);
+                LOGGER.debug("提供可选取Slave数据源:{},将自动切换从主Master选取数据源", slaveDSMap);
             }
             return selectFromMaster();
         } else {

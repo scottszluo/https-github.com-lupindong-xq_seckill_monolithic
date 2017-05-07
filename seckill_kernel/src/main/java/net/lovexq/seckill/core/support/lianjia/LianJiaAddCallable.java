@@ -4,6 +4,8 @@ import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.ProtoStuffUtil;
 import net.lovexq.seckill.core.support.activemq.MqProducer;
 import net.lovexq.seckill.kernel.dto.EstateItemDTO;
+import net.lovexq.seckill.kernel.model.EstateImageModel;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,16 +53,19 @@ public class LianJiaAddCallable implements Callable<JsonResult> {
                 LOGGER.info("开始新增[{}]，第{}条记录", estateItem.getBatch() + "：" + estateItem.getHouseId(), curPage + 1);
                 // 解析详情数据
                 estateItem = LianJiaCrawler.INSTANCE.parseDetailData(estateItem, lianJiaParam.getAppProperties().getLiaJiaCookie());
+                List<EstateImageModel> imageList = estateItem.getEstateImageList();
+
+                if ((CollectionUtils.isNotEmpty(imageList) && "1".equals(estateItem.getCrawlerState())) || !"1".equals(estateItem.getCrawlerState())) {
+                    // 转为二进制数据
+                    byte[] dataArray = ProtoStuffUtil.serialize(estateItem);
+                    // 发送消息
+                    mqProducer.sendQueueMessage(dataArray, queue);
+                }
+
                 bodyLength = estateItem.getBodyLength();
-
-                // 转为二进制数据
-                byte[] dataArray = ProtoStuffUtil.serialize(estateItem);
-                // 发送消息
-                mqProducer.sendQueueMessage(dataArray, queue);
-
-                if ((bodyLength % 9000000) > 6000000) {
-                    Thread.sleep(15000);
-                    LOGGER.info("休眠了{}秒", 15000 / 1000);
+                if ((bodyLength % 10000000) > 8000000) {
+                    Thread.sleep(2000);
+                    LOGGER.info("休眠了{}秒", 2000 / 1000);
                 }
             }
 

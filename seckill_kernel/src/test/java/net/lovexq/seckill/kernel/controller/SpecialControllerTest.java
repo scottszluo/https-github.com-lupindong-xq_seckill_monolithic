@@ -55,8 +55,10 @@ public class SpecialControllerTest {
         List<Map> mapList = estateItemRepository.queryForMapList("select * from estate_item where id like '%" + targetId + "%' and cover_url is not null");
         System.out.println("本次生成的特价房源数：" + mapList.size());
         Random random = (new Random());
+        LocalDate localDate = LocalDate.now();
         for (Map map : mapList) {
             SpecialStockModel model = new SpecialStockModel(IdWorker.INSTANCE.nextId());
+            model.setBatch(localDate.toString() + "-" + mapList.size());
             model.setTitle(map.get("title").toString());
             model.setHouseId(map.get("house_id").toString());
             model.setTotalPrice(new BigDecimal(map.get("total_price").toString()));
@@ -83,11 +85,10 @@ public class SpecialControllerTest {
         // 先干掉原有数据
         String key = CacheKeyGenerator.generate(SpecialServiceImpl.class, "listForSecKill");
         redisTemplate.delete(key);
-        specialStockRepository.deleteAll();
+        //specialStockRepository.deleteAll();
 
         long targetId = System.currentTimeMillis() % 1000;
         List<EstateItemModel> estateItemList = estateItemRepository.findByHouseIdLike("%" + targetId + "%");
-//        int maxNum = 15;
         int maxNum = estateItemList.size();
         if (maxNum > estateItemList.size()) {
             maxNum = estateItemList.size();
@@ -95,18 +96,23 @@ public class SpecialControllerTest {
 
         System.out.println("本次生成的特价房源数：" + maxNum);
         LocalDate today = LocalDate.now();
+        String batch = maxNum + "@" + today.toString();
         Random random = new Random();
         for (int i = 0; i < maxNum; i++) {
             EstateItemModel estateIteml = estateItemList.get(i);
-            SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
-            BeanUtils.copyProperties(estateIteml, specialStock, "id");
-            specialStock.setNumber(random.nextInt(10) + 1);
-            LocalDate.now().atStartOfDay();
-            LocalDateTime sTime = today.atStartOfDay().withHour(random.nextInt(24)).withMinute(0).withSecond(0);
-            LocalDateTime eTime = sTime.plusDays(3);
-            specialStock.setStartTime(sTime);
-            specialStock.setEndTime(eTime);
-            specialStockRepository.save(specialStock);
+            SpecialStockModel old = specialStockRepository.findByHouseId(estateIteml.getHouseId());
+            if (old == null) {
+                SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
+                BeanUtils.copyProperties(estateIteml, specialStock, "id");
+                specialStock.setNumber(random.nextInt(10) + 1);
+                LocalDate.now().atStartOfDay();
+                LocalDateTime sTime = today.atStartOfDay().withHour(random.nextInt(24)).withMinute(0).withSecond(0);
+                LocalDateTime eTime = sTime.plusDays(3);
+                specialStock.setStartTime(sTime);
+                specialStock.setEndTime(eTime);
+                specialStock.setBatch(batch);
+                specialStockRepository.save(specialStock);
+            }
         }
 
     }

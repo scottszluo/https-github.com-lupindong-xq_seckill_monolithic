@@ -30,7 +30,7 @@
                             <a href="/" class="text-decoration-none" target="_blank" th:href="'/special/'+${stock.houseId}">
                                 <span class="thumb-info thumb-info-lighten">
                                     <span class="thumb-info-wrapper m-none">
-                                        <img class="lazyload img-responsive" style="height: 240px" th:attr="data-original=${stock.coverUrl}?:'/component/porto/img/blank.jpg'">
+                                        <img class="lazyload img-responsive" style="height: 240px" src="/component/porto/img/blank.jpg" th:attr="data-original=${stock.coverUrl}?:'/component/porto/img/blank.jpg'">
                                         <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md" th:text="'仅'+${stock.number}+'套'">number</span>
                                     </span>
                                     <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">

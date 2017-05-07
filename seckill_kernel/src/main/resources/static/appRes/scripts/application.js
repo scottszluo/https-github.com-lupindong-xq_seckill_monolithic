@@ -1,6 +1,7 @@
 /**
  * Created by LuPindong on 2017-4-24.
  */
+// 全局
 $(function () {
     // 激活对应频道
     var pathname = window.location.pathname;
@@ -11,8 +12,16 @@ $(function () {
     }
     $("#mainNav > li").removeClass("active");
     $(channel).addClass("active");
-});
 
+    var userName = $.cookie("USER_NAME");
+    if (Common.StringUtil.isBlank(userName)) {
+        $("#login").show();
+    } else {
+        $("#userName").text(userName);
+        $("#logout").show();
+    }
+});
+// 通用
 var Common = (function () {
     var stack_topleft = {"dir1": "down", "dir2": "right", "push": "top"};
     var stack_bottomleft = {"dir1": "right", "dir2": "up", "push": "top"};
@@ -124,7 +133,7 @@ var Common = (function () {
         StringUtil: StringUtil
     }
 })();
-
+// 房源信息
 var Estate = (function () {
     var List = {
         url: function () {
@@ -146,7 +155,7 @@ var Estate = (function () {
         List: List
     }
 })();
-
+// 特价秒杀
 var Special = (function () {
     var List = {
         url: function () {
@@ -251,14 +260,14 @@ var Special = (function () {
         Detail: Detail
     }
 })();
-
+// 用户管理
 var SysUser = (function () {
+    var saltUrl = function () {
+        return "/user/salt";
+    };
     var Register = {
         signupUrl: function () {
             return "/user/signup";
-        },
-        saltUrl: function () {
-            return "/user/salt";
         },
         init: function () {
             $('#frmSignUp').validate({
@@ -293,20 +302,79 @@ var SysUser = (function () {
             var email = $.trim($("#email").val());
             var password = $.trim($("#password").val());
 
-            $.get(Register.saltUrl())
+            $.get(saltUrl())
                 .done(function (result) {
-                    var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(email, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
+                    var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
                     var val2nd = SparkMD5.hash(val1st, false);
                     var data = {
-                        account: account,
-                        email: email,
-                        cipher: val2nd
+                        account: window.btoa(account),
+                        email: window.btoa(email),
+                        cipher: window.btoa(val2nd)
                     }
 
                     // 执行登录操作
                     $.post(Register.signupUrl(), data)
                         .done(function (result) {
                             if (200 == result.status) {
+                                Common.PNotice.success(result.message);
+                                window.location.href = "/user/login";
+                            } else {
+                                Common.PNotice.error(result.message);
+                            }
+                        })
+                        .fail(function (result) {
+                            Common.PNotice.error(result.message, result.data);
+                        });
+                });
+        }
+    };
+    var Login = {
+        signinUrl: function () {
+            return "/user/signin";
+        },
+        init: function () {
+            $('#frmSignIn').validate({
+                rules: {
+                    account: {required: true, minlength: 4},
+                    password: {required: true, minlength: 6},
+                },
+                messages: {
+                    account: {required: "请输入账号/邮箱", minlength: "账号至少由4个字母组成"},
+                    password: {required: "请输入密码", minlength: "密码长度不能小于6个字母"}
+                },
+                submitHandler: function (form) {
+                    Login.signin();
+                }
+            });
+
+            $('#frmSignIn input').keypress(function (e) {
+                if (e.which == 13) {
+                    if ($('#frmSignUp').validate().form()) {
+                        Login.signin();
+                    }
+                    return false;
+                }
+            });
+        },
+        signin: function () {
+            var account = $.trim($("#account").val());
+            var password = $.trim($("#password").val());
+
+            $.get(saltUrl())
+                .done(function (result) {
+                    var val1st = SparkMD5.hash(account, false) + SparkMD5.hash(password, false) + SparkMD5.hash(result.data, false);
+                    var val2nd = SparkMD5.hash(val1st, false);
+                    var data = {
+                        account: window.btoa(account),
+                        cipher: window.btoa(val2nd)
+                    }
+
+                    // 执行登录操作
+                    $.post(Login.signinUrl(), data)
+                        .done(function (result) {
+                            if (200 == result.status) {
+                                // $.cookie('Token', result.data, { expires: 7 });
+
                                 Common.PNotice.success(result.message);
                                 window.location.href = "/";
                             } else {
@@ -316,11 +384,32 @@ var SysUser = (function () {
                         .fail(function (result) {
                             Common.PNotice.error(result.message, result.data);
                         });
-                })
+                });
         }
     };
-
+    var Logout = {
+        signoutUrl: function () {
+            return "/user/signout";
+        },
+        signout: function () {
+            // 执行登出操作
+            $.post(Logout.signoutUrl())
+                .done(function (result) {
+                    if (200 == result.status) {
+                        Common.PNotice.success(result.message);
+                        window.location.href = window.location.href;
+                    } else {
+                        Common.PNotice.error(result.message);
+                    }
+                })
+                .fail(function (result) {
+                    Common.PNotice.error(result.message, result.data);
+                });
+        }
+    };
     return {
-        Register: Register
+        Register: Register,
+        Login: Login,
+        Logout: Logout
     }
 })();

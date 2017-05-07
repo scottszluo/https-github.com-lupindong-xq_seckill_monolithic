@@ -19,7 +19,7 @@ public class CookieUtil {
      */
     public static Cookie createCookie(String name, String context, int maxAge, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, context); // 新建Cookie
-        cookie.setDomain("localhost"); // 设置域名
+        cookie.setDomain("127.0.0.1"); // 设置域名
         cookie.setMaxAge(maxAge); // 设置有效期
         cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
         response.addCookie(cookie); // 输出到客户端
@@ -27,17 +27,58 @@ public class CookieUtil {
     }
 
     /**
-     * 删除cookie
+     * 创建cookie
      *
-     * @param name     cookie名字
+     * @param name
      * @param context
+     * @param domain
+     * @param maxAge
      * @param response
      * @return
      */
-    public static void removeCookie(String name, String context, HttpServletResponse response) {
+    public static Cookie createCookie(String name, String context, String domain, int maxAge, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, context); // 新建Cookie
-        cookie.setMaxAge(0); // 设置生命周期为0，不能为负数
-        response.addCookie(cookie); // 必须执行这一句
+        cookie.setDomain(domain); // 设置域名
+        cookie.setMaxAge(maxAge); // 设置有效期
+        cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
+        response.addCookie(cookie); // 输出到客户端
+        return cookie;
+    }
+
+    /**
+     * 创建cookie
+     *
+     * @param name
+     * @param context
+     * @param domain
+     * @param maxAge
+     * @param isHttpOnly
+     * @param response
+     * @return
+     */
+    public static Cookie createCookie(String name, String context, String domain, int maxAge, boolean isHttpOnly, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, context); // 新建Cookie
+        cookie.setDomain(domain); // 设置域名
+        cookie.setMaxAge(maxAge); // 设置有效期
+        cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
+        cookie.setHttpOnly(isHttpOnly);
+        response.addCookie(cookie); // 输出到客户端
+        return cookie;
+    }
+
+    /**
+     * 删除cookie
+     *
+     * @param name
+     * @param response
+     * @return
+     */
+    public static void removeCookie(String name, String domain, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, null); // 新建Cookie
+        cookie.setDomain(domain); // 设置域名
+        cookie.setMaxAge(0); // 设置有效期
+        cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
+        response.addCookie(cookie); // 输出到客户端
     }
 
     /**

@@ -5,11 +5,11 @@ package net.lovexq.seckill.core.controller;
  */
 
 import net.lovexq.seckill.common.model.JsonResult;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public class BasicController {
 
     protected Map<String, String> buildParamMap(HttpServletRequest request) {
         Map<String, String[]> maps = request.getParameterMap();
-        if (!CollectionUtils.isEmpty(maps)) {
+        if (MapUtils.isNotEmpty(maps)) {
             maps.forEach((key, value) -> paramMap.put(key, value[0]));
         }
         return paramMap;

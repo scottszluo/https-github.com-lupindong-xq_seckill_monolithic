@@ -30,24 +30,18 @@ public class DynamicDataSourceAspect {
     public void dsPointcut() {
     }
 
-    @Around("dsPointcut()")
+    //@Around("dsPointcut()")
     public Object doAroundMethod(ProceedingJoinPoint pjp) throws Throwable {
         Object response;
-        String method = pjp.getSignature().getName();
         boolean hasBinding = false;
+        String method = pjp.getSignature().getName();
         try {
-            hasBinding = dynamicDataSourceHolder.hasBindingDataSource();
+            hasBinding = dynamicDataSourceHolder.hasBindingDataSource();    // 是否绑定数据源
             if (!hasBinding) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("开始自动选取数据源");
-                }
                 if (isReadOnlyMethod(method)) {
                     dynamicDataSourceHolder.markSlave();
                 } else {
                     dynamicDataSourceHolder.markMaster();
-                }
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("完成自动选取数据源");
                 }
             }
             response = pjp.proceed();
@@ -55,6 +49,37 @@ public class DynamicDataSourceAspect {
             if (!hasBinding) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.info("移除自动选取数据源");
+                }
+                dynamicDataSourceHolder.markRemove();
+            }
+        }
+        return response;
+    }
+
+    @Around("dsPointcut()")
+    public Object doAroundReadOnlyMethod(ProceedingJoinPoint pjp) throws Throwable {
+        Object response;
+        boolean hasBinding = false;
+        String method = pjp.getSignature().getName();
+        String dataSourceKey = "";
+        try {
+            dataSourceKey = dynamicDataSourceHolder.getDataSourceKey();
+            if (dataSourceKey != null) hasBinding = true;
+            if (!hasBinding) {
+                if (isReadOnlyMethod(method)) {
+                    dynamicDataSourceHolder.markSlave();
+                } else {
+                    dynamicDataSourceHolder.markMaster();
+                }
+            }
+            if (dataSourceKey == null) {
+                dataSourceKey = dynamicDataSourceHolder.getDataSourceKey();
+            }
+            response = pjp.proceed();
+        } finally {
+            if (!hasBinding && !DynamicDataSourceHolder.masterDSKey.equals(dataSourceKey)) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.info("移除自动选取数据源:{}", dataSourceKey);
                 }
                 dynamicDataSourceHolder.markRemove();
             }

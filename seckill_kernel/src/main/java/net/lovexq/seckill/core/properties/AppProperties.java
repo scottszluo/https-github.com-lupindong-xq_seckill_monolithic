@@ -16,6 +16,8 @@ public class AppProperties {
     private String liaJiaCookie;
     private String privateSalt;
     private String publicSalt;
+    private String jwtSecretKey;
+    private Long jwtExpiration;
 
     public String getLiaJiaCookie() {
         return liaJiaCookie;
@@ -39,5 +41,21 @@ public class AppProperties {
 
     public void setPublicSalt(String publicSalt) {
         this.publicSalt = publicSalt;
+    }
+
+    public String getJwtSecretKey() {
+        return jwtSecretKey;
+    }
+
+    public void setJwtSecretKey(String jwtSecretKey) {
+        this.jwtSecretKey = jwtSecretKey;
+    }
+
+    public Long getJwtExpiration() {
+        return jwtExpiration;
+    }
+
+    public void setJwtExpiration(Long jwtExpiration) {
+        this.jwtExpiration = jwtExpiration;
     }
 }

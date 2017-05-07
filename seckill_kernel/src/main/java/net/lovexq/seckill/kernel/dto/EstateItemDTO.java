@@ -22,6 +22,10 @@ public class EstateItemDTO extends EstateItemModel {
 
     private Long bodyLength;
 
+    private Boolean isNew = false;
+
+    private String CrawlerState;
+
     public EstateItemDTO() {
         super();
     }
@@ -60,5 +64,21 @@ public class EstateItemDTO extends EstateItemModel {
 
     public void setBodyLength(Long bodyLength) {
         this.bodyLength = bodyLength;
+    }
+
+    public Boolean getNew() {
+        return isNew;
+    }
+
+    public void setNew(Boolean isNew) {
+        this.isNew = isNew;
+    }
+
+    public String getCrawlerState() {
+        return CrawlerState;
+    }
+
+    public void setCrawlerState(String crawlerState) {
+        CrawlerState = crawlerState;
     }
 }

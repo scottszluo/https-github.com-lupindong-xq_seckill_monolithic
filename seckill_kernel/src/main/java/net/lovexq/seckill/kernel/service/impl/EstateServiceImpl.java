@@ -6,6 +6,7 @@ import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.repository.specification.EstateItemSpecification;
 import net.lovexq.seckill.kernel.service.EstateService;
 import net.lovexq.seckill.kernel.service.ImageService;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,8 +16,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,10 @@ public class EstateServiceImpl implements EstateService {
         for (EstateItemModel sourceItem : sourceItemList) {
             EstateItemDTO targetItem = new EstateItemDTO();
             BeanUtils.copyProperties(sourceItem, targetItem);
-
+            // 如果是最近三天上架的
+            if (targetItem.getUpdateTime().isAfter(LocalDateTime.now().minusDays(3))) {
+                targetItem.setNew(true);
+            }
             targetItemList.add(targetItem);
         }
 

@@ -24,13 +24,13 @@ public class CrawlerRecordModel extends BasicModel implements Serializable {
     private String batch;
     private String historyCode;
     private String currentCode;
-    private Integer state; // -1初始状态===》0下架, 1不变, 2新增
+    private String state;
     private byte[] data;
 
     public CrawlerRecordModel() {
     }
 
-    public CrawlerRecordModel(String batch, String currentCode, Integer state) {
+    public CrawlerRecordModel(String batch, String currentCode, String state) {
         this.batch = batch;
         this.currentCode = currentCode;
         this.state = state;
@@ -68,11 +68,11 @@ public class CrawlerRecordModel extends BasicModel implements Serializable {
         this.currentCode = currentCode;
     }
 
-    public Integer getState() {
+    public String getState() {
         return state;
     }
 
-    public void setState(Integer state) {
+    public void setState(String state) {
         this.state = state;
     }
 

@@ -25,7 +25,7 @@ public class SysUserModel extends BasicModel implements Serializable {
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 11, updatable = false)
-    protected Long id;
+    private Long id;
 
     /**
      * 账号

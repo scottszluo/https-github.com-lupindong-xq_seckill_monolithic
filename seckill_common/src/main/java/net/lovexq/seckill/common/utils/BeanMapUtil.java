@@ -3,6 +3,7 @@ package net.lovexq.seckill.common.utils;
 import org.assertj.core.util.Lists;
 import org.springframework.cglib.beans.BeanMap;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +43,17 @@ public class BeanMapUtil {
      * @return
      */
     public static <T> T mapToBean(Map map, T bean) {
+        // 转换BigInteger
+        Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Object> e = it.next();
+            String key = e.getKey();
+            Object value = e.getValue();
+            if (value instanceof BigInteger) {
+                map.put(key, ((BigInteger) value).longValue());
+            }
+        }
+
         BeanMap beanMap = BeanMap.create(bean);
         beanMap.putAll(map);
         return bean;

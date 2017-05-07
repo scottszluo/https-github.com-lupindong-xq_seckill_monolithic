@@ -47,10 +47,22 @@
                                                 特价秒杀
                                             </a>
                                         </li>
-                                        <li class="dropdown-full-color dropdown-quaternary" id="login">
-                                            <a href="/login">
-                                                特价秒杀
+                                        <li class="dropdown-full-color dropdown-quaternary" style="display: none" id="login">
+                                            <a href="/user/login">
+                                                登录
                                             </a>
+                                        </li>
+                                        <li class="dropdown dropdown-full-color dropdown-quaternary" style="display: none" id="logout">
+                                            <a class="dropdown-toggle" href="#">
+                                                <i class="fa fa-user-circle-o"></i>
+                                                <label id="userName"></label>
+                                                <i class="fa fa-caret-down"></i>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="/user/profile">个人中心</a></li>
+                                                <li><a href="javascript:void(0)" onclick="SysUser.Logout.signout()">安全登出</a></li>
+                                            </ul>
+                                        </li>
                                         </li>
                                     </ul>
                                 </nav>
