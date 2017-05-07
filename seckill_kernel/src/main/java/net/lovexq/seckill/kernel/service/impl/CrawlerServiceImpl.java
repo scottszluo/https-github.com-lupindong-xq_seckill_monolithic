@@ -62,6 +62,7 @@ public class CrawlerServiceImpl implements CrawlerService {
     private Queue checkQueue;
 
     @Override
+    @Transactional
     public JsonResult invokeInitialize(String baseUrl, String region, Integer curPage, Integer totalPage) {
         JsonResult result = new JsonResult();
         ExecutorService exec = Executors.newCachedThreadPool();
@@ -77,6 +78,7 @@ public class CrawlerServiceImpl implements CrawlerService {
     }
 
     @Override
+    @Transactional
     public JsonResult invokeCheck(String batch, String baseUrl, String region) {
         JsonResult result = new JsonResult();
         ExecutorService exec = Executors.newCachedThreadPool();
@@ -140,11 +142,11 @@ public class CrawlerServiceImpl implements CrawlerService {
         try {
             EstateItemDTO dto = ProtoStuffUtil.deserialize(dataArray, EstateItemDTO.class);
             // 先查看数据库是否已存在该记录
-            EstateItemModel model = estateItemRepository.findByHouseId(dto.getHouseId());
+            EstateItemModel model = estateItemRepository.findByHouseCode(dto.getHouseCode());
             if (model != null) {
                 BeanUtils.copyProperties(dto, model, "id");
                 // 先删除原有图片
-                estateImageRepository.deleteByHouseCode(dto.getHouseId());
+                estateImageRepository.deleteByHouseCode(dto.getHouseCode());
             } else {
                 model = new EstateItemModel();
                 BeanUtils.copyProperties(dto, model);
@@ -174,7 +176,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                     // 户型图
                 } else {
                     image.setPictureId(System.currentTimeMillis());
-                    image.setHouseCode(dto.getHouseId());
+                    image.setHouseCode(dto.getHouseCode());
                     image.setPictureType(99);
                     if (StringUtils.isBlank(image.getPictureSourceUrl())) {
                         image.setPictureSourceUrl(image.getUrl());
@@ -191,15 +193,15 @@ public class CrawlerServiceImpl implements CrawlerService {
         try {
             EstateItemDTO dto = ProtoStuffUtil.deserialize(dataArray, EstateItemDTO.class);
             String batch = dto.getBatch();
-            String houseId = dto.getHouseId();
-            CrawlerRecordModel crawlerRecordModel = crawlerRecordRepository.findByBatchAndHistoryCode(batch, houseId);
+            String houseCode = dto.getHouseCode();
+            CrawlerRecordModel crawlerRecordModel = crawlerRecordRepository.findByBatchAndHistoryCode(batch, houseCode);
             if (crawlerRecordModel != null) {
                 crawlerRecordModel.setState(CrawlerRecordEnum.UPDATE.getValue());
             } else {
-                crawlerRecordModel = new CrawlerRecordModel(batch, houseId, CrawlerRecordEnum.CREATE.getValue());
-                List<CrawlerRecordModel> list = crawlerRecordRepository.findByBatchAndCurrentCode(batch, houseId);
+                crawlerRecordModel = new CrawlerRecordModel(batch, houseCode, CrawlerRecordEnum.CREATE.getValue());
+                List<CrawlerRecordModel> list = crawlerRecordRepository.findByBatchAndCurrentCode(batch, houseCode);
                 if (!CollectionUtils.isEmpty(list)) {
-                    crawlerRecordRepository.deleteRepeatRecord(batch, houseId);
+                    crawlerRecordRepository.deleteRepeatRecord(batch, houseCode);
                 }
             }
             crawlerRecordModel.setData(dataArray);

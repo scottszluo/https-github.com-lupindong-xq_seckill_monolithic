@@ -78,7 +78,7 @@
                                 </tr>
                                 <tr>
                                     <td>房源编号</td>
-                                    <td>[[${specialStock.houseId}]]</td>
+                                    <td>[[${specialStock.houseCode}]]</td>
                                 </tr>
                                 <tr>
                                     <td>小区名称</td>
@@ -128,9 +128,7 @@
                                     </h3>
                                     <p id="timeArea"></p>
                                 </div>
-                                <div class="call-to-action-btn" id="execution">
-                                    <!--<a href="/execute" class="btn btn-lg btn-primary">马上抢购!</a>-->
-                                </div>
+                                <div class="call-to-action-btn" id="execution"></div>
                             </section>
 
                             <hr class="solid tall">
@@ -296,7 +294,7 @@
         // 图片懒加载
         Common.Lazyload.init();
         Special.Detail.init({
-            houseId: '[[${specialStock.houseId}]]',
+            houseCode: '[[${specialStock.houseCode}]]',
             nowTime: '[[${nowTimeX}]]',
             startTime: '[[${startTimeX}]]',
             endTime: '[[${endTimeX}]]'

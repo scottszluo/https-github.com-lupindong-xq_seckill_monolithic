@@ -50,7 +50,7 @@ public class LianJiaAddCallable implements Callable<JsonResult> {
             List<EstateItemDTO> estateItemList = lianJiaParam.getEstateItemList();
             for (; curPage < estateItemList.size(); curPage++) {
                 EstateItemDTO estateItem = estateItemList.get(curPage);
-                LOGGER.info("开始新增[{}]，第{}条记录", estateItem.getBatch() + "：" + estateItem.getHouseId(), curPage + 1);
+                LOGGER.info("开始新增[{}]，第{}条记录", estateItem.getBatch() + "：" + estateItem.getHouseCode(), curPage + 1);
                 // 解析详情数据
                 estateItem = LianJiaCrawler.INSTANCE.parseDetailData(estateItem, lianJiaParam.getAppProperties().getLiaJiaCookie());
                 List<EstateImageModel> imageList = estateItem.getEstateImageList();

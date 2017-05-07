@@ -73,6 +73,11 @@ public class AppConstants {
     public static final Long DEFAULT_APP_ERROR = 20000L;
 
     /**
+     * JWT的CLAIMS
+     */
+    public static final String CLAIMS = "CLAIMS";
+
+    /**
      * Token的key
      */
     public static final String TOKEN = "TOKEN";

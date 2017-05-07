@@ -12,13 +12,13 @@ import java.util.List;
  */
 public interface CrawlerRecordRepository extends BasicRepository<CrawlerRecordModel, Long> {
 
-    CrawlerRecordModel findByBatchAndHistoryCode(String batch, String houseId);
+    CrawlerRecordModel findByBatchAndHistoryCode(String batch, String houseCode);
 
-    List<CrawlerRecordModel> findByBatchAndCurrentCode(String batch, String houseId);
+    List<CrawlerRecordModel> findByBatchAndCurrentCode(String batch, String houseCode);
 
     @Modifying
-    @Query("delete from CrawlerRecordModel c where c.batch = ?1 and c.currentCode=?2")
-    void deleteRepeatRecord(String batch, String houseId);
+    @Query("DELETE FROM CrawlerRecordModel c WHERE c.batch = ?1 AND c.currentCode=?2")
+    void deleteRepeatRecord(String batch, String houseCode);
 
     List<CrawlerRecordModel> findByBatchAndStateIn(String batch, List<String> stateList);
 }

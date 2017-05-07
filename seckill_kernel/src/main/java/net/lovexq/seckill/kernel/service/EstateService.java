@@ -16,6 +16,6 @@ public interface EstateService {
 
     Page<EstateItemDTO> listForSaleByPage(Pageable pageable, Map<String, String> paramMap) throws Exception;
 
-    EstateItemDTO getByHouseId(String id) throws Exception;
+    EstateItemDTO getByHouseCode(String houseCode) throws Exception;
 
 }

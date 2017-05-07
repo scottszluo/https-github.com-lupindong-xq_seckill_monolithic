@@ -33,7 +33,7 @@ public class SpecialStockModel extends BasicModel implements Serializable {
     private LocalDateTime endTime;  //结束时间
 
     private String title;         //标题x
-    private String houseId;       //编号x
+    private String houseCode;       //编号x
     /**
      * 基本信息
      */
@@ -119,12 +119,12 @@ public class SpecialStockModel extends BasicModel implements Serializable {
         this.title = title;
     }
 
-    public String getHouseId() {
-        return houseId;
+    public String getHouseCode() {
+        return houseCode;
     }
 
-    public void setHouseId(String houseId) {
-        this.houseId = houseId;
+    public void setHouseCode(String houseCode) {
+        this.houseCode = houseCode;
     }
 
     public BigDecimal getTotalPrice() {
@@ -299,7 +299,7 @@ public class SpecialStockModel extends BasicModel implements Serializable {
         sb.append(", batch='").append(batch).append('\'');
         sb.append(", number=").append(number);
         sb.append(", title='").append(title).append('\'');
-        sb.append(", houseId='").append(houseId).append('\'');
+        sb.append(", houseCode='").append(houseCode).append('\'');
         sb.append('}');
         return sb.toString();
     }

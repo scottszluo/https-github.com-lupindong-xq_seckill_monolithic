@@ -8,5 +8,5 @@ import java.util.List;
  * Created by LuPindong on 2017-4-27.
  */
 public interface ImageService {
-    List<EstateImageModel> listByHouseId(String id);
+    List<EstateImageModel> listByHouseCode(String id);
 }

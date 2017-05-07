@@ -176,21 +176,21 @@ var Special = (function () {
         nowUrl: function () {
             return "/special/now";
         },
-        exposure: function (houseId) {
-            return '/special/' + houseId + '/exposure';
+        exposure: function (houseCode) {
+            return '/special/' + houseCode + '/exposure';
         },
-        execution: function (houseId, key) {
-            return '/special/' + houseId + '/execution/' + key;
+        execution: function (houseCode, key) {
+            return '/special/' + houseCode + '/execution/' + key;
         },
         init: function (params) {
-            var houseId = params['houseId'];
+            var houseCode = params['houseCode'];
             var nowTime = params['nowTime'];
             var startTime = params['startTime'];
             var endTime = params['endTime'];
 
-            Detail.countDownX(houseId, nowTime, startTime, endTime);
+            Detail.countDownX(houseCode, nowTime, startTime, endTime);
         },
-        countDownX: function (houseId, nowTime, startTime, endTime) {
+        countDownX: function (houseCode, nowTime, startTime, endTime) {
             var timeArea = $("#timeArea");
             if (nowTime > endTime) {
                 timeArea.html('<h2 class="font-red">秒杀结束!</h2>');
@@ -200,19 +200,19 @@ var Special = (function () {
                     var format = event.strftime('秒杀倒计时: %D天 %H时 %M分 %S秒 ');
                     timeArea.html('<h2 class="font-red">' + format + '</h2>');
                 }).on('finish.countdown', function () {
-                    Detail.executeSecKill(houseId, endTime);
+                    Detail.executeSecKill(houseCode, endTime);
                 });
             } else {
-                Detail.executeSecKill(houseId, endTime);
+                Detail.executeSecKill(houseCode, endTime);
             }
         },
-        executeSecKill: function (houseId, endTime) {
+        executeSecKill: function (houseCode, endTime) {
             var timeArea = $("#timeArea");
             var execution = $("#execution");
 
             execution.hide().html('<a href="javascript:void(0)" class="btn btn-lg btn-primary" id="killBtn">开始秒杀!</a>');
 
-            $.get(Detail.exposure(houseId))
+            $.get(Detail.exposure(houseCode))
                 .done(function (result) {
                     //在回调函数种执行交互流程
                     if (200 == result.status) {
@@ -224,9 +224,15 @@ var Special = (function () {
                             //
                         });
 
-                        var killUrl = Detail.execution(houseId, result.data);
+                        var killUrl = Detail.execution(houseCode, result.data);
                         //绑定一次点击事件
                         $('#killBtn').one('click', function () {
+                            var userName = $.cookie("USER_NAME");
+                             if (Common.StringUtil.isBlank(userName)) {
+                                Common.PNotice.error("非法请求，禁止访问。请登录后再访问！");
+                                return false;
+                             }
+
                             //执行秒杀请求
                             //1.先禁用按钮
                             $(this).addClass('disabled');
@@ -234,15 +240,15 @@ var Special = (function () {
                             $.post(killUrl)
                                 .done(function (result) {
                                     if (200 == result.status) {
-                                        // var killResult = result['data'];
-                                        // var state = killResult['state'];
-                                        // var stateInfo = killResult['stateInfo'];
-                                        //显示秒杀结果
-                                        //execution.html('<span class="label label-success">' + stateInfo + '</span>');
+                                        execution.html('<a href="javascript:void(0)" class="btn btn-lg btn-tertiary">秒杀成功!</a>');
+                                        Common.PNotice.success(result.message);
+                                    } else {
+                                        Common.PNotice.error(result.message);
                                     }
-                                }).fail(function (result) {
-
-                            });
+                                })
+                                .fail(function (result) {
+                                    Common.PNotice.error(result.responseJSON.message);
+                                });
                         });
                         execution.show();
                     } else {

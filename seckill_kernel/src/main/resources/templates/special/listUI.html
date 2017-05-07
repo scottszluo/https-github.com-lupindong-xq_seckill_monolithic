@@ -27,7 +27,7 @@
                 <ul class="properties-listing sort-destination p-none">
                     <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(specialStockList)}" th:each="stock, stockStat : ${specialStockList}">
                         <div class="listing-item">
-                            <a href="/" class="text-decoration-none" target="_blank" th:href="'/special/'+${stock.houseId}">
+                            <a href="/" class="text-decoration-none" target="_blank" th:href="'/special/'+${stock.houseCode}">
                                 <span class="thumb-info thumb-info-lighten">
                                     <span class="thumb-info-wrapper m-none">
                                         <img class="lazyload img-responsive" style="height: 240px" src="/component/porto/img/blank.jpg" th:attr="data-original=${stock.coverUrl}?:'/component/porto/img/blank.jpg'">

@@ -25,8 +25,8 @@ public class ApplicationMainTest {
 
     @Test
     public void testRedis() {
-        SpecialStockModel model = specialStockRepository.findByHouseId("GZ0002595190");
-        SpecialStockModel mode2 = specialStockRepository.findByHouseId("GZ0002429519");
+        SpecialStockModel model = specialStockRepository.findByHouseCode("GZ0002595190");
+        SpecialStockModel mode2 = specialStockRepository.findByHouseCode("GZ0002429519");
 
         ValueOperations<String, SpecialStockModel> operations = redisTemplate.opsForValue();
 

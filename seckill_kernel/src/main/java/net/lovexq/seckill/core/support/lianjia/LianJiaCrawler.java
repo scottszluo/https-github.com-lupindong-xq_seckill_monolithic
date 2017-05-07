@@ -176,7 +176,7 @@ public enum LianJiaCrawler {
             }
 
             String dataHId = contentElement.select("div[class='priceInfo'] > div[class='unitPrice']").first().attr("data-hid");
-            estateItem.setHouseId(dataHId); // 编号
+            estateItem.setHouseCode(dataHId); // 编号
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -222,7 +222,7 @@ public enum LianJiaCrawler {
                     estateItem.setTotalPrice(new BigDecimal(getSubValue(elementData, "totalPrice")));
                     estateItem.setUnitPrice(new BigDecimal(getSubValue(elementData, "price")));
                     estateItem.setArea(new BigDecimal(getSubValue(elementData, "area")));
-                    //estateItem.setHouseId(getSubValue(elementData, "houseId"));
+                    //estateItem.setHouseCode(getSubValue(elementData, "houseCode"));
                     estateItem.setResBlockId(getSubValue(elementData, "resblockId"));
                     estateItem.setResBlockName(getSubValue(elementData, "resblockName"));
                     estateItem.setCityId(getSubValue(elementData, "cityId"));
@@ -277,7 +277,7 @@ public enum LianJiaCrawler {
      * @return
      */
     public EstateItemDTO parseCoverImgData(EstateItemDTO estateItem, Elements bigImgElements) {
-        Element imgElement = bigImgElements.select("div[class='item'][data-houseid='" + estateItem.getHouseId() + "'] > a > img").first();
+        Element imgElement = bigImgElements.select("div[class='item'][data-houseid='" + estateItem.getHouseCode() + "'] > a > img").first();
         if (imgElement != null) {
             String original = imgElement.attr("data-original");
             estateItem.setCoverUrl(original);

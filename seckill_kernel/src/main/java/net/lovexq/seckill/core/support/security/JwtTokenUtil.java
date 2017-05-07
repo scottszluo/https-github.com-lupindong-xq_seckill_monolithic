@@ -1,6 +1,7 @@
 package net.lovexq.seckill.core.support.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
@@ -10,7 +11,7 @@ import java.util.Date;
 
 public class JwtTokenUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
 
     /**
      * 生成Token
@@ -20,7 +21,7 @@ public class JwtTokenUtil {
      * @param secretKey
      * @return
      */
-    public static String generateToken(Claims claims, Long expiration, String secretKey) {
+    public static String generateToken(Claims claims, Long expiration, String secretKey) throws JwtException {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate(expiration))
@@ -28,7 +29,7 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    private static Date generateExpirationDate(Long expiration) {
+    public static Date generateExpirationDate(Long expiration) {
         return new Date(System.currentTimeMillis() + expiration * 1000);
     }
 
@@ -39,18 +40,11 @@ public class JwtTokenUtil {
      * @param secretKey
      * @return
      */
-    public static Claims getClaims(String token, String secretKey) {
-        Claims claims = new JwtClaims();
-        try {
-            claims = Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody();
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return claims;
+    public static Claims getClaims(String token, String secretKey) throws JwtException {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     /**
@@ -60,13 +54,42 @@ public class JwtTokenUtil {
      * @param secretKey
      * @return
      */
-    public static String getAudience(String token, String secretKey) {
-        String account = null;
-        try {
-            account = getClaims(token, secretKey).getAudience();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return account;
+    public static String getAudience(String token, String secretKey) throws JwtException {
+        return getClaims(token, secretKey).getAudience();
     }
+
+    /**
+     * 从Token获取受众
+     *
+     * @param claims
+     * @return
+     */
+    public static String getAudience(Claims claims) throws JwtException {
+        return claims.getAudience();
+    }
+
+    /**
+     * 判断是否过期
+     *
+     * @param token
+     * @param secretKey
+     * @return
+     */
+    public static Boolean isTokenExpired(String token, String secretKey) throws JwtException {
+        Claims claims = getClaims(token, secretKey);
+        Date expiration = claims.getExpiration();
+        return expiration.before(new Date());
+    }
+
+    /**
+     * 判断是否过期
+     *
+     * @param claims
+     * @return
+     */
+    public static Boolean isTokenExpired(Claims claims) throws JwtException {
+        Date expiration = claims.getExpiration();
+        return expiration.before(new Date());
+    }
+
 }

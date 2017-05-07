@@ -43,9 +43,9 @@ public class EstateController extends BasicController {
         return "/estate/listUI";
     }
 
-    @GetMapping("/estate/{id}")
-    public String detailUI(@PathVariable("id") String id, Model model) throws Exception {
-        EstateItemDTO estateItem = estateService.getByHouseId(id);
+    @GetMapping("/estate/{houseCode}")
+    public String detailUI(@PathVariable("houseCode") String houseCode, Model model) throws Exception {
+        EstateItemDTO estateItem = estateService.getByHouseCode(houseCode);
         model.addAttribute("estateItem", estateItem);
         return "/estate/detailUI";
     }

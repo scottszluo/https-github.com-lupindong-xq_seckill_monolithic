@@ -52,6 +52,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
+    @Transactional
     public JsonResult executeSignIn(HttpServletResponse response, String account, String cipher) throws Exception {
         JsonResult result = new JsonResult();
 
@@ -73,9 +74,9 @@ public class SysUserServiceImpl implements SysUserService {
         String token = JwtTokenUtil.generateToken(claims, appProperties.getJwtExpiration(), appProperties.getJwtSecretKey());
         result.setData(token);
 
-        // 存入cookie
-        CookieUtil.createCookie(AppConstants.TOKEN, result.getData().toString(), "127.0.0.1", 36000, true, response);
-        CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", 36000,  response);
+        // 存入Cookie
+        CookieUtil.createCookie(AppConstants.TOKEN, token, "127.0.0.1", 3600, true, response);
+        CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", 3600,  response);
 
         return result;
     }

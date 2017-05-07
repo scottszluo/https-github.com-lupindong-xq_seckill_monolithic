@@ -67,12 +67,12 @@ public class EstateServiceImpl implements EstateService {
 
     @Override
     @Transactional(readOnly = true)
-    public EstateItemDTO getByHouseId(String id) throws Exception {
+    public EstateItemDTO getByHouseCode(String houseCode) throws Exception {
         EstateItemDTO targetItem = new EstateItemDTO();
-        EstateItemModel sourceItem = estateItemRepository.findByHouseId(id);
+        EstateItemModel sourceItem = estateItemRepository.findByHouseCode(houseCode);
         if (sourceItem != null) {
             BeanUtils.copyProperties(sourceItem, targetItem);
-            targetItem.setEstateImageList(imageService.listByHouseId(id));
+            targetItem.setEstateImageList(imageService.listByHouseCode(houseCode));
         }
 
         return targetItem;

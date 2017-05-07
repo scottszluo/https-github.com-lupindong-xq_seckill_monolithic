@@ -52,7 +52,7 @@ public class LianJiaCrawlerTest {
     public long testWRJson() throws IOException {
 
         // 136
-        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002346888");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseCode("GZ0002346888");
 
         long begin = System.currentTimeMillis();
 
@@ -78,7 +78,7 @@ public class LianJiaCrawlerTest {
     public long testWR2Json() throws IOException {
 
         // 370
-        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002460857");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseCode("GZ0002460857");
 
         long begin = System.currentTimeMillis();
 
@@ -196,7 +196,7 @@ public class LianJiaCrawlerTest {
     public long testWRProtobuf() throws IOException {
 
         // 77
-        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002346888");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseCode("GZ0002346888");
 
         long begin = System.currentTimeMillis();
 
@@ -223,7 +223,7 @@ public class LianJiaCrawlerTest {
     public long testWR2Protobuf() throws IOException {
 
         // 84
-        EstateItemModel estateItemModel = estateItemRepository.findByHouseId("GZ0002460857");
+        EstateItemModel estateItemModel = estateItemRepository.findByHouseCode("GZ0002460857");
 
         long begin = System.currentTimeMillis();
 

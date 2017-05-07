@@ -1,7 +1,10 @@
 package net.lovexq.seckill.core.config;
 
+import net.lovexq.seckill.core.filter.AuthenticationFilter;
 import net.lovexq.seckill.core.interceptor.LogInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -15,11 +18,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class WebAppConfig extends WebMvcConfigurerAdapter {
 
-    //@Autowired
-    //private AutowireCapableBeanFactory beanFactory;
 
     @Autowired
     private LogInterceptor logInterceptor;
+
+    @Autowired
+    private AuthenticationFilter authenticationFilter;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -29,13 +33,11 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
         registry.addInterceptor(logInterceptor).addPathPatterns("/**");
     }
 
-    /*@Bean
-    public FilterRegistrationBean addAFilter() {
+    @Bean
+    public FilterRegistrationBean addAuthenticationFilter() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
-        SessionFilter sessionFilter = new SessionFilter();
-        beanFactory.autowireBean(sessionFilter);
-        registration.setFilter(sessionFilter);
-        registration.addUrlPatterns("/background*//**");
-     return registration;
-     }*/
+        registration.setFilter(authenticationFilter);
+        registration.addUrlPatterns("/special/*");
+        return registration;
+    }
 }

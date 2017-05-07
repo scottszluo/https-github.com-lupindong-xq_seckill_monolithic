@@ -12,11 +12,11 @@ import java.util.List;
  */
 public interface EstateItemRepository extends BasicRepository<EstateItemModel, Long> {
 
-    EstateItemModel findByHouseId(String houseId);
+    EstateItemModel findByHouseCode(String houseCode);
 
-    List<EstateItemModel> findByHouseIdLike(String houseId);
+    List<EstateItemModel> findByHouseCodeLike(String houseCode);
 
     @Modifying
-    @Query("update EstateItemModel i set saleState = '下架' where i.houseId=?1")
-    void updateState(String houseId);
+    @Query("UPDATE EstateItemModel i SET saleState = '下架' WHERE i.houseCode=?1")
+    void updateState(String houseCode);
 }

@@ -1,5 +1,6 @@
 package net.lovexq.seckill.kernel.service;
 
+import io.jsonwebtoken.Claims;
 import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.kernel.dto.SpecialStockDTO;
 import net.lovexq.seckill.kernel.model.SpecialStockModel;
@@ -16,7 +17,9 @@ public interface SpecialService {
 
     List<SpecialStockModel> listForSecKill() throws Exception;
 
-    SpecialStockDTO getByHouseId(String id) throws Exception;
+    SpecialStockDTO getByHouseCode(String houseCode) throws Exception;
 
-    JsonResult exposureSecKillUrl(String id) throws Exception;
+    JsonResult exposureSecKillUrl(String houseCode) throws Exception;
+
+    JsonResult executionSecKill(String houseCode, String key, Claims claims) throws Exception;
 }

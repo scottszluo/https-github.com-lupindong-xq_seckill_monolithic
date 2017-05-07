@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class ImageServiceImpl implements ImageService {
     private EstateImageRepository estateImageRepository;
 
     @Override
-    public List<EstateImageModel> listByHouseId(String id) {
+    @Transactional(readOnly = true)
+    public List<EstateImageModel> listByHouseCode(String id) {
         EstateImageModel estateImage = new EstateImageModel(null, id);
         Sort sort = new Sort(Sort.Direction.ASC, "pictureType");
         return estateImageRepository.findAll(Example.of(estateImage), sort);

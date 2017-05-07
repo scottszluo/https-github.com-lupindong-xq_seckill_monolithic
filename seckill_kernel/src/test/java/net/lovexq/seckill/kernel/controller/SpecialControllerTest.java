@@ -60,7 +60,7 @@ public class SpecialControllerTest {
             SpecialStockModel model = new SpecialStockModel(IdWorker.INSTANCE.nextId());
             model.setBatch(localDate.toString() + "-" + mapList.size());
             model.setTitle(map.get("title").toString());
-            model.setHouseId(map.get("house_id").toString());
+            model.setHouseCode(map.get("house_code").toString());
             model.setTotalPrice(new BigDecimal(map.get("total_price").toString()));
             model.setUnitPrice(new BigDecimal(map.get("unit_price").toString()));
             model.setModel(map.get("model").toString());
@@ -88,7 +88,7 @@ public class SpecialControllerTest {
         //specialStockRepository.deleteAll();
 
         long targetId = System.currentTimeMillis() % 1000;
-        List<EstateItemModel> estateItemList = estateItemRepository.findByHouseIdLike("%" + targetId + "%");
+        List<EstateItemModel> estateItemList = estateItemRepository.findByHouseCodeLike("%" + targetId + "%");
         int maxNum = estateItemList.size();
         if (maxNum > estateItemList.size()) {
             maxNum = estateItemList.size();
@@ -100,7 +100,7 @@ public class SpecialControllerTest {
         Random random = new Random();
         for (int i = 0; i < maxNum; i++) {
             EstateItemModel estateIteml = estateItemList.get(i);
-            SpecialStockModel old = specialStockRepository.findByHouseId(estateIteml.getHouseId());
+            SpecialStockModel old = specialStockRepository.findByHouseCode(estateIteml.getHouseCode());
             if (old == null) {
                 SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
                 BeanUtils.copyProperties(estateIteml, specialStock, "id");
@@ -128,11 +128,11 @@ public class SpecialControllerTest {
         EstateImageModel newImage;
         while (true) {
             long targetId = System.currentTimeMillis() % 1000;
-            estateItemList = estateItemRepository.findByHouseIdLike("%" + targetId + "%");
+            estateItemList = estateItemRepository.findByHouseCodeLike("%" + targetId + "%");
             int maxNum = estateItemList.size();
             for (int i = 0; i < maxNum; i++) {
                 estateIteml = estateItemList.get(i);
-                if (estateIteml.getHouseId().contains("-N")) {
+                if (estateIteml.getHouseCode().contains("-N")) {
                     continue;
                 }
 
@@ -140,7 +140,7 @@ public class SpecialControllerTest {
                 BeanUtils.copyProperties(estateIteml, newModel, "id");
                 String postfix = "-N" + targetId + "-" + maxNum + "-" + i;
                 newModel.setTitle(estateIteml.getTitle() + postfix);
-                newModel.setHouseId(estateIteml.getHouseId() + postfix);
+                newModel.setHouseCode(estateIteml.getHouseCode() + postfix);
                 LocalDateTime sTime = LocalDateTime.now();
                 LocalDateTime eTime = sTime.plusDays(3);
                 newModel.setCreateTime(sTime);
@@ -149,12 +149,12 @@ public class SpecialControllerTest {
 
                 // 相关图片
                 condition = new EstateImageModel();
-                condition.setHouseCode(estateIteml.getHouseId());
+                condition.setHouseCode(estateIteml.getHouseCode());
                 imageModelList = estateImageRepository.findAll(Example.of(condition));
                 for (EstateImageModel estateImageModel : imageModelList) {
                     newImage = new EstateImageModel();
                     BeanUtils.copyProperties(estateImageModel, newImage, "pictureId");
-                    newImage.setHouseCode(newModel.getHouseId());
+                    newImage.setHouseCode(newModel.getHouseCode());
                     estateImageRepository.saveAndFlush(newImage);
                 }
             }

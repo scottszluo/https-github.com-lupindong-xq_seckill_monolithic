@@ -138,7 +138,7 @@
                 <ul class="properties-listing sort-destination p-none">
                     <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(estateItemPage.content)}" th:each="item, itemStat : ${estateItemPage.content}">
                         <div class="listing-item">
-                            <a href="/" class="text-decoration-none" target="_blank" th:href="'/estate/'+${item.houseId}">
+                            <a href="/" class="text-decoration-none" target="_blank" th:href="'/estate/'+${item.houseCode}">
                                 <span class="thumb-info thumb-info-lighten">
                                     <span class="thumb-info-wrapper m-none">
                                         <img class="lazyload img-responsive" style="height: 240px" src="/component/porto/img/blank.jpg" th:attr="data-original=${item.coverUrl}?:'/component/porto/img/blank.jpg'">
