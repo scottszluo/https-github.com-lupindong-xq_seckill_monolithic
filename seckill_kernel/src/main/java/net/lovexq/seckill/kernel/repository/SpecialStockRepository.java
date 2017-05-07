@@ -16,7 +16,7 @@ public interface SpecialStockRepository extends BasicRepository<SpecialStockMode
 
     SpecialStockModel findByHouseCode(String houseCode);
 
-    List<SpecialStockModel> findBySaleStateOrderByStartTime(String saleState);
+    List<SpecialStockModel> findByBatchAndSaleStateOrderByStartTime(String batch, String saleState);
 
     @Modifying
     @Query("UPDATE SpecialStockModel s SET number = number - 1 WHERE s.houseCode=?1 AND startTime < ?2 AND endTime >= ?2 AND number > 0")

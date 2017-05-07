@@ -2,12 +2,16 @@ package net.lovexq.seckill.kernel.controller;
 
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import net.lovexq.seckill.common.utils.IdWorker;
+import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import net.lovexq.seckill.kernel.model.EstateImageModel;
 import net.lovexq.seckill.kernel.model.EstateItemModel;
 import net.lovexq.seckill.kernel.model.SpecialStockModel;
+import net.lovexq.seckill.kernel.model.SysConfigModel;
 import net.lovexq.seckill.kernel.repository.EstateImageRepository;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
 import net.lovexq.seckill.kernel.repository.SpecialStockRepository;
+import net.lovexq.seckill.kernel.repository.SysConfigRepository;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
@@ -36,23 +40,23 @@ public class SpecialControllerTest {
     private EstateItemRepository estateItemRepository;
     @Autowired
     private EstateImageRepository estateImageRepository;
-
     @Autowired
     private SpecialStockRepository specialStockRepository;
-
+    @Autowired
+    private SysConfigRepository sysConfigRepository;
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Test
     public void clearCache() {
-        String key = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
-        redisTemplate.delete(key);
+        String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
+        redisTemplate.delete(cacheKey);
 
         List<String> keysList = new ArrayList<>();
         List<SpecialStockModel> list = specialStockRepository.findAll();
         for (SpecialStockModel model : list) {
-            key = CacheKeyGenerator.generate(SpecialStockModel.class, "getByHouseCode", model.getHouseCode());
-            keysList.add(key);
+            cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "getByHouseCode", model.getHouseCode());
+            keysList.add(cacheKey);
         }
 
         redisTemplate.delete(keysList);
@@ -92,38 +96,50 @@ public class SpecialControllerTest {
     @Test
     public void randomInsertSpecialStockV2() throws IllegalAccessException, InstantiationException {
         // 先干掉原有数据
-        String key = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
-        redisTemplate.delete(key);
-        //specialStockRepository.deleteAll();
+        clearCache();
 
-        long targetId = System.currentTimeMillis() % 1000;
-        List<EstateItemModel> estateItemList = estateItemRepository.findByHouseCodeLike("%" + targetId + "%");
-        int maxNum = estateItemList.size();
-        if (maxNum > estateItemList.size()) {
-            maxNum = estateItemList.size();
-        }
-
-        System.out.println("本次生成的特价房源数：" + maxNum);
-        LocalDate today = LocalDate.now();
-        String batch = maxNum + "@" + today.toString();
-        Random random = new Random();
-        for (int i = 0; i < maxNum; i++) {
-            EstateItemModel estateIteml = estateItemList.get(i);
-            SpecialStockModel old = specialStockRepository.findByHouseCode(estateIteml.getHouseCode());
-            if (old == null) {
-                SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
-                BeanUtils.copyProperties(estateIteml, specialStock, "id");
-                specialStock.setNumber(random.nextInt(10) + 1);
-                LocalDate.now().atStartOfDay();
-                LocalDateTime sTime = today.atStartOfDay().withHour(random.nextInt(24)).withMinute(0).withSecond(0);
-                LocalDateTime eTime = sTime.plusDays(1);
-                specialStock.setStartTime(sTime);
-                specialStock.setEndTime(eTime);
-                specialStock.setBatch(batch);
-                specialStockRepository.save(specialStock);
+        try {
+            long targetId = System.currentTimeMillis() % 1000;
+            List<EstateItemModel> estateItemList = estateItemRepository.findByHouseCodeLike("%" + targetId + "%");
+            int maxNum = estateItemList.size();
+            if (maxNum > estateItemList.size()) {
+                maxNum = estateItemList.size();
             }
-        }
 
+            System.out.println("本次生成的特价房源数：" + maxNum);
+            LocalDate today = LocalDate.now();
+            String batch = maxNum + "@" + today.toString();
+            Random random = new Random();
+            for (int i = 0; i < maxNum; i++) {
+                EstateItemModel estateIteml = estateItemList.get(i);
+                SpecialStockModel old = specialStockRepository.findByHouseCode(estateIteml.getHouseCode());
+                if (old == null && EstateEnum.FOR_SALE.getValue().equals(estateIteml.getSaleState())) {
+                    SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
+                    BeanUtils.copyProperties(estateIteml, specialStock, "id");
+                    specialStock.setNumber(random.nextInt(10) + 1);
+                    LocalDate.now().atStartOfDay();
+                    LocalDateTime sTime = today.atStartOfDay().withHour(random.nextInt(24)).withMinute(0).withSecond(0);
+                    LocalDateTime eTime = sTime.plusDays(1);
+                    specialStock.setStartTime(sTime);
+                    specialStock.setEndTime(eTime);
+                    specialStock.setBatch(batch);
+                    specialStockRepository.save(specialStock);
+                }
+            }
+
+            // 更新特价批次
+            SysConfigModel sysConfigModel = sysConfigRepository.findByConfigKey("special_batch");
+            if (sysConfigModel == null) {
+                sysConfigModel = new SysConfigModel();
+                sysConfigModel.setConfigKey("special_batch");
+            }
+            sysConfigModel.setConfigValue(batch);
+            sysConfigRepository.save(sysConfigModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.assertTrue(false);
+        }
+        Assert.assertTrue(true);
     }
 
     @Test

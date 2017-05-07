@@ -23,8 +23,7 @@ public class SysUserModel extends BasicModel implements Serializable {
      * 主键
      */
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", length = 11, updatable = false)
+    @Column(name = "id", length = 20, updatable = false)
     private Long id;
 
     /**

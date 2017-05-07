@@ -13,6 +13,7 @@ import net.lovexq.seckill.kernel.repository.SpecialKilledRepository;
 import net.lovexq.seckill.kernel.repository.SpecialStockRepository;
 import net.lovexq.seckill.kernel.service.ImageService;
 import net.lovexq.seckill.kernel.service.SpecialService;
+import net.lovexq.seckill.kernel.service.SysConfigService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,8 @@ public class SpecialServiceImpl implements SpecialService {
     @Autowired
     private ImageService imageService;
     @Autowired
+    private SysConfigService sysConfigService;
+    @Autowired
     private RedisClient redisClient;
     @Autowired
     private AppProperties appProperties;
@@ -50,15 +53,16 @@ public class SpecialServiceImpl implements SpecialService {
     @Override
     @Transactional(readOnly = true)
     public List<SpecialStockModel> listForSecKill() throws Exception {
-        String key = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
+        String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
 
-        List<SpecialStockModel> list = redisClient.getList(key, SpecialStockModel.class);
+        List<SpecialStockModel> list = redisClient.getList(cacheKey, SpecialStockModel.class);
         if (!CollectionUtils.isEmpty(list)) {
             return list;
         } else {
-            list = specialStockRepository.findBySaleStateOrderByStartTime("在售");
+            String batch = sysConfigService.getByConfigKey("special_batch").getConfigValue();
+            list = specialStockRepository.findByBatchAndSaleStateOrderByStartTime(batch, "在售");
             if (!CollectionUtils.isEmpty(list)) {
-                redisClient.setList(key, list, 20);
+                redisClient.setList(cacheKey, list, 20);
             }
             return list;
         }
@@ -67,9 +71,9 @@ public class SpecialServiceImpl implements SpecialService {
     @Override
     @Transactional(readOnly = true)
     public SpecialStockDTO getByHouseCode(String houseCode) throws Exception {
-        String key = CacheKeyGenerator.generate(SpecialStockModel.class, "getByHouseCode", houseCode);
+        String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "getByHouseCode", houseCode);
 
-        SpecialStockDTO targetStock = redisClient.getObj(key, SpecialStockDTO.class);
+        SpecialStockDTO targetStock = redisClient.getObj(cacheKey, SpecialStockDTO.class);
         if (targetStock != null) {
             return targetStock;
         } else {
@@ -78,7 +82,7 @@ public class SpecialServiceImpl implements SpecialService {
             if (sourceStock != null) {
                 BeanUtils.copyProperties(sourceStock, targetStock);
                 targetStock.setEstateImageList(imageService.listByHouseCode(houseCode));
-                redisClient.setObj(key, targetStock, 10);
+                redisClient.setObj(cacheKey, targetStock, 10);
             }
             return targetStock;
         }
