@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head th:include="common/fgHead :: head('特价秒杀 | lovexq.net')"></head>
+<!-- END HEAD -->
+<body>
+
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <span th:replace="common/coHeader"></span>
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+
+        <section class="page-header page-header-light page-header-more-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>特价秒杀<span class="font-red">原价几百万，几千万的房产，现在统统一折出售，抢到即赚到！</span></h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="row mb-lg">
+                <ul class="properties-listing sort-destination p-none">
+                    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(specialStockList)}" th:each="stock, stockStat : ${specialStockList}">
+                        <div class="listing-item">
+                            <a href="/" class="text-decoration-none" target="_blank" th:href="'/special/'+${stock.houseCode}">
+                                <span class="thumb-info thumb-info-lighten">
+                                    <span class="thumb-info-wrapper m-none">
+                                        <img class="lazyload img-responsive" style="height: 240px" src="/component/porto/img/blank.jpg" th:attr="data-original=${stock.coverUrl}?:'/component/porto/img/blank.jpg'">
+                                        <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md"
+                                              th:if="${stock.number}>0" th:text="'仅'+${stock.number}+'套'">number</span>
+                                        <span class="thumb-info-listing-type background-color-dark text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md"
+                                              th:if="${stock.number}<=0">售罄</span>
+                                    </span>
+                                    <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
+                                        <del class="font-red"><sapn th:text="'原价'+${stock.totalPrice}+'万'">totalPrice</sapn></del>&nbsp&nbsp
+                                        <sapn class="font-red" style="font-size: 1.8em" th:text="${#numbers.formatDecimal(stock.totalPrice * 0.1, 1, 2)}+'万'">totalPrice</sapn><br/>
+                                        <span class="text-sm">单价[[${stock.unitPrice}]]/平米&nbsp&nbsp&nbsp&nbsp首付[[${#numbers.formatDecimal(stock.totalPrice * 0.3, 1, 2)}]]万</span>
+                                        <i class="fa fa-caret-right text-color-secondary pull-right"></i>
+                                    </span>
+                                    <span class="custom-thumb-info-title b-normal p-lg">
+                                        <span class="thumb-info-inner text-md font-weight-bold" th:text="${stock.title}">title</span>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${stock.model}">model</span></li>
+                                            <li><span class="accomodation-value" th:text="${stock.area}+'平米'">area</span></li>
+                                            <li><span class="accomodation-value" th:text="${stock.direction}">direction</span></li>
+                                        </ul>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${stock.floor}">floor</span></li>
+                                            <li><span class="accomodation-value" th:text="${stock.buildingAge}?:'暂无数据'">buildingAge</span></li>
+                                            <li><span class="accomodation-value" th:text="${stock.decoration}">decoration</span></li>
+                                        </ul>
+                                    </span>
+                                </span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BEGIN FOOTER -->
+    <span th:replace="common/coFooter"></span>
+    <!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<span th:replace="common/fgFoot"></span>
+<!-- END FOOT -->
+
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
+        // 图片懒加载初始化
+        Common.Lazyload.init();
+    })
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

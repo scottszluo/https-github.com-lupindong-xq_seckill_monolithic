@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head th:include="common/fgHead :: head('房源信息 | lovexq.net')"></head>
+<!-- END HEAD -->
+<body>
+
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <span th:replace="common/coHeader"></span>
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+
+        <section class="page-header page-header-light page-header-more-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>房源信息<span class="font-red">万千真实房源，让每一位消费者都能找到一个家！</span></h1>
+                    </div>
+                </div>
+                <div class="row mt-lg">
+                    <div class="col-md-12">
+                        <form id="estatesForm" method="POST">
+                            <input type="hidden" name="page" id="page" th:value="${estateItemPage.number}+1">
+                            <input type="hidden" name="size" id="size" th:value="${estateItemPage.size}">
+                            <input type="hidden" name="sort" id="sort" th:value="${estateItemPage.sort}">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="regionAName" required="">
+                                            <option value=''>区域</option>
+                                            <option value="天河" th:selected="${regionAName eq '天河'}">天河</option>
+                                            <option value="越秀" th:selected="${regionAName eq '越秀'}">越秀</option>
+                                            <option value="荔湾" th:selected="${regionAName eq '荔湾'}">荔湾</option>
+                                            <option value="海珠" th:selected="${regionAName eq '海珠'}">海珠</option>
+                                            <option value="番禺" th:selected="${regionAName eq '番禺'}">番禺</option>
+                                            <option value="白云" th:selected="${regionAName eq '白云'}">白云</option>
+                                            <option value="黄埔" th:selected="${regionAName eq '黄埔'}">黄埔</option>
+                                            <option value="从化" th:selected="${regionAName eq '从化'}">从化</option>
+                                            <option value="增城" th:selected="${regionAName eq '增城'}">增城</option>
+                                            <option value="花都" th:selected="${regionAName eq '花都'}">花都</option>
+                                            <option value="萝岗" th:selected="${regionAName eq '萝岗'}">萝岗</option>
+                                            <option value="南沙" th:selected="${regionAName eq '南沙'}">南沙</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="totalPrice" required="">
+                                            <option value=''>售价</option>
+                                            <option value="tp1" th:selected="${totalPrice eq 'tp1'}">100万以下</option>
+                                            <option value="tp2" th:selected="${totalPrice eq 'tp2'}">100-200万</option>
+                                            <option value="tp3" th:selected="${totalPrice eq 'tp3'}">200-300万</option>
+                                            <option value="tp4" th:selected="${totalPrice eq 'tp4'}">300-500万</option>
+                                            <option value="tp5" th:selected="${totalPrice eq 'tp5'}">500-1000万</option>
+                                            <option value="tp6" th:selected="${totalPrice eq 'tp6'}">1000万以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="model" required="">
+                                            <option value=''>户型</option>
+                                            <option value="1室" th:selected="${model eq '1室'}">一室</option>
+                                            <option value="2室" th:selected="${model eq '2室'}">二室</option>
+                                            <option value="3室" th:selected="${model eq '3室'}">三室</option>
+                                            <option value="4室" th:selected="${model eq '4室'}">四室</option>
+                                            <option value="5室" th:selected="${model eq '5室'}">五室</option>
+                                            <option value="5室+" th:selected="${model eq '5室+'}">五室及以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="area" required="">
+                                            <option value=''>面积</option>
+                                            <option value="a1" th:selected="${area eq 'a1'}">40平以下</option>
+                                            <option value="a2" th:selected="${area eq 'a2'}">40-60平</option>
+                                            <option value="a3" th:selected="${area eq 'a3'}">60-80平</option>
+                                            <option value="a4" th:selected="${area eq 'a4'}">80-100平</option>
+                                            <option value="a5" th:selected="${area eq 'a5'}">100-144平</option>
+                                            <option value="a6" th:selected="${area eq 'a6'}">144平以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="direction" required="">
+                                            <option value=''>朝向</option>
+                                            <option value="东" th:selected="${direction eq '东'}">东</option>
+                                            <option value="西" th:selected="${direction eq '西'}">西</option>
+                                            <option value="南" th:selected="${direction eq '南'}">南</option>
+                                            <option value="北" th:selected="${direction eq '北'}">北</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="floor" required="">
+                                            <option value=''>楼层</option>
+                                            <option value="低楼层" th:selected="${floor eq '低楼层'}">低楼层</option>
+                                            <option value="中楼层" th:selected="${floor eq '中楼层'}">中楼层</option>
+                                            <option value="高楼层" th:selected="${floor eq '高楼层'}">高楼层</option>
+                                            <option value="独栋" th:selected="${floor eq '独栋'}">独栋</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="nav nav-pills sort-source">
+                                <li th:class="'sort id ' + (${#strings.contains(#strings.defaultString(sort,'id'),'id')?'active':''})">
+                                    <a href="#">默认排序</a>
+                                </li>
+                                <li th:class="'sort totalPrice ' + (${#strings.contains(#strings.defaultString(sort,'id'),'totalPrice')?'active':''})">
+                                    <a href="#">房屋总价</a>
+                                </li>
+                                <li th:class="'sort unitPrice ' + (${#strings.contains(#strings.defaultString(sort,'id'),'unitPrice')?'active':''})">
+                                    <a href="#">房屋单价</a>
+                                </li>
+                                <li th:class="'sort area ' + (${#strings.contains(#strings.defaultString(sort,'id'),'area')?'active':''})">
+                                    <a href="#">房屋面积</a>
+                                </li>
+                                <li th:class="'sort focusNum ' + (${#strings.contains(#strings.defaultString(sort,'id'),'focusNum')?'active':''})">
+                                    <a href="#">关注人数</a>
+                                </li>
+                                <li th:class="'sort watchNum ' + (${#strings.contains(#strings.defaultString(sort,'id'),'watchNum')?'active':''})">
+                                    <a href="#">带看次数</a>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="row mb-lg">
+                <ul class="properties-listing sort-destination p-none">
+                    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item" th:if="${not #lists.isEmpty(estateItemPage.content)}" th:each="item, itemStat : ${estateItemPage.content}">
+                        <div class="listing-item">
+                            <a href="/" class="text-decoration-none" target="_blank" th:href="'/estate/'+${item.houseCode}">
+                                <span class="thumb-info thumb-info-lighten">
+                                    <span class="thumb-info-wrapper m-none">
+                                        <img class="lazyload img-responsive" style="height: 240px" src="/component/porto/img/blank.jpg" th:attr="data-original=${item.coverUrl}?:'/component/porto/img/blank.jpg'">
+                                        <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md" th:if="${item.new} == true">新上</span>
+                                    </span>
+                                    <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
+                                        <sapn class="font-red" th:text="${item.totalPrice}+'万'">totalPrice</sapn><br/>
+                                        <span class="text-sm">单价[[${item.unitPrice}]]/平米&nbsp&nbsp&nbsp&nbsp首付[[${#numbers.formatDecimal(item.totalPrice * 0.3, 1, 2)}]]万</span>
+                                        <i class="fa fa-caret-right text-color-secondary pull-right"></i>
+                                    </span>
+                                    <span class="custom-thumb-info-title b-normal p-lg">
+                                        <span class="thumb-info-inner text-md font-weight-bold" th:text="${item.title}">title</span>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${item.model}">model</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.area}+'平米'">area</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.direction}">direction</span></li>
+                                        </ul>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${item.floor}">floor</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.buildingAge}?:'暂无数据'">buildingAge</span></li>
+                                            <li><span class="accomodation-value" th:text="${item.decoration}">decoration</span></li>
+                                        </ul>
+                                        <ul class="accommodations text-uppercase p-none text-sm">
+                                            <li><span class="accomodation-value" th:text="${item.focusNum}+'人关注'">focusNum</span></li>
+                                            <li><span class="accomodation-value" th:text="'共'+${item.watchNum}+'次带看'">watchNum</span></li>
+                                        </ul>
+                                    </span>
+                                </span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row mt-lg mb-xlg">
+                <div class="col-md-12 center" id="pagination"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BEGIN FOOTER -->
+    <span th:replace="common/coFooter"></span>
+    <!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<span th:replace="common/fgFoot"></span>
+<!-- END FOOT -->
+
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
+        // 图片懒加载初始化
+        Common.Lazyload.init();
+        // 分页事件初始化
+        Common.Bootpag.initWithPost("estatesForm", Estate.List.url(), [[${estateItemPage.totalPages}]], [[${estateItemPage.number}]] + 1);
+        // 绑定数据过滤函数
+        $("select").on("change", function () {
+            Estate.List.filterData(this);
+        })
+        $(".sort").click(function () {
+            Estate.List.filterData(this);
+        })
+    })
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

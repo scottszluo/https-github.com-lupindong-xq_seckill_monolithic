@@ -1,0 +1,7 @@
+resources/3rd-party/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
