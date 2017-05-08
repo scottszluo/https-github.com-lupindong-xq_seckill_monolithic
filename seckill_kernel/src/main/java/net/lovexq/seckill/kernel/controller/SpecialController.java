@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public class SpecialController extends BasicController {
     public String detailUI(@PathVariable("houseCode") String houseCode, Model model) throws Exception {
         SpecialStockDTO specialStock = specialService.getByHouseCode(houseCode);
         model.addAttribute("specialStock", specialStock);
-        model.addAttribute("nowTimeX", TimeUtil.format(LocalDateTime.now()));
+        model.addAttribute("nowTimeX", TimeUtil.format(TimeUtil.nowDateTime()));
         model.addAttribute("startTimeX", TimeUtil.format(specialStock.getStartTime()));
         model.addAttribute("endTimeX", TimeUtil.format(specialStock.getEndTime()));
 
@@ -55,7 +56,7 @@ public class SpecialController extends BasicController {
     @ResponseBody
     @GetMapping("/special/now")
     public JsonResult now() {
-        return new JsonResult(TimeUtil.format(LocalDateTime.now()));
+        return new JsonResult(TimeUtil.format(TimeUtil.nowDateTime()));
     }
 
     @ResponseBody

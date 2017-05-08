@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import net.lovexq.seckill.common.utils.IdWorker;
+import net.lovexq.seckill.common.utils.TimeUtil;
 import net.lovexq.seckill.core.properties.AppProperties;
 import net.lovexq.seckill.core.repository.cache.RedisClient;
 import net.lovexq.seckill.kernel.dto.SpecialStockDTO;
@@ -95,7 +96,7 @@ public class SpecialServiceImpl implements SpecialService {
 
         LocalDateTime startTime = specialStock.getStartTime(); // 秒杀开始时间
         LocalDateTime endTime = specialStock.getEndTime(); // 秒杀结束时间
-        LocalDateTime nowTime = LocalDateTime.now(); //系统当前时间
+        LocalDateTime nowTime = TimeUtil.nowDateTime(); //系统当前时间
 
         //若是秒杀未开始
         if (startTime.isAfter(nowTime)) {
@@ -140,7 +141,7 @@ public class SpecialServiceImpl implements SpecialService {
             // 插入成功
         } else {
             // 执行减库存操作
-            int updateCount = specialStockRepository.reduceNumber(houseCode, LocalDateTime.now());
+            int updateCount = specialStockRepository.reduceNumber(houseCode, TimeUtil.nowDateTime());
 
             // 更新失败，说明库存为零，则秒杀失败
             if (updateCount <= 0) {

@@ -1,6 +1,7 @@
 package net.lovexq.seckill.common.model;
 
 import net.lovexq.seckill.common.LocalDateTimeType;
+import net.lovexq.seckill.common.utils.TimeUtil;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
@@ -55,12 +56,12 @@ public class BasicModel {
 
     @PrePersist
     public void prePersist() {
-        setCreateTime(LocalDateTime.now());
-        setUpdateTime(LocalDateTime.now());
+        setCreateTime(TimeUtil.nowDateTime());
+        setUpdateTime(TimeUtil.nowDateTime());
     }
 
     @PreUpdate
     public void preUpdate() {
-        setUpdateTime(LocalDateTime.now());
+        setUpdateTime(TimeUtil.nowDateTime());
     }
 }

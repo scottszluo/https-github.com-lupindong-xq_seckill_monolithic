@@ -1,13 +1,12 @@
 package net.lovexq.seckill.kernel.repository;
 
+import net.lovexq.seckill.common.utils.TimeUtil;
 import net.lovexq.seckill.kernel.model.SysUserModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.time.LocalDateTime;
 
 /**
  * Created by LuPindong on 2017-4-30.
@@ -36,8 +35,8 @@ public class SysUserRepositoryTest {
             newUser.setAccount(oldUser.getAccount().replace("4", indexStr));
             newUser.setMobile(String.valueOf(Long.parseLong(oldUser.getMobile()) + index));
             newUser.setEmail(oldUser.getEmail().replace("4", indexStr));
-            newUser.setCreateTime(LocalDateTime.now());
-            newUser.setUpdateTime(LocalDateTime.now());
+            newUser.setCreateTime(TimeUtil.nowDateTime());
+            newUser.setUpdateTime(TimeUtil.nowDateTime());
             newUser.setLocked(false);
             newUser.setState(true);
             sysUserRepository.saveAndFlush(newUser);

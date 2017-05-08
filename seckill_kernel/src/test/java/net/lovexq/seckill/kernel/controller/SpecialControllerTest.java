@@ -2,6 +2,7 @@ package net.lovexq.seckill.kernel.controller;
 
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import net.lovexq.seckill.common.utils.IdWorker;
+import net.lovexq.seckill.common.utils.TimeUtil;
 import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import net.lovexq.seckill.core.repository.cache.RedisClient;
 import net.lovexq.seckill.kernel.model.EstateImageModel;
@@ -88,7 +89,7 @@ public class SpecialControllerTest {
             model.setSaleState(map.get("sale_state").toString());
             model.setCoverUrl(map.get("cover_url") != null ? map.get("cover_url").toString() : "");
             model.setNumber(random.nextInt(10) + 1);
-            LocalDateTime sTime = LocalDateTime.now();
+            LocalDateTime sTime = TimeUtil.nowDateTime();
             LocalDateTime eTime = sTime.plusDays(1);
             model.setStartTime(sTime);
             model.setEndTime(eTime);
@@ -120,7 +121,8 @@ public class SpecialControllerTest {
                 if (old == null && EstateEnum.FOR_SALE.getValue().equals(estateItem.getSaleState())) {
                     SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
                     BeanUtils.copyProperties(estateItem, specialStock, "id");
-                    specialStock.setNumber(random.nextInt(10) + 1);
+                    specialStock.setTotal(random.nextInt(10) + 1);
+                    specialStock.setNumber(specialStock.getTotal());
                     LocalDate.now().atStartOfDay();
                     LocalDateTime sTime = today.atStartOfDay().withHour(random.nextInt(24)).withMinute(0).withSecond(0);
                     LocalDateTime eTime = sTime.plusDays(1);
@@ -175,7 +177,7 @@ public class SpecialControllerTest {
                 String postfix = "-N" + targetId + "-" + maxNum + "-" + i;
                 newModel.setTitle(estateIteml.getTitle() + postfix);
                 newModel.setHouseCode(estateIteml.getHouseCode() + postfix);
-                LocalDateTime sTime = LocalDateTime.now();
+                LocalDateTime sTime = TimeUtil.nowDateTime();
                 LocalDateTime eTime = sTime.plusDays(1);
                 newModel.setCreateTime(sTime);
                 newModel.setUpdateTime(eTime);

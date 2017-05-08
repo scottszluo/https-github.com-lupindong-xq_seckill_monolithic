@@ -53,9 +53,13 @@ public class TimeTest {
         //Exception in thread "main" java.time.DateTimeException: 
         //Invalid value for HourOfDay (valid values 0 - 23): 25
 
+        LocalTime timeKolkata2 = LocalTime.now();
+        System.out.println("Current Time in IST=" + timeKolkata2);
+
         //Current date in "Asia/Kolkata", you can get it from ZoneId javadoc
         LocalTime timeKolkata = LocalTime.now(ZoneId.of("Asia/Shanghai"));
         System.out.println("Current Time in IST=" + timeKolkata);
+
 
         //java.time.zone.ZoneRulesException: Unknown time-zone ID: IST
         //LocalTime todayIST = LocalTime.now(ZoneId.of("IST"));
@@ -69,8 +73,9 @@ public class TimeTest {
     public void testLocalDateTimeExample() {
 
         //Current Date
-        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime today = TimeUtil.nowDateTime();
         //System.out.println("Current DateTime = " + today.format(new DateTimeFormatter("yyyy-MM-dd HH:mm:ss")));
+        System.out.println(today);
 
         //Current Date using LocalDate and LocalTime
         today = LocalDateTime.of(LocalDate.now(), LocalTime.now());
@@ -86,7 +91,11 @@ public class TimeTest {
         //Invalid value for HourOfDay (valid values 0 - 23): 25
 
         //Current date in "Asia/Kolkata", you can get it from ZoneId javadoc
-        LocalDateTime todayKolkata = LocalDateTime.now(ZoneId.of("Asia/Shanghai"));
+        LocalDateTime todayKolkatax = TimeUtil.nowDateTime();
+        System.out.println("Current Date in IST=" + todayKolkatax);
+
+        //Current date in "Asia/Kolkata", you can get it from ZoneId javadoc
+        LocalDateTime todayKolkata = LocalDateTime.now(ZoneId.of("America/New_York"));
         System.out.println("Current Date in IST=" + todayKolkata);
 
         //java.time.zone.ZoneRulesException: Unknown time-zone ID: IST
@@ -145,7 +154,7 @@ public class TimeTest {
         System.out.println(date.format(DateTimeFormatter.ofPattern("d::MMM::uuuu")));
         System.out.println(date.format(DateTimeFormatter.BASIC_ISO_DATE));
 
-        LocalDateTime dateTime = LocalDateTime.now();
+        LocalDateTime dateTime = TimeUtil.nowDateTime();
 
         //default format
         System.out.println("Default format of LocalDateTime=" + dateTime);

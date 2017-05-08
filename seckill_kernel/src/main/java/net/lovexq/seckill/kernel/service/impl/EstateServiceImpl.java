@@ -1,5 +1,6 @@
 package net.lovexq.seckill.kernel.service.impl;
 
+import net.lovexq.seckill.common.utils.TimeUtil;
 import net.lovexq.seckill.kernel.dto.EstateItemDTO;
 import net.lovexq.seckill.kernel.model.EstateItemModel;
 import net.lovexq.seckill.kernel.repository.EstateItemRepository;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class EstateServiceImpl implements EstateService {
             EstateItemDTO targetItem = new EstateItemDTO();
             BeanUtils.copyProperties(sourceItem, targetItem);
             // 如果是最近三天上架的
-            if (targetItem.getUpdateTime().isAfter(LocalDateTime.now().minusDays(3))) {
+            if (targetItem.getUpdateTime().isAfter(TimeUtil.nowDateTime().minusDays(3))) {
                 targetItem.setNew(true);
             }
             targetItemList.add(targetItem);

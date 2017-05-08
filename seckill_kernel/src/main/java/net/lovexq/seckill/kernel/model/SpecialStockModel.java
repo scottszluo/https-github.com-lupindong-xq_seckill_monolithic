@@ -26,6 +26,7 @@ public class SpecialStockModel extends BasicModel implements Serializable {
 
     private String batch;       //批次
 
+    private Integer total;         //总库存数量
     private Integer number;         //库存数量
     @Type(type = "localDateTimeType")
     private LocalDateTime startTime;//开始时间
@@ -85,6 +86,14 @@ public class SpecialStockModel extends BasicModel implements Serializable {
 
     public void setBatch(String batch) {
         this.batch = batch;
+    }
+
+    public Integer getTotal() {
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
     }
 
     public Integer getNumber() {
@@ -297,6 +306,7 @@ public class SpecialStockModel extends BasicModel implements Serializable {
         final StringBuilder sb = new StringBuilder("SpecialStockModel{");
         sb.append("id=").append(id);
         sb.append(", batch='").append(batch).append('\'');
+        sb.append(", total=").append(total);
         sb.append(", number=").append(number);
         sb.append(", title='").append(title).append('\'');
         sb.append(", houseCode='").append(houseCode).append('\'');

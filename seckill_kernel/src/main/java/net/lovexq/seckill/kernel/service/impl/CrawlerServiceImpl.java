@@ -71,9 +71,11 @@ public class CrawlerServiceImpl implements CrawlerService {
             exec.submit(new LianJiaInitializeCallable(lianJiaParam, mqProducer, initializeQueue));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            exec.shutdownNow();
             result = new JsonResult(500, e.getMessage());
+        } finally {
+            exec.shutdown();
         }
+
         return result;
     }
 
@@ -87,8 +89,9 @@ public class CrawlerServiceImpl implements CrawlerService {
             exec.submit(new LianJiaCheckCallable(lianJiaParam, mqProducer, checkQueue));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            exec.shutdownNow();
             result = new JsonResult(500, e.getMessage());
+        } finally {
+            exec.shutdown();
         }
         return result;
     }
@@ -130,8 +133,9 @@ public class CrawlerServiceImpl implements CrawlerService {
             exec.submit(new LianJiaAddCallable(lianJiaParam, mqProducer, initializeQueue));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            exec.shutdownNow();
             result = new JsonResult(500, e.getMessage());
+        } finally {
+            exec.shutdown();
         }
         return result;
     }
