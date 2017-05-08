@@ -1,7 +1,7 @@
 package net.lovexq.seckill.kernel;
 
-import net.lovexq.seckill.kernel.model.SpecialStockModel;
-import net.lovexq.seckill.kernel.repository.SpecialStockRepository;
+import net.lovexq.background.special.model.SpecialStockModel;
+import net.lovexq.background.special.repository.SpecialStockRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

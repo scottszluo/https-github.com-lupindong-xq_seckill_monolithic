@@ -1,6 +1,8 @@
 package net.lovexq.seckill.core.support.security;
 
 import io.jsonwebtoken.Claims;
+import net.lovexq.background.core.support.security.JwtClaims;
+import net.lovexq.background.core.support.security.JwtTokenUtil;
 import org.junit.Test;
 
 /**

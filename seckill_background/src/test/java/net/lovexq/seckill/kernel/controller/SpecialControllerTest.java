@@ -1,18 +1,18 @@
 package net.lovexq.seckill.kernel.controller;
 
+import net.lovexq.background.system.model.SystemConfigModel;
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import net.lovexq.seckill.common.utils.IdWorker;
 import net.lovexq.seckill.common.utils.TimeUtil;
 import net.lovexq.seckill.common.utils.enums.EstateEnum;
-import net.lovexq.seckill.core.repository.cache.RedisClient;
-import net.lovexq.seckill.kernel.model.EstateImageModel;
-import net.lovexq.seckill.kernel.model.EstateItemModel;
-import net.lovexq.seckill.kernel.model.SpecialStockModel;
-import net.lovexq.seckill.kernel.model.SysConfigModel;
-import net.lovexq.seckill.kernel.repository.EstateImageRepository;
-import net.lovexq.seckill.kernel.repository.EstateItemRepository;
-import net.lovexq.seckill.kernel.repository.SpecialStockRepository;
-import net.lovexq.seckill.kernel.repository.SysConfigRepository;
+import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.estate.model.EstateImageModel;
+import net.lovexq.background.estate.model.EstateItemModel;
+import net.lovexq.background.special.model.SpecialStockModel;
+import net.lovexq.background.estate.repository.EstateImageRepository;
+import net.lovexq.background.estate.repository.EstateItemRepository;
+import net.lovexq.background.special.repository.SpecialStockRepository;
+import net.lovexq.background.system.repository.SysConfigRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -136,15 +136,15 @@ public class SpecialControllerTest {
             }
 
             // 更新特价批次
-            SysConfigModel sysConfigModel = sysConfigRepository.findByConfigKey("special_batch");
+            SystemConfigModel sysConfigModel = sysConfigRepository.findByConfigKey("special_batch");
             if (sysConfigModel == null) {
-                sysConfigModel = new SysConfigModel();
+                sysConfigModel = new SystemConfigModel();
                 sysConfigModel.setConfigKey("special_batch");
             }
             sysConfigModel.setConfigValue(batch);
             sysConfigRepository.save(sysConfigModel);
 
-            String cacheKey = CacheKeyGenerator.generate(SysConfigModel.class, "getByConfigKey", "special_batch");
+            String cacheKey = CacheKeyGenerator.generate(SystemConfigModel.class, "getByConfigKey", "special_batch");
             redisClient.setObj(cacheKey, sysConfigModel);
         } catch (Exception e) {
             e.printStackTrace();

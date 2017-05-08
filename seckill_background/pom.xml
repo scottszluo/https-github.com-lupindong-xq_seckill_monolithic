@@ -63,6 +63,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-java8time</artifactId>
+        </dependency>
         <!-- 这里指定打包的时候不再需要tomcat相关的包 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

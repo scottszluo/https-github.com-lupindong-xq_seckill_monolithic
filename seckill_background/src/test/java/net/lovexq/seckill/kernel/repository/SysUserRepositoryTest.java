@@ -1,7 +1,8 @@
 package net.lovexq.seckill.kernel.repository;
 
+import net.lovexq.background.system.model.SystemUserModel;
+import net.lovexq.background.system.repository.SysUserRepository;
 import net.lovexq.seckill.common.utils.TimeUtil;
-import net.lovexq.seckill.kernel.model.SysUserModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,12 @@ public class SysUserRepositoryTest {
 
     @Test
     public void testBatchAddUser() {
-        SysUserModel newUser;
-        SysUserModel oldUser = sysUserRepository.findOne(343142L);
+        SystemUserModel newUser;
+        SystemUserModel oldUser = sysUserRepository.findOne(343142L);
         Long index = 343142L;
         while (true) {
             index++;
-            newUser = new SysUserModel();
+            newUser = new SystemUserModel();
             String indexStr = index.toString();
 
             newUser.setId(index);
