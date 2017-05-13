@@ -138,7 +138,7 @@ var Estate = (function () {
         init: function () {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
             if (requestParamObj == null || requestParamObj.length < 1) {
-                requestParamObj = {"page": 1};
+                requestParamObj = {"page": 1, "sort": "id:DESC"};
             }
             // 载入列表数据
             this.loadData(requestParamObj);
@@ -162,9 +162,9 @@ var Estate = (function () {
         goNextPage: function (pageNum) {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
             if (requestParamObj != null && requestParamObj.length > 0) {
-                requestParamObj.push("page", pageNum);
+                requestParamObj.page = pageNum;
             } else {
-                requestParamObj = {"page": pageNum};
+                requestParamObj = {"page": pageNum, "sort": "id:DESC"};
             }
             this.loadData(requestParamObj);
         },
