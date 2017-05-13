@@ -104,7 +104,7 @@ public class LianJiaCheckCallable implements Callable<JsonResult> {
             String pageUrl = pageElement.attr("page-url");
             Map pageData = JSON.parseObject(pageElement.attr("page-data"), Map.class);
             int curPage = MapUtils.getIntValue(pageData, "curPage");
-            int totalPage = MapUtils.getIntValue(pageData, "totalPage") + 5;
+            int totalPage = MapUtils.getIntValue(pageData, "totalPage") + 1;
             // 抓取每页数据
             while (curPage <= totalPage) {
                 curPageUrl = pageUrl.replace("{page}", String.valueOf(curPage));

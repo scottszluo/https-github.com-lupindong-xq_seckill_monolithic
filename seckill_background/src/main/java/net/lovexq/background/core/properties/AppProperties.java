@@ -18,6 +18,7 @@ public class AppProperties {
     private String publicSalt;
     private String jwtSecretKey;
     private Long jwtExpiration;
+    private String producesPath;
 
     public String getLiaJiaCookie() {
         return liaJiaCookie;
@@ -57,5 +58,13 @@ public class AppProperties {
 
     public void setJwtExpiration(Long jwtExpiration) {
         this.jwtExpiration = jwtExpiration;
+    }
+
+    public String getProducesPath() {
+        return producesPath;
+    }
+
+    public void setProducesPath(String producesPath) {
+        this.producesPath = producesPath;
     }
 }

@@ -140,17 +140,23 @@ var Estate = (function () {
             if (requestParamObj == null || requestParamObj.length < 1) {
                 requestParamObj = {"page": 1};
             }
+            // 载入列表数据
             this.loadData(requestParamObj);
 
-            // 绑定数据过滤函数
+            // 绑定过滤函数
             $("select").on("change", function () {
-                List.filterData(this);
+                List.filterData(this, 1);
             })
 
+            // 绑定排序函数
             $(".sort").click(function () {
-                List.sortData(this);
+                List.sortData(this, 1);
             })
 
+            // 触发排序函数
+            var sortValues = requestParamObj.sort.split(":");
+            var selector = "li.sort." + sortValues[0];
+            List.sortData($(selector)[0], 0);
         },
 
         goNextPage: function (pageNum) {
@@ -206,15 +212,35 @@ var Estate = (function () {
             $("#estatesForm").attr("action", Estate.List.dataUrl()).submit();
         },
 
-        sortData: function (obj) {
+        sortData: function (obj, type) {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
-            console.log(requestParamObj);
             var classNames = obj.className.split(" ");
             if (Common.StringUtil.isBlank(requestParamObj.sort)) {
                 requestParamObj.sort = "id:DESC";
             }
             var sortValues = requestParamObj.sort.split(":");
-            var sortType = Common.StringUtil.getNewSortType(sortValues[1]);
+            var sortType = sortValues[1];
+            if (1 == type) {
+                sortType = Common.StringUtil.getNewSortType(sortType);
+            }
+
+            // 清空之前的排序按钮
+            $("li.sort").removeClass("active");
+            $("li.sort >a > i").remove();
+
+            // 选中对应排序按钮
+            var selector = "li.sort." + classNames[1];
+            $(selector).addClass("active");
+
+            // 添加升降序箭头
+            var html = '<a href="#">' + $(selector).attr("data-loading-text")
+            var arrowIcon = "<i class='fa fa-long-arrow-up'></i>";
+            if ("DESC" == sortType) {
+                arrowIcon = "<i class='fa fa-long-arrow-down'></i>";
+            }
+            html = html + arrowIcon + '</a>';
+            $(selector).html(html);
+
             requestParamObj.sort = classNames[1] + ":" + sortType;
             this.loadData(requestParamObj);
         }

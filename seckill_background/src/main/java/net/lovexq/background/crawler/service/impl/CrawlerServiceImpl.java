@@ -1,25 +1,26 @@
 package net.lovexq.background.crawler.service.impl;
 
-import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.seckill.common.utils.BeanMapUtil;
-import net.lovexq.seckill.common.utils.ProtoStuffUtil;
-import net.lovexq.seckill.common.utils.enums.CrawlerRecordEnum;
-import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import net.lovexq.background.core.properties.AppProperties;
 import net.lovexq.background.core.support.activemq.MqProducer;
 import net.lovexq.background.core.support.lianjia.LianJiaAddCallable;
 import net.lovexq.background.core.support.lianjia.LianJiaCheckCallable;
 import net.lovexq.background.core.support.lianjia.LianJiaInitializeCallable;
 import net.lovexq.background.core.support.lianjia.LianJiaParam;
-import net.lovexq.background.estate.dto.EstateItemDTO;
 import net.lovexq.background.crawler.model.CrawlerRecordModel;
+import net.lovexq.background.crawler.repository.CrawlerRecordRepository;
+import net.lovexq.background.crawler.service.CrawlerService;
+import net.lovexq.background.estate.dto.EstateItemDTO;
 import net.lovexq.background.estate.model.EstateImageModel;
 import net.lovexq.background.estate.model.EstateItemModel;
-import net.lovexq.background.crawler.repository.CrawlerRecordRepository;
 import net.lovexq.background.estate.repository.EstateImageRepository;
 import net.lovexq.background.estate.repository.EstateItemRepository;
-import net.lovexq.background.crawler.service.CrawlerService;
+import net.lovexq.seckill.common.model.JsonResult;
+import net.lovexq.seckill.common.utils.BeanMapUtil;
+import net.lovexq.seckill.common.utils.ProtoStuffUtil;
+import net.lovexq.seckill.common.utils.enums.CrawlerRecordEnum;
+import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +28,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import javax.jms.Queue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.io.FileWriter;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -160,9 +163,13 @@ public class CrawlerServiceImpl implements CrawlerService {
             estateItemRepository.save(model);
             // 保存房源图片
             saveImages(dto);
+
+            // 生成静态页面
+            generateStaticPage(BeanMapUtil.beanToMap(dto), "estate_detailUI");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+
     }
 
     /**
@@ -213,6 +220,24 @@ public class CrawlerServiceImpl implements CrawlerService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void generateStaticPage(Map dataMap, String templateName) throws Exception {
+        //构造模板引擎
+        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        resolver.setPrefix("templates/");//模板所在目录，相对于当前classloader的classpath。
+        resolver.setSuffix(".html");//模板文件后缀
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(resolver);
+
+        //构造上下文(Model)
+        Context context = new Context(Locale.CHINA, dataMap);
+        //渲染模板
+        String houseCode = MapUtils.getString(dataMap, "houseCode");
+        Assert.notNull(houseCode, "HouseCode must not be null!");
+        FileWriter write = new FileWriter(appProperties.getProducesPath() + houseCode + ".shtml");
+        templateEngine.process(templateName, context, write);
     }
 
 }

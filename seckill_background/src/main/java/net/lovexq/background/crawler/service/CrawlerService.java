@@ -2,6 +2,8 @@ package net.lovexq.background.crawler.service;
 
 import net.lovexq.seckill.common.model.JsonResult;
 
+import java.util.Map;
+
 /**
  * Created by LuPindong on 2017-4-27.
  */
@@ -15,4 +17,6 @@ public interface CrawlerService {
     void saveInitializeData(byte[] dataArray) throws Exception;
 
     void saveCheckData(byte[] dataArray) throws Exception;
+
+    void generateStaticPage(Map dataMap, String templateName) throws Exception;
 }
