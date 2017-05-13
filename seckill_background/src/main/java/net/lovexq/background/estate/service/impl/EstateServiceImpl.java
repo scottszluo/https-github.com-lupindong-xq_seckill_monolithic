@@ -48,6 +48,7 @@ public class EstateServiceImpl implements EstateService {
         String cacheKey = CacheKeyGenerator.generate(EstateItemDTO.class, "listForSaleByPage", pageable, paramMap);
 
         Page<EstateItemDTO> targetItemPage = new PageX();
+        //redisClient.del(cacheKey);
         // 读取缓存数据
         targetItemPage = redisClient.getObj(cacheKey, targetItemPage.getClass());
         if (targetItemPage != null && CollectionUtils.isNotEmpty(targetItemPage.getContent())) {

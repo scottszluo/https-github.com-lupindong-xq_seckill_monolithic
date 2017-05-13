@@ -135,13 +135,27 @@ var Estate = (function () {
             return "/estates";
         },
 
-        init: function () {
-            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+        checkRequestParamObj: function (requestParamObj) {
             if (requestParamObj == null || requestParamObj.length < 1) {
                 requestParamObj = {"page": 1, "sort": "id:DESC"};
             }
+            return requestParamObj;
+        },
+
+        init: function () {
+            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+
+            // 选中过滤条件
+            this.checkFilterFiled(requestParamObj);
+
+            requestParamObj = this.checkRequestParamObj(requestParamObj);
             // 载入列表数据
             this.loadData(requestParamObj);
+
+            // 触发排序函数
+            var sortValues = requestParamObj.sort.split(":");
+            var selector = "li.sort." + sortValues[0];
+            List.sortData($(selector)[0], 0);
 
             // 绑定过滤函数
             $("select").on("change", function () {
@@ -152,48 +166,45 @@ var Estate = (function () {
             $(".sort").click(function () {
                 List.sortData(this, 1);
             })
-
-            // 触发排序函数
-            var sortValues = requestParamObj.sort.split(":");
-            var selector = "li.sort." + sortValues[0];
-            List.sortData($(selector)[0], 0);
         },
 
         goNextPage: function (pageNum) {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
-            if (requestParamObj != null && requestParamObj.length > 0) {
-                requestParamObj.page = pageNum;
-            } else {
-                requestParamObj = {"page": pageNum, "sort": "id:DESC"};
-            }
+            requestParamObj = this.checkRequestParamObj(requestParamObj);
+            requestParamObj.page = pageNum;
+
             this.loadData(requestParamObj);
         },
 
         loadData: function (requestParamObj) {
             $.get(List.dataUrl(), requestParamObj).done(function (result) {
                 var pageData = result.data;
-                $("#listing").loadTemplate("#listData", pageData.content, {
-                    complete: function () {
-                        Common.Lazyload.init();
-                    },
-                });
+                if (pageData != null) {
+                    $("#listing").loadTemplate("#listData", pageData.content, {
+                        complete: function () {
+                            Common.Lazyload.init();
+                        },
+                    });
 
-                // 先解绑
-                $('#pagination').off('page');
+                    // 先解绑
+                    $('#pagination').off('page');
 
-                // 分页
-                $('#pagination').bootpag({
-                    total: (pageData.totalPages > 100) ? 100 : pageData.totalPages,
-                    page: pageData.number + 1,
-                    maxVisible: 5,
-                    leaps: true,
-                    firstLastUse: true,
-                    first: '首页',
-                    last: '尾页',
-                }).on('page', function (event, num) {
-                    $(window).scrollTop(0);
-                    List.goNextPage(num);
-                });
+                    // 分页
+                    $('#pagination').bootpag({
+                        total: (pageData.totalPages > 100) ? 100 : pageData.totalPages,
+                        page: pageData.number + 1,
+                        maxVisible: 5,
+                        leaps: true,
+                        firstLastUse: true,
+                        first: '首页',
+                        last: '尾页',
+                    }).on('page', function (event, num) {
+                        $(window).scrollTop(0);
+                        List.goNextPage(num);
+                    });
+                } else {
+                    $("#listing").html("<h2>暂无符合条件的数据！</h2>");
+                }
             }).fail(function (result) {
                 Common.PNotice.error(result.message);
             });
@@ -201,40 +212,54 @@ var Estate = (function () {
             sessionStorage.setItem("requestParam", JSON.stringify(requestParamObj));
         },
 
-        filterData: function (obj) {
-            if ("LI" == obj.tagName) {
-                var classNames = obj.className.split(" ");
-                var sortValues = $("#sort").val().split(":");
-                var sortType = Common.StringUtil.getNewSortType(sortValues[1]);
-                $("#sort").val(classNames[1] + ":" + sortType);
-            }
+        checkFilterFiled: function (requestParamObj) {
+            $.each($("select.form-control"), function (index, obj) {
+                var selectValue = requestParamObj[obj.name];
+                if (Common.StringUtil.isNotBlank(selectValue)) {
+                    obj.value = selectValue;
+                } else {
+                    obj.value = "";
+                    delete requestParamObj[obj.name];
+                }
+            })
+        },
 
-            $("#estatesForm").attr("action", Estate.List.dataUrl()).submit();
+        filterData: function (obj) {
+            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+            requestParamObj = this.checkRequestParamObj(requestParamObj);
+
+            var selectName = obj.name;
+            var selectValue = obj.options[obj.selectedIndex].value;
+            if (Common.StringUtil.isNotBlank(selectValue)) {
+                requestParamObj[selectName] = selectValue;
+            } else {
+                delete requestParamObj[selectName];
+            }
+            requestParamObj.page = 1;
+            this.loadData(requestParamObj);
         },
 
         sortData: function (obj, type) {
-            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
-            var classNames = obj.className.split(" ");
-            if (Common.StringUtil.isBlank(requestParamObj.sort)) {
-                requestParamObj.sort = "id:DESC";
-            }
-            var sortValues = requestParamObj.sort.split(":");
-            var sortType = sortValues[1];
-            if (1 == type) {
-                sortType = Common.StringUtil.getNewSortType(sortType);
-            }
-
             // 清空之前的排序按钮
             $("li.sort").removeClass("active");
             $("li.sort >a > i").remove();
 
             // 选中对应排序按钮
+            var classNames = obj.className.split(" ");
             var selector = "li.sort." + classNames[1];
             $(selector).addClass("active");
 
             // 添加升降序箭头
             var html = '<a href="#">' + $(selector).attr("data-loading-text")
             var arrowIcon = "<i class='fa fa-long-arrow-up'></i>";
+
+            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+            requestParamObj = this.checkRequestParamObj(requestParamObj);
+            var sortValues = requestParamObj.sort.split(":");
+            var sortType = sortValues[1];
+            if (1 == type) {
+                sortType = Common.StringUtil.getNewSortType(sortType);
+            }
             if ("DESC" == sortType) {
                 arrowIcon = "<i class='fa fa-long-arrow-down'></i>";
             }

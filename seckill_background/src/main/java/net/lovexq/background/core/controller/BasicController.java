@@ -25,7 +25,6 @@ public class BasicController {
 
     protected Pageable pageable;
     protected JsonResult result = new JsonResult();
-    protected Map<String, String> paramMap = new HashMap<>();
     private int defaultPage = 1; // 默认第一页
     private int maxPage = 100; // 最多显示前100页
     private int defaultSize = 15;
@@ -68,6 +67,7 @@ public class BasicController {
     }
 
     protected Map<String, String> buildParamMap(HttpServletRequest request) {
+        Map<String, String> paramMap = new HashMap<>();
         Map<String, String[]> maps = request.getParameterMap();
         if (MapUtils.isNotEmpty(maps)) {
             maps.forEach((key, value) -> paramMap.put(key, value[0]));
@@ -81,13 +81,5 @@ public class BasicController {
 
     public void setResult(JsonResult result) {
         this.result = result;
-    }
-
-    public Map<String, String> getParamMap() {
-        return paramMap;
-    }
-
-    public void setParamMap(Map<String, String> paramMap) {
-        this.paramMap = paramMap;
     }
 }
