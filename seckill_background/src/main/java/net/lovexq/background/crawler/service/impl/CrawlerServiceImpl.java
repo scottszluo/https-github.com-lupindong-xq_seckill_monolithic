@@ -172,7 +172,7 @@ public class CrawlerServiceImpl implements CrawlerService {
      */
     private void saveImages(EstateItemDTO dto) {
         List<EstateImageModel> imageList = dto.getEstateImageList();
-        if (!CollectionUtils.isEmpty(imageList)) {
+        if (CollectionUtils.isNotEmpty(imageList)) {
             for (EstateImageModel image : imageList) {
                 // 普通图片
                 if (image.getPictureId() != null) {
@@ -204,7 +204,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             } else {
                 crawlerRecordModel = new CrawlerRecordModel(batch, houseCode, CrawlerRecordEnum.CREATE.getValue());
                 List<CrawlerRecordModel> list = crawlerRecordRepository.findByBatchAndCurrentCode(batch, houseCode);
-                if (!CollectionUtils.isEmpty(list)) {
+                if (CollectionUtils.isNotEmpty(list)) {
                     crawlerRecordRepository.deleteRepeatRecord(batch, houseCode);
                 }
             }

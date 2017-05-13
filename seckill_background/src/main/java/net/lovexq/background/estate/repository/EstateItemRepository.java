@@ -12,11 +12,14 @@ import java.util.List;
  */
 public interface EstateItemRepository extends BasicRepository<EstateItemModel, Long> {
 
+    String UPDATESTATE_SQL = "UPDATE EstateItemModel i SET saleState = '下架' WHERE i.houseCode=?1";
+
+
     EstateItemModel findByHouseCode(String houseCode);
 
     List<EstateItemModel> findByHouseCodeLike(String houseCode);
 
     @Modifying
-    @Query("UPDATE EstateItemModel i SET saleState = '下架' WHERE i.houseCode=?1")
+    @Query(UPDATESTATE_SQL)
     void updateState(String houseCode);
 }

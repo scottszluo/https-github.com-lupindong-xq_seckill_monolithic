@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="XQ,SecKill,秒杀,高并发"/>
+    <meta name="description" content="基于单体架构的Java高并发秒杀系统">
+    <meta name="author" content="lovexq.net">
+    <meta name="referrer" content="never">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <title>特价秒杀 | lovexq.net</title>
+    <!--#include file="/common/fgHead.html"-->
+</head>
+<!-- END HEAD -->
+<body>
+
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <!--#include file="/common/coHeader.html"-->
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+
+        <section class="page-header page-header-light page-header-more-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>特价秒杀<span class="font-red">原价几百万，几千万的房产，现在统统一折出售，抢到即赚到！</span></h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="row mb-lg">
+                <ul class="properties-listing sort-destination p-none" id="listing"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BEGIN FOOTER -->
+    <!--#include file="/common/coFooter.html"-->
+    <!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<!--#include file="/common/fgFoot.html"-->
+<!-- END FOOT -->
+
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
+        // 页面初始化
+        Special.List.init();
+    })
+</script>
+<!-- 列表数据模板 -->
+<script type="text/html" id="listData">
+    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item">
+        <div class="listing-item">
+            <a class="text-decoration-none" target="_blank" data-href="detailHref">
+            <span class="thumb-info thumb-info-lighten">
+                <span class="thumb-info-wrapper m-none">
+                    <img class="lazyload img-responsive" style="height: 240px" data-template-bind='[{"attribute": "data-original", "value": "coverUrl"}]'>
+                </span>
+                <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
+                    <sapn class="text-lg font-red" data-content="totalPriceOriginal"></sapn>&nbsp&nbsp
+                    <sapn class="text-xl font-red" data-content="totalPriceCurrent"></sapn>
+                    <i class="fa fa-caret-right text-color-secondary pull-right"></i>
+                </span>
+                <span class="custom-thumb-info-title b-normal p-md">
+                    <span class="thumb-info-inner text-lg font-weight-bold" data-content="title"></span>
+                    <ul class="accommodations text-uppercase p-none text-sm">
+                        <li><span class="accomodation-value" data-content="model"></span></li>
+                        <li><span class="accomodation-value" data-content="areaStr"></span></li>
+                        <li><span class="accomodation-value" data-content="direction"></span></li>
+                    </ul>
+                    <ul class="accommodations text-uppercase p-none text-sm">
+                        <li><span class="accomodation-value" data-content="floor"></span></li>
+                        <li><span class="accomodation-value" data-content="buildingAge"></span></li>
+                        <li><span class="accomodation-value" data-content="decoration"></span></li>
+                    </ul>
+                </span>
+            </span>
+            </a>
+        </div>
+    </li>
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

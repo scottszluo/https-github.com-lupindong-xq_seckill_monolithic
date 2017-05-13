@@ -10,10 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,10 +44,11 @@ public class ErrorController extends BasicErrorController {
         return new ResponseEntity<>(map, status);
     }
 
+    // 纯后台是不会有html响应的
     /**
      * 覆盖默认的HTML响应
      */
-    @Override
+    /*@Override
     public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> model = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.TEXT_HTML));
         LOGGER.error("捕获的Html异常信息为：{}", model);
@@ -65,5 +64,5 @@ public class ErrorController extends BasicErrorController {
             default:
                 return new ModelAndView("/error/error", model);
         }
-    }
+    }*/
 }

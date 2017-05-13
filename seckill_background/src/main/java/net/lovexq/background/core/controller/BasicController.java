@@ -26,24 +26,27 @@ public class BasicController {
     protected Pageable pageable;
     protected JsonResult result = new JsonResult();
     protected Map<String, String> paramMap = new HashMap<>();
-    private int defaultPage = 1;
+    private int defaultPage = 1; // 默认第一页
+    private int maxPage = 100; // 最多显示前100页
     private int defaultSize = 15;
 
     /**
      * 创建分页请求.
      */
     protected PageRequest buildPageRequest(HttpServletRequest request) {
+        int page = defaultPage;
+        int size = defaultSize;
 
         String pageStr = request.getParameter("page");
+        if (StringUtils.isNotBlank(pageStr)) page = Integer.parseInt(pageStr);
         String sizeStr = request.getParameter("size");
-        String sortStr = request.getParameter("sort");
-
-        int page = Integer.parseInt(pageStr != null ? pageStr : String.valueOf(defaultPage));
-        int size = Integer.parseInt(sizeStr != null ? sizeStr : String.valueOf(defaultSize));
+        if (StringUtils.isNotBlank(sizeStr)) size = Integer.parseInt(sizeStr);
 
         if (page < 1) page = defaultPage;
+        if (page > 100) page = maxPage;
         if (size < 1) size = defaultSize;
 
+        String sortStr = request.getParameter("sort");
         if (StringUtils.isNotBlank(sortStr)) {
             Sort sort;
             String[] sortArray = sortStr.split(":");

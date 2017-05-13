@@ -20,6 +20,7 @@ $(function () {
         $("#userName").text(userName);
         $("#logout").show();
     }
+
 });
 // 通用
 var Common = (function () {
@@ -43,79 +44,44 @@ var Common = (function () {
             });
         },
         primary: function (text, title) {
-            PNotice.common(text, title, 'primary', 'notification-primary stack-bottomright', stack_bottomright);
+            this.common(text, title, 'primary', 'notification-primary stack-bottomright', stack_bottomright);
         },
         notice: function (text, title) {
-            PNotice.common(text, title, 'notice', 'stack-bottomright', stack_bottomright);
+            this.common(text, title, 'notice', 'stack-bottomright', stack_bottomright);
         },
         success: function (text, title) {
-            PNotice.common(text, title, 'success', 'stack-bottomright', stack_bottomright);
+            this.common(text, title, 'success', 'stack-bottomright', stack_bottomright);
         },
         info: function (text, title) {
-            PNotice.common(text, title, 'info', 'stack-bottomright', stack_bottomright);
+            this.common(text, title, 'info', 'stack-bottomright', stack_bottomright);
         },
         error: function (text, title) {
-            PNotice.common(text, title, 'error', 'stack-bottomright', stack_bottomright);
+            this.common(text, title, 'error', 'stack-bottomright', stack_bottomright);
         }
-    }
-
-    var Bootpag = {
-        // 初始化分页信息（Get提交）
-        initWithGet: function (url, total, page) {
-            $('#pagination').bootpag({
-                total: total,
-                page: page,
-                maxVisible: 5,
-                leaps: true,
-                firstLastUse: true,
-                first: '首页',
-                last: '尾页',
-            }).on('page', function (event, num) {
-                if (url.indexOf('page=') != -1) {
-                    window.location.href = url + num;
-                } else {
-                    window.location.href = url + "?page=" + num;
-                }
-            });
-        },
-        // 初始化分页信息（Post提交）
-        initWithPost: function (formId, url, total, page) {
-            $('#pagination').bootpag({
-                total: total,
-                page: page,
-                maxVisible: 5,
-                leaps: true,
-                firstLastUse: true,
-                first: '首页',
-                last: '尾页',
-            }).on('page', function (event, num) {
-                $("#page").val(num);
-                $("#" + formId).attr("action", url).submit();
-            });
-        }
-    }
+    };
 
     var Lazyload = {
         // 初始化图片延迟加载
         init: function () {
             $("img.lazyload").lazyload({
+                threshold: 100,
                 effect: "fadeIn"
             });
         }
-    }
+    };
 
     var StringUtil = {
         isBlank: function (strVal) {
-            if (typeof(strVal) == "undefined" || "" == strVal || strVal.length < 1) {
+            if (typeof(strVal) == "undefined" || null == strVal || "" == strVal || strVal.length < 1) {
                 return true;
             }
             return false;
         },
         isNotBlank: function (strVal) {
-            return !StringUtil.isBlank(strVal);
+            return !this.isBlank(strVal);
         },
         getNewSortType: function (sortType) {
-            if (Common.StringUtil.isNotBlank(sortType)) {
+            if (this.isNotBlank(sortType)) {
                 if ("ASC" == $.trim(sortType)) {
                     sortType = "DESC";
                 } else {
@@ -123,12 +89,37 @@ var Common = (function () {
                 }
             }
             return sortType;
+        },
+        //获取url中"?"符后的字串
+        getRequestParam: function () {
+            var url = window.location.search;
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var keyValue = url.substr(1);
+                strs = keyValue.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = decodeURI(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        },
+        getRequestParamWithSearch: function (locationSearch) {
+            var theRequest = new Object();
+            if (locationSearch.indexOf("?") != -1) {
+                var keyValue = locationSearch.substr(1);
+                strs = keyValue.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = decodeURI(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
         }
-    }
+    };
+
+    $.addTemplateFormatter({});
 
     return {
         PNotice: PNotice,
-        Bootpag: Bootpag,
         Lazyload: Lazyload,
         StringUtil: StringUtil
     }
@@ -136,9 +127,74 @@ var Common = (function () {
 // 房源信息
 var Estate = (function () {
     var List = {
-        url: function () {
-            return "/estate/list";
+        uiUrl: function () {
+            return "/estate/listUI.html";
         },
+
+        dataUrl: function () {
+            return "/estates";
+        },
+
+        init: function () {
+            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+            if (requestParamObj == null || requestParamObj.length < 1) {
+                requestParamObj = {"page": 1};
+            }
+            this.loadData(requestParamObj);
+
+            // 绑定数据过滤函数
+            $("select").on("change", function () {
+                List.filterData(this);
+            })
+
+            $(".sort").click(function () {
+                List.sortData(this);
+            })
+
+        },
+
+        goNextPage: function (pageNum) {
+            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+            if (requestParamObj != null && requestParamObj.length > 0) {
+                requestParamObj.push("page", pageNum);
+            } else {
+                requestParamObj = {"page": pageNum};
+            }
+            this.loadData(requestParamObj);
+        },
+
+        loadData: function (requestParamObj) {
+            $.get(List.dataUrl(), requestParamObj).done(function (result) {
+                var pageData = result.data;
+                $("#listing").loadTemplate("#listData", pageData.content, {
+                    complete: function () {
+                        Common.Lazyload.init();
+                    },
+                });
+
+                // 先解绑
+                $('#pagination').off('page');
+
+                // 分页
+                $('#pagination').bootpag({
+                    total: (pageData.totalPages > 100) ? 100 : pageData.totalPages,
+                    page: pageData.number + 1,
+                    maxVisible: 5,
+                    leaps: true,
+                    firstLastUse: true,
+                    first: '首页',
+                    last: '尾页',
+                }).on('page', function (event, num) {
+                    $(window).scrollTop(0);
+                    List.goNextPage(num);
+                });
+            }).fail(function (result) {
+                Common.PNotice.error(result.message);
+            });
+
+            sessionStorage.setItem("requestParam", JSON.stringify(requestParamObj));
+        },
+
         filterData: function (obj) {
             if ("LI" == obj.tagName) {
                 var classNames = obj.className.split(" ");
@@ -147,9 +203,22 @@ var Estate = (function () {
                 $("#sort").val(classNames[1] + ":" + sortType);
             }
 
-            $("#estatesForm").attr("action", Estate.List.url()).submit();
+            $("#estatesForm").attr("action", Estate.List.dataUrl()).submit();
+        },
+
+        sortData: function (obj) {
+            var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+            console.log(requestParamObj);
+            var classNames = obj.className.split(" ");
+            if (Common.StringUtil.isBlank(requestParamObj.sort)) {
+                requestParamObj.sort = "id:DESC";
+            }
+            var sortValues = requestParamObj.sort.split(":");
+            var sortType = Common.StringUtil.getNewSortType(sortValues[1]);
+            requestParamObj.sort = classNames[1] + ":" + sortType;
+            this.loadData(requestParamObj);
         }
-    }
+    };
 
     return {
         List: List
@@ -158,20 +227,23 @@ var Estate = (function () {
 // 特价秒杀
 var Special = (function () {
     var List = {
-        url: function () {
-            return "/special/list";
+        dataUrl: function () {
+            return "/specials";
         },
-        filterData: function (obj) {
-            if ("LI" == obj.tagName) {
-                var classNames = obj.className.split(" ");
-                var sortValues = $("#sort").val().split(":");
-                var sortType = Common.StringUtil.getNewSortType(sortValues[1]);
-                $("#sort").val(classNames[1] + ":" + sortType);
-            }
 
-            $("#stocksForm").attr("action", Special.List.url()).submit();
+        init: function () {
+            $.get(List.dataUrl()).done(function (result) {
+                $("#listing").loadTemplate("#listData", result.data, {
+                    complete: function () {
+                        Common.Lazyload.init();
+                    }
+                });
+            }).fail(function (result) {
+                Common.PNotice.error(result.responseJSON.message);
+            });
         }
-    }
+    };
+
     var Detail = {
         nowUrl: function () {
             return "/special/now";
@@ -256,9 +328,9 @@ var Special = (function () {
             }).fail(function (result) {
                 Common.PNotice.error(result.responseJSON.message);
             });
-            ;
         }
-    }
+    };
+
     return {
         List: List,
         Detail: Detail
@@ -266,9 +338,11 @@ var Special = (function () {
 })();
 // 用户管理
 var SysUser = (function () {
+
     var saltUrl = function () {
         return "/user/salt";
     };
+
     var Register = {
         signupUrl: function () {
             return "/user/signup";
@@ -329,6 +403,7 @@ var SysUser = (function () {
             });
         }
     };
+
     var Login = {
         signinUrl: function () {
             return "/user/signin";
@@ -373,7 +448,7 @@ var SysUser = (function () {
                 $.post(Login.signinUrl(), data).done(function (result) {
                     if (200 == result.status) {
                         Common.PNotice.success(result.message);
-                        window.location.href = "/";
+                        window.location.href = "/special/listUI.html";
                     } else {
                         Common.PNotice.error(result.message);
                     }
@@ -383,6 +458,7 @@ var SysUser = (function () {
             });
         }
     };
+
     var Logout = {
         signoutUrl: function () {
             return "/user/signout";
@@ -401,6 +477,7 @@ var SysUser = (function () {
             });
         }
     };
+
     return {
         Register: Register,
         Login: Login,

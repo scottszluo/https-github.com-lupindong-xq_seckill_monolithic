@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="XQ,SecKill,秒杀,高并发"/>
+    <meta name="description" content="基于单体架构的Java高并发秒杀系统">
+    <meta name="author" content="lovexq.net">
+    <meta name="referrer" content="never">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <title>[[${title}]] | lovexq.net</title>
+    <!--#include file="/common/fgHead.html"-->
+</head>
+<!-- END HEAD -->
+<body>
+
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <!--#include file="/common/coHeader.html"-->
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+
+        <section class="page-header page-header-light page-header-more-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>[[${title}]]<span>[[${regionAName}]] - [[${regionBName}]]</span></h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+
+            <div class="row pb-xl pt-md">
+                <div class="col-md-9">
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <span class="thumb-info-listing-type thumb-info-listing-type-detail background-color-secondary text-uppercase text-color-light font-weight-semibold p-sm pl-md pr-md" th:text="'仅'+${number}+'套'">number</span>
+                            <div class="thumb-gallery">
+                                <div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
+                                    <div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
+                                        <div th:if="${not #lists.isEmpty(estateImageList)}" th:each="iamge, iamgeStat : ${estateImageList}">
+                                            <a href="/" th:href="${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
+                                                <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
+                                                    <span class="thumb-info-wrapper font-size-xl">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" src="/3rd-party/porto/img/blank.jpg" th:src="${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
+                                                        <span class="thumb-info-title font-size-xl">
+                                                            <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="owl-carousel owl-theme manual thumb-gallery-thumbs mt" id="thumbGalleryThumbs">
+                                    <div th:if="${not #lists.isEmpty(estateImageList)}" th:each="iamge, iamgeStat : ${estateImageList}">
+                                        <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg" th:src="${iamge.url}?:'/3rd-party/porto/img/blank.jpg'">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-5">
+                            <table class="table table-striped">
+                                <colgroup>
+                                    <col width="38%">
+                                    <col width="62%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <td class="pt-md pb-md background-color-primary font-red text-light" colspan="2">
+                                        <sapn class="text-lg">
+                                            <del>原价[[${totalPrice}]]万</del>
+                                        </sapn>
+                                        &nbsp&nbsp
+                                        <sapn class="text-xl" th:text="'秒杀价'+${#numbers.formatDecimal(totalPrice * 0.1, 1, 2)}+'万'">totalPrice</sapn>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>房源编号</td>
+                                    <td>[[${houseCode}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>小区名称</td>
+                                    <td>[[${resBlockName}]]&nbsp&nbsp<a href="#map" class="font-size-sm" data-hash data-hash-offset="100">(地图)</a></td>
+                                </tr>
+                                <tr>
+                                    <td>所在区域</td>
+                                    <td>[[${regionAName}]] - [[${regionBName}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>房屋户型</td>
+                                    <td>[[${model}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>房屋朝向</td>
+                                    <td>[[${direction}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>建筑面积</td>
+                                    <td>[[${area}]]平米</td>
+                                </tr>
+                                <tr>
+                                    <td>所在楼层</td>
+                                    <td>[[${floor}]]</td>
+                                </tr>
+                                <tr>
+                                    <td>建筑年代</td>
+                                    <td>[[${buildingAge}?:'暂无数据']]年</td>
+                                </tr>
+                                <tr>
+                                    <td>装修情况</td>
+                                    <td>[[${decoration}]]</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <section class="call-to-action with-borders button-centered mb-xl">
+                                <div class="call-to-action-content">
+                                    <h3>
+                                        开始时间：<strong th:text="${startTime}">startTime</strong>
+                                    </h3>
+                                    <p id="countDownArea" th:if="${number}>0"></p>
+                                    <p th:if="${number}<=0">
+                                    <h2 class="font-red" th:if="${number}<=0">秒杀结束</h2></p>
+                                </div>
+                                <div class="call-to-action-btn" id="execution"></div>
+                            </section>
+
+                            <hr class="solid tall">
+
+                            <h4 class="mt-md mb-md">房源描述</h4>
+                            <p>
+                                <b>装修描述</b>：整幢别墅都是台湾出名大师设计，宫殿般装修，部是进口材料，音响系统：为世界Boss音响系统，房间、洗手间及花园音响系统，均有自行控制开关，互不干扰
+                            </p>
+                            <p>
+                                <b>户型介绍</b>：住房三层，建筑实用面积：600平方米，花园占地面积：601平方米，主人卧室、孩子住房及客厅均正南方向；欧式客厅层高6.5米，客厅临院漂出锦鲤鱼池，带私家独立花园，奢华泳池，大师手笔打造品质大宅，台湾有名设计师设计，耗资一千万，历近二年时间完成，土建增加防震及避雷系统。
+                            </p>
+                            <p>
+                                <b>小区介绍</b>：汇景新城全国十大明星楼盘之一，广州都市内花园！现代化都市中配套成熟完善，且交通便捷宁静的‘城中花园’。本‘独立’别墅朝向正东南，是别墅区内占地面积最大，装修奢华的传世别墅之一！
+                            </p>
+                            <p>
+                                <b>周边配套</b>：亚太盛汇商场、高尔夫球场、山顶公园、亚太国际俱乐部、潮皇汇、品善餐饮、健身房、儿童游乐场、歌舞厅、咖啡厅、篮球场、网球场、洗衣店、美发美容、羽毛球场、游泳池、阅览室、餐厅。
+                            </p>
+                            <p>
+                                <b>交通出行</b>：汇景新城周边交通主道有南门出广园快速，北门有汇景北路接驳五山路，东门有科韵路，西门有华南干线。社区内还有电瓶车接送点，进出非常方便。
+                            </p>
+
+                            <hr class="solid tall">
+
+                            <h4 class="mt-md mb-md">房源特色</h4>
+                            <ul class="list list-icons list-secondary row m-none">
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>中央空调</i></a></li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>家庭影院</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>中央供暖</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>洗衣机</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>阳台</li>
+                                <li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i>仓库</li>
+                                <li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i>车库</li>
+                                <li class="col-sm-6 col-md-4 custom-list-item-disabled"><i class="fa fa-check"></i>院子</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>电热水器</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>木地板</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>健身房</li>
+                                <li class="col-sm-6 col-md-4"><i class="fa fa-check"></i>海景</li>
+                            </ul>
+
+                            <hr class="solid tall">
+
+                            <h4 class="mt-md mb-md" id="map">小区位置</h4>
+                            <div class="google-map m-none mb-xlg">
+                                <img alt="小区位置" class="lazyload" data-original="/3rd-party/porto/img/map.jpg">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-3">
+                    <aside class="sidebar">
+                        <div class="agents text-color-light center">
+                            <h4 class="text-light pt-xl m-none">经纪人</h4>
+                            <div class="owl-carousel owl-theme nav-bottom rounded-nav pl-xs pr-xs pt-md m-none" data-plugin-options="{'items': 1, 'loop': false, 'dots': false, 'nav': true}">
+                                <div class="pr-sm pl-sm">
+                                    <a href="#" class="text-decoration-none">
+                                        <span class="agent-thumb">
+                                            <img class="img-responsive img-circle" src="/3rd-party/porto/img/team/team-11.jpg" alt/>
+                                        </span>
+                                        <span class="agent-infos text-light pt-md">
+                                            <strong class="text-uppercase font-weight-bold">张三</strong>
+                                            <span class="font-weight-light">123-456-789</span>
+                                            <span class="font-weight-light">zs@lovexq.net</span>
+                                        </span>
+                                    </a>
+                                </div>
+                                <div class="pr-sm pl-sm">
+                                    <a href="#" class="text-decoration-none">
+                                        <span class="agent-thumb">
+                                            <img class="img-responsive img-circle" src="/3rd-party/porto/img/team/team-12.jpg" alt/>
+                                        </span>
+                                        <span class="agent-infos text-light pt-md">
+                                            <strong class="text-uppercase font-weight-bold">李四</strong>
+                                            <span class="font-weight-light">123-456-789</span>
+                                            <span class="font-weight-light">ls@lovexq.net</span>
+                                        </span>
+                                    </a>
+                                </div>
+                                <div class="pr-sm pl-sm">
+                                    <a href="#" class="text-decoration-none">
+                                        <span class="agent-thumb">
+                                            <img class="img-responsive img-circle" src="/3rd-party/porto/img/team/team-13.jpg" alt/>
+                                        </span>
+                                        <span class="agent-infos text-light pt-md">
+                                            <strong class="text-uppercase font-weight-bold">王五</strong>
+                                            <span class="font-weight-light">123-456-789</span>
+                                            <span class="font-weight-light">ww@lovexq.net</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="pt-lg mb-md text-color-dark">需求消息</h4>
+                        <p>联系我们或给我们打电话了解更多的信息</p>
+
+                        <form id="contactForm" action="#" class="mb-lg">
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>您的名字*</label>
+                                        <input type="text" value="" data-msg-required="Please enter your name." maxlength="100" class="form-control" name="name" id="name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>您的邮箱*</label>
+                                        <input type="email" value="" data-msg-required="Please enter your email address." data-msg-email="Please enter a valid email address."
+                                               maxlength="100" class="form-control" name="email" id="email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>主题</label>
+                                        <input type="text" value="" data-msg-required="Please enter the subject." maxlength="100" class="form-control" name="subject" id="subject" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label>消息*</label>
+                                        <textarea maxlength="5000" data-msg-required="Please enter your message." rows="6" class="form-control" name="message" id="message" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input type="submit" value="发送消息" class="btn btn-secondary mb-xl" data-loading-text="加载中...">
+                                    <div class="alert alert-success hidden" id="contactSuccess">
+                                        消息已成功发送
+                                    </div>
+                                    <div class="alert alert-danger hidden" id="contactError">
+                                        发送消息时发送异常
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </aside>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- BEGIN FOOTER -->
+<!--#include file="/common/coFooter.html"-->
+<!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<!--#include file="/common/fgFoot.html"-->
+<!-- END FOOT -->
+<!-- BEGIN PAGESCRIPT -->
+<script src="https://cdn.bootcss.com/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
+<script th:if="${number}>0">
+    $(function () {
+        // 图片懒加载
+        Common.Lazyload.init();
+        // 详情页初始化
+        Special.Detail.init({
+            houseCode: '[[${houseCode}]]',
+            nowTime: '[[${nowTimeX}]]',
+            startTime: '[[${startTimeX}]]',
+            endTime: '[[${endTimeX}]]'
+        });
+    })
+</script>
+<script th:if="${number}<=0">
+    $(function () {
+        // 图片懒加载
+        Common.Lazyload.init();
+    })
+
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="XQ,SecKill,秒杀,高并发"/>
+    <meta name="description" content="基于单体架构的Java高并发秒杀系统">
+    <meta name="author" content="lovexq.net">
+    <meta name="referrer" content="never">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <title>房源信息 | lovexq.net</title>
+    <!--#include file="/common/fgHead.html"-->
+</head>
+<!-- END HEAD -->
+<body>
+
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <!--#include file="/common/coHeader.html"-->
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+
+        <section class="page-header page-header-light page-header-more-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>房源信息<span class="font-red">万千真实房源，让每一位消费者都能找到一个家！</span></h1>
+                    </div>
+                </div>
+                <div class="row mt-lg">
+                    <div class="col-md-12">
+                        <form id="estatesForm">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="regionAName" required>
+                                            <option value=''>区域</option>
+                                            <option value="天河" th:selected="${regionAName eq '天河'}">天河</option>
+                                            <option value="越秀" th:selected="${regionAName eq '越秀'}">越秀</option>
+                                            <option value="荔湾" th:selected="${regionAName eq '荔湾'}">荔湾</option>
+                                            <option value="海珠" th:selected="${regionAName eq '海珠'}">海珠</option>
+                                            <option value="番禺" th:selected="${regionAName eq '番禺'}">番禺</option>
+                                            <option value="白云" th:selected="${regionAName eq '白云'}">白云</option>
+                                            <option value="黄埔" th:selected="${regionAName eq '黄埔'}">黄埔</option>
+                                            <option value="从化" th:selected="${regionAName eq '从化'}">从化</option>
+                                            <option value="增城" th:selected="${regionAName eq '增城'}">增城</option>
+                                            <option value="花都" th:selected="${regionAName eq '花都'}">花都</option>
+                                            <option value="萝岗" th:selected="${regionAName eq '萝岗'}">萝岗</option>
+                                            <option value="南沙" th:selected="${regionAName eq '南沙'}">南沙</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="totalPrice" required>
+                                            <option value=''>售价</option>
+                                            <option value="tp1" th:selected="${totalPrice eq 'tp1'}">100万以下</option>
+                                            <option value="tp2" th:selected="${totalPrice eq 'tp2'}">100-200万</option>
+                                            <option value="tp3" th:selected="${totalPrice eq 'tp3'}">200-300万</option>
+                                            <option value="tp4" th:selected="${totalPrice eq 'tp4'}">300-500万</option>
+                                            <option value="tp5" th:selected="${totalPrice eq 'tp5'}">500-1000万</option>
+                                            <option value="tp6" th:selected="${totalPrice eq 'tp6'}">1000万以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="model" required>
+                                            <option value=''>户型</option>
+                                            <option value="1室" th:selected="${model eq '1室'}">一室</option>
+                                            <option value="2室" th:selected="${model eq '2室'}">二室</option>
+                                            <option value="3室" th:selected="${model eq '3室'}">三室</option>
+                                            <option value="4室" th:selected="${model eq '4室'}">四室</option>
+                                            <option value="5室" th:selected="${model eq '5室'}">五室</option>
+                                            <option value="5室+" th:selected="${model eq '5室+'}">五室及以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="area" required>
+                                            <option value=''>面积</option>
+                                            <option value="a1" th:selected="${area eq 'a1'}">40平以下</option>
+                                            <option value="a2" th:selected="${area eq 'a2'}">40-60平</option>
+                                            <option value="a3" th:selected="${area eq 'a3'}">60-80平</option>
+                                            <option value="a4" th:selected="${area eq 'a4'}">80-100平</option>
+                                            <option value="a5" th:selected="${area eq 'a5'}">100-144平</option>
+                                            <option value="a6" th:selected="${area eq 'a6'}">144平以上</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="direction" required>
+                                            <option value=''>朝向</option>
+                                            <option value="东" th:selected="${direction eq '东'}">东</option>
+                                            <option value="西" th:selected="${direction eq '西'}">西</option>
+                                            <option value="南" th:selected="${direction eq '南'}">南</option>
+                                            <option value="北" th:selected="${direction eq '北'}">北</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control-custom mb-md">
+                                        <select class="form-control text-uppercase font-size-sm" name="floor" required>
+                                            <option value=''>楼层</option>
+                                            <option value="低楼层" th:selected="${floor eq '低楼层'}">低楼层</option>
+                                            <option value="中楼层" th:selected="${floor eq '中楼层'}">中楼层</option>
+                                            <option value="高楼层" th:selected="${floor eq '高楼层'}">高楼层</option>
+                                            <option value="独栋" th:selected="${floor eq '独栋'}">独栋</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="nav nav-pills sort-source">
+                                <li class="sort id">
+                                    <a href="#">默认排序</a>
+                                </li>
+                                <li class="sort totalPrice">
+                                    <a href="#">房屋总价</a>
+                                </li>
+                                <li class="sort unitPrice">
+                                    <a href="#">房屋单价</a>
+                                </li>
+                                <li class="sort area">
+                                    <a href="#">房屋面积</a>
+                                </li>
+                                <li class="sort focusNum">
+                                    <a href="#">关注人数</a>
+                                </li>
+                                <li class="sort watchNum">
+                                    <a href="#">带看次数</a>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="row mb-lg">
+                <ul class="properties-listing sort-destination p-none" id="listing"></ul>
+            </div>
+
+            <div class="row mt-lg mb-xlg">
+                <div class="col-md-12 center" id="pagination"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BEGIN FOOTER -->
+    <!--#include file="/common/coFooter.html"-->
+    <!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<!--#include file="/common/fgFoot.html"-->
+<!-- END FOOT -->
+
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
+        //Estate.List.loadData($("#page").val());
+        Estate.List.init();
+    })
+</script>
+<!-- 列表数据模板 -->
+<script type="text/html" id="listData">
+    <li class="col-md-4 col-sm-6 col-xs-12 p-md isotope-item">
+        <div class="listing-item">
+            <a class="text-decoration-none" target="_blank" data-href="detailHref">
+            <span class="thumb-info thumb-info-lighten">
+                <span class="thumb-info-wrapper m-none">
+                    <img class="lazyload img-responsive" style="height: 240px" data-template-bind='[{"attribute": "data-original", "value": "coverUrl"}]'>
+                </span>
+                <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
+                    <sapn class="text-xl font-red" data-content="totalPriceStr"></sapn><br/>
+                    <sapn class="text-sm" data-content="downPayments"></sapn>
+                    <i class="fa fa-caret-right text-color-secondary pull-right"></i>
+                </span>
+                <span class="custom-thumb-info-title b-normal p-md">
+                    <span class="thumb-info-inner text-lg font-weight-bold" data-content="title"></span>
+                    <ul class="accommodations text-uppercase p-none text-sm">
+                        <li><span class="accomodation-value" data-content="model"></span></li>
+                        <li><span class="accomodation-value" data-content="areaStr"></span></li>
+                        <li><span class="accomodation-value" data-content="direction"></span></li>
+                    </ul>
+                    <ul class="accommodations text-uppercase p-none text-sm">
+                        <li><span class="accomodation-value" data-content="floor"></span></li>
+                        <li><span class="accomodation-value" data-content="buildingAge"></span></li>
+                        <li><span class="accomodation-value" data-content="decoration"></span></li>
+                    </ul>
+                    <ul class="accommodations text-uppercase p-none text-sm">
+                        <li><span class="accomodation-value" data-content="focusNumStr"></span></li>
+                        <li><span class="accomodation-value" data-content="watchNumStr"></span></li>
+                    </ul>
+                </span>
+            </span>
+            </a>
+        </div>
+    </li>
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

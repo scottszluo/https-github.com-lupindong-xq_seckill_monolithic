@@ -22,9 +22,14 @@ public class EstateItemDTO extends EstateItemModel {
 
     private Long bodyLength;
 
-    private Boolean isNew = false;
-
     private String CrawlerState;
+
+    private String totalPriceStr;
+    private String unitPriceStr;
+    private String downPayments;
+    private String areaStr;
+    private String focusNumStr;
+    private String watchNumStr;
 
     public EstateItemDTO() {
         super();
@@ -66,19 +71,59 @@ public class EstateItemDTO extends EstateItemModel {
         this.bodyLength = bodyLength;
     }
 
-    public Boolean getNew() {
-        return isNew;
-    }
-
-    public void setNew(Boolean isNew) {
-        this.isNew = isNew;
-    }
-
     public String getCrawlerState() {
         return CrawlerState;
     }
 
     public void setCrawlerState(String crawlerState) {
         CrawlerState = crawlerState;
+    }
+
+    public String getTotalPriceStr() {
+        return totalPriceStr;
+    }
+
+    public void setTotalPriceStr(String totalPriceStr) {
+        this.totalPriceStr = totalPriceStr;
+    }
+
+    public String getUnitPriceStr() {
+        return unitPriceStr;
+    }
+
+    public void setUnitPriceStr(String unitPriceStr) {
+        this.unitPriceStr = unitPriceStr;
+    }
+
+    public String getDownPayments() {
+        return downPayments;
+    }
+
+    public void setDownPayments(String downPayments) {
+        this.downPayments = downPayments;
+    }
+
+    public String getAreaStr() {
+        return areaStr;
+    }
+
+    public void setAreaStr(String areaStr) {
+        this.areaStr = areaStr;
+    }
+
+    public String getFocusNumStr() {
+        return focusNumStr;
+    }
+
+    public void setFocusNumStr(String focusNumStr) {
+        this.focusNumStr = focusNumStr;
+    }
+
+    public String getWatchNumStr() {
+        return watchNumStr;
+    }
+
+    public void setWatchNumStr(String watchNumStr) {
+        this.watchNumStr = watchNumStr;
     }
 }

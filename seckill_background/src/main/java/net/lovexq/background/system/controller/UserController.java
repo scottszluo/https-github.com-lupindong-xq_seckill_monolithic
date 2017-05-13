@@ -1,19 +1,15 @@
 package net.lovexq.background.system.controller;
 
+import net.lovexq.background.core.controller.BasicController;
+import net.lovexq.background.system.service.UserService;
 import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.CookieUtil;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
-import net.lovexq.background.core.controller.BasicController;
-import net.lovexq.background.system.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author LuPindong
  * @time 2017-05-01 09:41
  */
-@Controller
+@RestController
 @RequestMapping("/user")
 public class UserController extends BasicController {
 
@@ -33,12 +29,6 @@ public class UserController extends BasicController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/register")
-    public String registerUI() {
-        return "/system/user/registerUI";
-    }
-
-    @ResponseBody
     @PostMapping("/signup")
     public JsonResult signup(HttpServletRequest request) {
         String account = request.getParameter("account");
@@ -62,12 +52,6 @@ public class UserController extends BasicController {
         return result;
     }
 
-    @GetMapping("/login")
-    public String loginUI() {
-        return "/system/user/loginUI";
-    }
-
-    @ResponseBody
     @PostMapping("/signin")
     public JsonResult signin(HttpServletRequest request, HttpServletResponse response) {
         String account = request.getParameter("account");
@@ -87,7 +71,6 @@ public class UserController extends BasicController {
         return result;
     }
 
-    @ResponseBody
     @PostMapping("/signout")
     public JsonResult signout(HttpServletResponse response) {
         CookieUtil.removeCookie(AppConstants.TOKEN, "127.0.0.1", response);
@@ -95,7 +78,6 @@ public class UserController extends BasicController {
         return result;
     }
 
-    @ResponseBody
     @GetMapping("/salt")
     public JsonResult salt() {
         return userService.getPublicSalt();

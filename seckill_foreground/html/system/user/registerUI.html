@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="XQ,SecKill,秒杀,高并发"/>
+    <meta name="description" content="基于单体架构的Java高并发秒杀系统">
+    <meta name="author" content="lovexq.net">
+    <meta name="referrer" content="never">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <title>注册 | lovexq.net</title>
+    <!--#include file="/common/fgHead.html"-->
+</head>
+<!-- END HEAD -->
+<!--<body>-->
+<body>
+<div class="body">
+    <!-- BEGIN HEADER -->
+    <!--#include file="/common/coHeader.html"-->
+    <!-- END HEADER -->
+
+    <div role="main" class="main">
+        <div class="container">
+            <div class="featured-box featured-box-primary align-left mt-xlg" style="height: 427px;width: 50%">
+                <div class="box-content">
+                    <h4 class="heading-primary text-uppercase mb-md">注册账号</h4>
+                    <form id="frmSignUp">
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <input type="text" id="account" name="account" class="form-control input-lg" placeholder="用户账号">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <input type="text" id="email" name="email" class="form-control input-lg" placeholder="邮箱地址">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                    <input type="password" id="password" name="password" class="form-control input-lg" placeholder="设置密码">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="password" id="rePassword" name="rePassword" class="form-control input-lg" placeholder="确认密码">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="submit" value="注册" class="btn btn-primary btn-lg pull-right mb-xl" data-loading-text="注册中...">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BEGIN FOOTER -->
+    <!--#include file="/common/coFooter.html"-->
+    <!-- END FOOTER -->
+</div>
+<!-- BEGIN FOOT -->
+<!--#include file="/common/fgFoot.html"-->
+<!-- END FOOT -->
+<!-- BEGIN PAGESCRIPT -->
+<script>
+    $(function () {
+        SysUser.Register.init();
+    })
+</script>
+<!-- END PAGESCRIPT -->
+</body>
+
+</html>

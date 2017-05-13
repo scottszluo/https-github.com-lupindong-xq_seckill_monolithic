@@ -3,7 +3,6 @@ package net.lovexq.background.special.service;
 import io.jsonwebtoken.Claims;
 import net.lovexq.background.special.dto.SpecialStockDTO;
 import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.background.special.model.SpecialStockModel;
 
 import java.util.List;
 
@@ -15,11 +14,13 @@ import java.util.List;
  */
 public interface SpecialService {
 
-    List<SpecialStockModel> listForSecKill() throws Exception;
+    List<SpecialStockDTO> listForSecKill() throws Exception;
 
-    SpecialStockDTO getByHouseCode(String houseCode) throws Exception;
+    SpecialStockDTO getOne(Long id) throws Exception;
 
     JsonResult getExposureSecKillUrl(String houseCode, Claims claims) throws Exception;
 
     JsonResult executionSecKill(String houseCode, String key, Claims claims) throws Exception;
+
+    void generateStaticPage(Long id) throws Exception;
 }

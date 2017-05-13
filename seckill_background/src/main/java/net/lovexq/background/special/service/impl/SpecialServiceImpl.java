@@ -10,21 +10,26 @@ import net.lovexq.background.special.model.SpecialStockModel;
 import net.lovexq.background.special.repository.SpecialOrderRepository;
 import net.lovexq.background.special.repository.SpecialStockRepository;
 import net.lovexq.background.special.service.SpecialService;
-import net.lovexq.background.system.service.ConfigService;
 import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
+import net.lovexq.seckill.common.utils.CachedBeanCopier;
 import net.lovexq.seckill.common.utils.IdWorker;
 import net.lovexq.seckill.common.utils.TimeUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,45 +50,56 @@ public class SpecialServiceImpl implements SpecialService {
     @Autowired
     private EstateService estateService;
     @Autowired
-    private ConfigService configService;
-    @Autowired
     private RedisClient redisClient;
     @Autowired
     private AppProperties appProperties;
 
     @Override
     @Transactional(readOnly = true)
-    public List<SpecialStockModel> listForSecKill() throws Exception {
+    public List<SpecialStockDTO> listForSecKill() throws Exception {
         String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
 
-        List<SpecialStockModel> list = redisClient.getList(cacheKey, SpecialStockModel.class);
-        if (!CollectionUtils.isEmpty(list)) {
-            return list;
+        List<SpecialStockDTO> targetList = redisClient.getList(cacheKey, SpecialStockDTO.class);
+        if (CollectionUtils.isNotEmpty(targetList)) {
+            return targetList;
         } else {
-            String batch = configService.getByConfigKey("special_batch").getConfigValue();
-            list = specialStockRepository.findByBatchAndSaleStateOrderByStartTime(batch, "在售");
-            if (!CollectionUtils.isEmpty(list)) {
-                redisClient.setList(cacheKey, list, 20);
+            List<SpecialStockModel> sourceList = specialStockRepository.findForSecKillList();
+            targetList = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(sourceList)) {
+                for (SpecialStockModel source : sourceList) {
+                    SpecialStockDTO target = new SpecialStockDTO();
+                    CachedBeanCopier.copy(source, target);
+
+                    target.setDetailHref("/special/" + target.getHouseCode() + ".shtml");
+                    target.setTotalPriceOriginal("<del>原价" + target.getTotalPrice() + "万</del>");
+                    target.setTotalPriceCurrent("秒杀价" + new BigDecimal(0.1).multiply(target.getTotalPrice()).setScale(2, BigDecimal.ROUND_HALF_DOWN) + "万");
+                    target.setUnitPriceStr("单价" + target.getUnitPrice() + "万");
+                    target.setAreaStr(target.getArea() + "平米");
+
+                    targetList.add(target);
+                }
+                redisClient.setList(cacheKey, targetList, 60);
             }
-            return list;
+
+            return targetList;
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SpecialStockDTO getByHouseCode(String houseCode) throws Exception {
-        String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "getByHouseCode", houseCode);
+    public SpecialStockDTO getOne(Long id) throws Exception {
+        String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "getOne", id);
 
         SpecialStockDTO targetStock = redisClient.getObj(cacheKey, SpecialStockDTO.class);
         if (targetStock != null) {
             return targetStock;
         } else {
             targetStock = new SpecialStockDTO();
-            SpecialStockModel sourceStock = specialStockRepository.findByHouseCode(houseCode);
+            SpecialStockModel sourceStock = specialStockRepository.getOne(id);
             if (sourceStock != null) {
-                BeanUtils.copyProperties(sourceStock, targetStock);
-                targetStock.setEstateImageList(estateService.listByHouseCode(houseCode));
-                redisClient.setObj(cacheKey, targetStock, 10);
+                CachedBeanCopier.copy(sourceStock, targetStock);
+                targetStock.setEstateImageList(estateService.listByHouseCode(targetStock.getHouseCode()));
+                redisClient.setObj(cacheKey, targetStock, 60);
             }
             return targetStock;
         }
@@ -92,7 +108,7 @@ public class SpecialServiceImpl implements SpecialService {
     @Override
     @Transactional(readOnly = true)
     public JsonResult getExposureSecKillUrl(String houseCode, Claims claims) throws Exception {
-        SpecialStockDTO specialStock = getByHouseCode(houseCode);
+        SpecialStockDTO specialStock = getOne(null);
 
         LocalDateTime startTime = specialStock.getStartTime(); // 秒杀开始时间
         LocalDateTime endTime = specialStock.getEndTime(); // 秒杀结束时间
@@ -154,5 +170,24 @@ public class SpecialServiceImpl implements SpecialService {
         }
 
         return result;
+    }
+
+    @Override
+    public void generateStaticPage(Long id) throws Exception {
+        //构造模板引擎
+        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        resolver.setPrefix("templates/");//模板所在目录，相对于当前classloader的classpath。
+        resolver.setSuffix(".html");//模板文件后缀
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(resolver);
+
+        //构造上下文(Model)
+        Context context = new Context();
+        context.setVariable("name", "蔬菜列表");
+        context.setVariable("array", new String[]{"土豆", "番茄", "白菜", "芹菜"});
+
+        //渲染模板
+        FileWriter write = new FileWriter("result.html");
+        templateEngine.process("example", context, write);
     }
 }
