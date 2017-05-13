@@ -48,7 +48,8 @@ public class LianJiaAddCallable implements Callable<JsonResult> {
                 curPage = curPage - 1;
             }
             List<EstateItemDTO> estateItemList = lianJiaParam.getEstateItemList();
-            for (; curPage < estateItemList.size(); curPage++) {
+            for (; curPage < 3; curPage++) {
+//            for (; curPage < estateItemList.size(); curPage++) {
                 EstateItemDTO estateItem = estateItemList.get(curPage);
                 LOGGER.info("开始新增[{}]，第{}条记录", estateItem.getBatch() + "：" + estateItem.getHouseCode(), curPage + 1);
                 // 解析详情数据

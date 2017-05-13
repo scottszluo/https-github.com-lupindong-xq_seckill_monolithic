@@ -144,13 +144,10 @@ var Estate = (function () {
 
         init: function () {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
+            requestParamObj = this.checkRequestParamObj(requestParamObj);
 
             // 选中过滤条件
             this.checkFilterFiled(requestParamObj);
-
-            requestParamObj = this.checkRequestParamObj(requestParamObj);
-            // 载入列表数据
-            this.loadData(requestParamObj);
 
             // 触发排序函数
             var sortValues = requestParamObj.sort.split(":");
@@ -204,6 +201,7 @@ var Estate = (function () {
                     });
                 } else {
                     $("#listing").html("<h2>暂无符合条件的数据！</h2>");
+                    $('#pagination').empty();
                 }
             }).fail(function (result) {
                 Common.PNotice.error(result.message);
@@ -251,7 +249,7 @@ var Estate = (function () {
 
             // 添加升降序箭头
             var html = '<a href="#">' + $(selector).attr("data-loading-text")
-            var arrowIcon = "<i class='fa fa-long-arrow-up'></i>";
+            var arrowIcon = " <i class='fa fa-long-arrow-up'></i>";
 
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
             requestParamObj = this.checkRequestParamObj(requestParamObj);
@@ -261,7 +259,7 @@ var Estate = (function () {
                 sortType = Common.StringUtil.getNewSortType(sortType);
             }
             if ("DESC" == sortType) {
-                arrowIcon = "<i class='fa fa-long-arrow-down'></i>";
+                arrowIcon = " <i class='fa fa-long-arrow-down'></i>";
             }
             html = html + arrowIcon + '</a>';
             $(selector).html(html);

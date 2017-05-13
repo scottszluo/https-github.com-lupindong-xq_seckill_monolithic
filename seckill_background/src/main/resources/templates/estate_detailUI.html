@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh_CN">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">>
 <!-- BEGIN HEAD -->
 <head>
     <meta charset="utf-8">
@@ -9,7 +9,7 @@
     <meta name="author" content="lovexq.net">
     <meta name="referrer" content="never">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
-    <title>房源信息 | lovexq.net</title>
+    <title>[[${title}]] | lovexq.net</title>
     <!--#include file="/common/fgHead.html"-->
 </head>
 <!-- END HEAD -->
@@ -26,7 +26,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1>[[${estateItem.title}]]<span>[[${estateItem.regionAName}]] - [[${estateItem.regionBName}]]</span></h1>
+                        <h1>[[${title}]]<span>[[${regionAName}]] - [[${regionBName}]]</span></h1>
                     </div>
                 </div>
             </div>
@@ -39,12 +39,10 @@
 
                     <div class="row">
                         <div class="col-md-7">
-                            <span class="thumb-info-listing-type thumb-info-listing-type-detail background-color-secondary text-uppercase text-color-light font-weight-semibold p-sm pl-md pr-md"
-                                  th:text="${estateItem.saleState}">saleState</span>
                             <div class="thumb-gallery">
                                 <div class="lightbox" data-plugin-options="{'delegate': 'a', 'type': 'image', 'gallery': {'enabled': true}}">
                                     <div class="owl-carousel owl-theme manual thumb-gallery-detail show-nav-hover" id="thumbGalleryDetail">
-                                        <div th:if="${not #lists.isEmpty(estateItem.estateImageList)}" th:each="iamge, iamgeStat : ${estateItem.estateImageList}">
+                                        <div th:if="${not #lists.isEmpty(estateImageList)}" th:each="iamge, iamgeStat : ${estateImageList}">
                                             <a href="/" th:href="${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
                                                 <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
                                                     <span class="thumb-info-wrapper font-size-xl">
@@ -59,7 +57,7 @@
                                     </div>
                                 </div>
                                 <div class="owl-carousel owl-theme manual thumb-gallery-thumbs mt" id="thumbGalleryThumbs">
-                                    <div th:if="${not #lists.isEmpty(estateItem.estateImageList)}" th:each="iamge, iamgeStat : ${estateItem.estateImageList}">
+                                    <div th:if="${not #lists.isEmpty(estateImageList)}" th:each="iamge, iamgeStat : ${estateImageList}">
                                         <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg" th:src="${iamge.url}?:'/3rd-party/porto/img/blank.jpg'">
                                     </div>
                                 </div>
@@ -74,51 +72,46 @@
                                 </colgroup>
                                 <tbody>
                                 <tr>
-                                    <td class="font-weight-bold pt-md pb-md background-color-primary text-light font-red" style="font-size: 2em" colspan="2">
-                                        [[${estateItem.totalPrice}]]万
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="font-size-md pt-sm pb-sm background-color-primary text-light" colspan="2">
-                                        单价[[${estateItem.unitPrice}]]/平米&nbsp&nbsp&nbsp&nbsp
-                                        首付[[${#numbers.formatDecimal(estateItem.totalPrice * 0.3, 1, 2)}]]万
+                                    <td class="p-sm pl-md pr-md background-color-primary text-light" colspan="2">
+                                        <sapn class="text-xl font-red">[[${totalPrice}]]万</sapn><br/>
+                                        <sapn class="text-sm">单价[[${unitPrice}]]/平米&nbsp&nbsp&nbsp&nbsp首付[[${#numbers.formatDecimal(totalPrice * 0.3, 1, 2)}]]万</sapn>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>房源编号</td>
-                                    <td>[[${estateItem.houseCode}]]</td>
+                                    <td>[[${houseCode}]]</td>
                                 </tr>
                                 <tr>
                                     <td>小区名称</td>
-                                    <td>[[${estateItem.resBlockName}]]&nbsp&nbsp<a href="#map" class="font-size-sm" data-hash data-hash-offset="100">(地图)</a></td>
+                                    <td>[[${resBlockName}]]&nbsp&nbsp<a href="#map" class="font-size-sm" data-hash data-hash-offset="100">(地图)</a></td>
                                 </tr>
                                 <tr>
                                     <td>所在区域</td>
-                                    <td>[[${estateItem.regionAName}]] - [[${estateItem.regionBName}]]</td>
+                                    <td>[[${regionAName}]] - [[${regionBName}]]</td>
                                 </tr>
                                 <tr>
                                     <td>房屋户型</td>
-                                    <td>[[${estateItem.model}]]</td>
+                                    <td>[[${model}]]</td>
                                 </tr>
                                 <tr>
                                     <td>房屋朝向</td>
-                                    <td>[[${estateItem.direction}]]</td>
+                                    <td>[[${direction}]]</td>
                                 </tr>
                                 <tr>
                                     <td>建筑面积</td>
-                                    <td>[[${estateItem.area}]]平米</td>
+                                    <td>[[${area}]]平米</td>
                                 </tr>
                                 <tr>
                                     <td>所在楼层</td>
-                                    <td>[[${estateItem.floor}]]</td>
+                                    <td>[[${floor}]]</td>
                                 </tr>
                                 <tr>
                                     <td>建筑年代</td>
-                                    <td>[[${estateItem.buildingAge?:'暂无数据'}]]年</td>
+                                    <td>[[${buildingAge}?:'暂无数据']]年</td>
                                 </tr>
                                 <tr>
                                     <td>装修情况</td>
-                                    <td>[[${estateItem.decoration}]]</td>
+                                    <td>[[${decoration}]]</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -287,6 +280,10 @@
 <!-- END FOOT -->
 <!-- BEGIN PAGESCRIPT -->
 <script>
+    $(function () {
+        // 图片懒加载
+        Common.Lazyload.init();
+    })
 </script>
 <!-- END PAGESCRIPT -->
 </body>

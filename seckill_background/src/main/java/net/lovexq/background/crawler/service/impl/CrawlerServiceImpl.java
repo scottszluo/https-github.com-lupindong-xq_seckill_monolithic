@@ -34,6 +34,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import javax.jms.Queue;
+import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -224,6 +225,9 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
     public void generateStaticPage(Map dataMap, String templateName) throws Exception {
+        //构造上下文(Model)
+        Context context = new Context(Locale.CHINA, dataMap);
+
         //构造模板引擎
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
         resolver.setPrefix("templates/");//模板所在目录，相对于当前classloader的classpath。
@@ -231,12 +235,17 @@ public class CrawlerServiceImpl implements CrawlerService {
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(resolver);
 
-        //构造上下文(Model)
-        Context context = new Context(Locale.CHINA, dataMap);
         //渲染模板
+        Assert.notNull(templateName, "templateName must not be null!");
+        String filePath = appProperties.getProducesPath() + templateName.split("_")[0] + "/";
+        File file = new File(filePath);
+        if (!file.exists()) file.mkdirs();
+
         String houseCode = MapUtils.getString(dataMap, "houseCode");
         Assert.notNull(houseCode, "HouseCode must not be null!");
-        FileWriter write = new FileWriter(appProperties.getProducesPath() + houseCode + ".shtml");
+
+
+        FileWriter write = new FileWriter(filePath + houseCode + ".shtml");
         templateEngine.process(templateName, context, write);
     }
 

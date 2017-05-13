@@ -48,7 +48,6 @@ public class EstateServiceImpl implements EstateService {
         String cacheKey = CacheKeyGenerator.generate(EstateItemDTO.class, "listForSaleByPage", pageable, paramMap);
 
         Page<EstateItemDTO> targetItemPage = new PageX();
-        //redisClient.del(cacheKey);
         // 读取缓存数据
         targetItemPage = redisClient.getObj(cacheKey, targetItemPage.getClass());
         if (targetItemPage != null && CollectionUtils.isNotEmpty(targetItemPage.getContent())) {
@@ -63,7 +62,7 @@ public class EstateServiceImpl implements EstateService {
                     EstateItemDTO dto = new EstateItemDTO();
                     CachedBeanCopier.copy(model, dto);
 
-                    dto.setDetailHref("/special/" + dto.getHouseCode() + ".shtml");
+                    dto.setDetailHref("/estate/" + dto.getHouseCode() + ".shtml");
                     dto.setTotalPriceStr(dto.getTotalPrice() + "万");
                     dto.setUnitPriceStr("单价" + dto.getUnitPrice() + "万");
                     dto.setDownPayments(dto.getUnitPriceStr() + ", 首付" + new BigDecimal(0.3).multiply(dto.getTotalPrice()).setScale(2, BigDecimal.ROUND_HALF_DOWN) + "万");
