@@ -18,7 +18,6 @@ import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.BeanMapUtil;
 import net.lovexq.seckill.common.utils.ProtoStuffUtil;
 import net.lovexq.seckill.common.utils.enums.CrawlerRecordEnum;
-import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +38,7 @@ import java.io.FileWriter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author LuPindong
@@ -72,7 +72,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
             LianJiaParam lianJiaParam = new LianJiaParam(appProperties, baseUrl, region, curPage, totalPage);
-            exec.submit(new LianJiaInitializeCallable(lianJiaParam, mqProducer, initializeQueue));
+            Future future = exec.submit(new LianJiaInitializeCallable(lianJiaParam, mqProducer, initializeQueue));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             result = new JsonResult(500, e.getMessage());
@@ -90,7 +90,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
             LianJiaParam lianJiaParam = new LianJiaParam(appProperties, batch, baseUrl, region);
-            exec.submit(new LianJiaCheckCallable(lianJiaParam, mqProducer, checkQueue));
+            Future future = exec.submit(new LianJiaCheckCallable(lianJiaParam, mqProducer, checkQueue));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             result = new JsonResult(500, e.getMessage());
@@ -106,7 +106,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         JsonResult result = new JsonResult();
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
-            List<EstateItemDTO> estateItemList = new ArrayList<>();
+            List<EstateItemDTO> estateItemList = new ArrayList();
             // 处理下架和更新情况
             List<CrawlerRecordModel> crawlerRecordList = crawlerRecordRepository.findByBatchAndStateIn(batch, Arrays.asList(CrawlerRecordEnum.DEFAULT.getValue(), CrawlerRecordEnum.CREATE.getValue()));
             for (CrawlerRecordModel crawlerRecord : crawlerRecordList) {
@@ -128,13 +128,12 @@ public class CrawlerServiceImpl implements CrawlerService {
             for (Map map : mapList) {
                 CrawlerRecordModel recordModel = new CrawlerRecordModel();
                 BeanMapUtil.mapToBean(map, recordModel);
-                EstateEnum.FOR_SALE.getValue();
                 EstateItemDTO estateItemDTO = ProtoStuffUtil.deserialize(recordModel.getData(), EstateItemDTO.class);
                 estateItemDTO.setCrawlerState(recordModel.getState().toString());
                 estateItemList.add(estateItemDTO);
             }
             LianJiaParam lianJiaParam = new LianJiaParam(estateItemList, appProperties, batch, curPage);
-            exec.submit(new LianJiaAddCallable(lianJiaParam, mqProducer, initializeQueue));
+            Future future = exec.submit(new LianJiaAddCallable(lianJiaParam, mqProducer, initializeQueue));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             result = new JsonResult(500, e.getMessage());

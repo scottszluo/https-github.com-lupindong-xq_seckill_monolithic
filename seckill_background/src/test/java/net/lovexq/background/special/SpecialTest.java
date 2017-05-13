@@ -1,6 +1,7 @@
 package net.lovexq.background.special;
 
 import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.crawler.service.CrawlerService;
 import net.lovexq.background.estate.model.EstateImageModel;
 import net.lovexq.background.estate.model.EstateItemModel;
 import net.lovexq.background.estate.repository.EstateImageRepository;
@@ -8,13 +9,9 @@ import net.lovexq.background.estate.repository.EstateItemRepository;
 import net.lovexq.background.special.dto.SpecialStockDTO;
 import net.lovexq.background.special.model.SpecialStockModel;
 import net.lovexq.background.special.repository.SpecialStockRepository;
-import net.lovexq.background.special.service.SpecialService;
 import net.lovexq.background.system.model.SystemConfigModel;
 import net.lovexq.background.system.repository.SysConfigRepository;
-import net.lovexq.seckill.common.utils.BeanMapUtil;
-import net.lovexq.seckill.common.utils.CacheKeyGenerator;
-import net.lovexq.seckill.common.utils.IdWorker;
-import net.lovexq.seckill.common.utils.TimeUtil;
+import net.lovexq.seckill.common.utils.*;
 import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,14 +24,15 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by LuPindong on 2017-4-26.
@@ -50,7 +48,7 @@ public class SpecialTest {
     @Autowired
     private SpecialStockRepository specialStockRepository;
     @Autowired
-    private SpecialService specialService;
+    private CrawlerService crawlerService;
     @Autowired
     private SysConfigRepository sysConfigRepository;
     @Autowired
@@ -59,8 +57,6 @@ public class SpecialTest {
     private RedisClient redisClient;
 
     private TemplateEngine templateEngine;
-
-    private String filePrefix = "D:\\Development\\WorkSpaces\\2017\\xq_seckill_monolithic\\seckill_foreground\\produce\\special\\";
 
     @Before
     public void initTemplateEngine() {
@@ -78,7 +74,7 @@ public class SpecialTest {
         String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
         redisTemplate.delete(cacheKey);
 
-        List<String> keysList = new ArrayList<>();
+        List<String> keysList = new ArrayList();
         List<SpecialStockModel> list = specialStockRepository.findAll();
         for (SpecialStockModel model : list) {
             cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "getByHouseCode", model.getHouseCode());
@@ -153,6 +149,19 @@ public class SpecialTest {
                     specialStock.setBatch(batch);
                     specialStockRepository.saveAndFlush(specialStock);
 
+                    // 生成静态页面
+                    SpecialStockDTO specialStockDTO = new SpecialStockDTO();
+                    CachedBeanCopier.copy(specialStock, specialStockDTO);
+
+                    EstateImageModel condition = new EstateImageModel();
+                    condition.setHouseCode(estateItem.getHouseCode());
+                    Example<EstateImageModel> example = Example.of(condition);
+                    List<EstateImageModel> estateImageModelList = estateImageRepository.findAll(example);
+                    specialStockDTO.setEstateImageList(estateImageModelList);
+
+                    // 转为Map
+                    crawlerService.generateStaticPage(BeanMapUtil.beanToMap(specialStockDTO), "special_detailUI");
+
                     if (count++ > 20) break;
                 }
             }
@@ -174,20 +183,6 @@ public class SpecialTest {
         }
         Assert.assertTrue(true);
     }
-
-
-    @Test
-    public void generateStaticPage() throws Exception {
-        Long id = 861224069901717504L;
-        SpecialStockDTO specialStoc = specialService.getOne(id);
-        Map<String, Object> map = BeanMapUtil.beanToMap(specialStoc);
-        //构造上下文(Model)
-        Context context = new Context(Locale.CHINA, map);
-        //渲染模板
-        FileWriter write = new FileWriter(filePrefix + specialStoc.getHouseCode() + ".shtml");
-        templateEngine.process("special_detailUI", context, write);
-    }
-
 
     @Test
     public void randomInsertEstate() throws IllegalAccessException, InstantiationException {
@@ -232,5 +227,6 @@ public class SpecialTest {
             }
         }
     }
+
 
 }

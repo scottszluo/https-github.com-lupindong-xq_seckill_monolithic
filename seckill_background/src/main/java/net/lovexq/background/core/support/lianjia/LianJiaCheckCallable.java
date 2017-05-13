@@ -48,7 +48,7 @@ public class LianJiaCheckCallable implements Callable<JsonResult> {
  * 获取区域链接列表
  */
     private static List<String> getRegionLinks(String html) throws Exception {
-        List<String> regionLinks = new ArrayList<>();
+        List<String> regionLinks = new ArrayList();
         Document document = Jsoup.parse(html);
         if (LianJiaCrawler.INSTANCE.checkValidHtml(document)) {
             Elements linkElements = document.select("div[data-role='ershoufang'] > div > a");

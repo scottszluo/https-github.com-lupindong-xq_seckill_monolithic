@@ -38,7 +38,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicDataSourceRegister.class);
     private PropertyValues dataSourcePropertyValues;
     private ConversionService conversionService = new DefaultConversionService();
-    private Map<Object, Object> targetDataSources = new HashMap<>();
+    private Map<Object, Object> targetDataSources = new HashMap();
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -47,19 +47,18 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
         }
 
         // 添加主数据源
-        targetDataSources.put("master", DynamicDataSourceHolder.masterDS);
+        targetDataSources.put("master", DynamicDataSourceHolder.getMasterDS());
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("提供可选取Master数据源：{}", "master");
         }
-        DynamicDataSourceHolder.masterDSKey = "master";
 
         // 添加从数据源
-        targetDataSources.putAll(DynamicDataSourceHolder.slaveDSMap);
+        targetDataSources.putAll(DynamicDataSourceHolder.getSlaveDSMap());
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("提供可选取Slave数据源：{}", DynamicDataSourceHolder.slaveDSMap.keySet());
+            LOGGER.debug("提供可选取Slave数据源：{}", DynamicDataSourceHolder.getSlaveDSMap().keySet());
         }
-        for (String key : DynamicDataSourceHolder.slaveDSMap.keySet()) {
-            DynamicDataSourceHolder.slaveDSKeys.add(key);
+        for (String key : DynamicDataSourceHolder.getSlaveDSMap().keySet()) {
+            DynamicDataSourceHolder.getSlaveDSKeys().add(key);
         }
 
         // 创建DynamicDataSource
@@ -68,7 +67,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
         beanDefinition.setSynthetic(true);
 
         MutablePropertyValues mpv = beanDefinition.getPropertyValues();
-        mpv.addPropertyValue("defaultTargetDataSource", DynamicDataSourceHolder.masterDS);
+        mpv.addPropertyValue("defaultTargetDataSource", DynamicDataSourceHolder.getMasterDS());
         mpv.addPropertyValue("targetDataSources", targetDataSources);
 
         registry.registerBeanDefinition("dataSource", beanDefinition);
@@ -95,8 +94,8 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
      */
     private void initMasterDataSource(Environment env) throws SQLException {
         Map<String, Object> msMap = new RelaxedPropertyResolver(env, "app.dataSource.master").getSubProperties(".");
-        DynamicDataSourceHolder.masterDS = buildDruidDataSource(msMap, "");
-        otherPropertiesBinder(env, DynamicDataSourceHolder.masterDS);
+        DynamicDataSourceHolder.setMasterDS(buildDruidDataSource(msMap, ""));
+        otherPropertiesBinder(env, DynamicDataSourceHolder.getMasterDS());
     }
 
     /**
@@ -109,7 +108,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
             String slaveName = "slave" + i;
             DruidDataSource slaveDataSource = buildDruidDataSource(ssMap, slaveName + ".");
             otherPropertiesBinder(env, slaveDataSource);
-            DynamicDataSourceHolder.slaveDSMap.put(slaveName, slaveDataSource);
+            DynamicDataSourceHolder.getSlaveDSMap().put(slaveName, slaveDataSource);
         }
     }
 

@@ -51,7 +51,7 @@ public class ProtoStuffUtil {
      */
     public static <T> T deserialize(byte[] dataArray, Class<T> targetClass) {
         if (dataArray == null || dataArray.length == 0) {
-            throw new RuntimeException("反序列化对象发生异常,byte序列为空!");
+            throw new RuntimeException("反序列化对象发生异常,Byte序列为空!");
         }
         T instance = null;
         try {
@@ -109,7 +109,7 @@ public class ProtoStuffUtil {
      */
     public static <T> List<T> deserializeList(byte[] dataArray, Class<T> targetClass) {
         if (dataArray == null || dataArray.length == 0) {
-            throw new RuntimeException("反序列化对象发生异常,byte序列为空!");
+            throw new RuntimeException("反序列化对象发生异常,Byte序列为空!");
         }
         RuntimeSchema<T> schema = RuntimeSchema.createFrom(targetClass);
         List<T> result = null;

@@ -15,6 +15,7 @@ import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import net.lovexq.seckill.common.utils.CachedBeanCopier;
 import net.lovexq.seckill.common.utils.IdWorker;
 import net.lovexq.seckill.common.utils.TimeUtil;
+import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.FileWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -64,7 +66,7 @@ public class SpecialServiceImpl implements SpecialService {
             return targetList;
         } else {
             List<SpecialStockModel> sourceList = specialStockRepository.findForSecKillList();
-            targetList = new ArrayList<>();
+            targetList = new ArrayList();
             if (CollectionUtils.isNotEmpty(sourceList)) {
                 for (SpecialStockModel source : sourceList) {
                     SpecialStockDTO target = new SpecialStockDTO();
@@ -72,7 +74,7 @@ public class SpecialServiceImpl implements SpecialService {
 
                     target.setDetailHref("/special/" + target.getHouseCode() + ".shtml");
                     target.setTotalPriceOriginal("<del>原价" + target.getTotalPrice() + "万</del>");
-                    target.setTotalPriceCurrent("秒杀价" + new BigDecimal(0.1).multiply(target.getTotalPrice()).setScale(2, BigDecimal.ROUND_HALF_DOWN) + "万");
+                    target.setTotalPriceCurrent("秒杀价" + BigDecimal.valueOf(0.1d).multiply(target.getTotalPrice()).setScale(2, BigDecimal.ROUND_HALF_DOWN) + "万");
                     target.setUnitPriceStr("单价" + target.getUnitPrice() + "万");
                     target.setAreaStr(target.getArea() + "平米");
 
@@ -132,9 +134,9 @@ public class SpecialServiceImpl implements SpecialService {
         }
     }
 
-    private String getMd5Url(String houseCode, String account) {
+    private String getMd5Url(String houseCode, String account) throws UnsupportedEncodingException {
         String saltUrl = houseCode + "/" + account + "/" + appProperties.getPrivateSalt();
-        return DigestUtils.md5DigestAsHex(saltUrl.getBytes());
+        return DigestUtils.md5DigestAsHex(saltUrl.getBytes(AppConstants.CHARSET_UTF8));
     }
 
     @Override

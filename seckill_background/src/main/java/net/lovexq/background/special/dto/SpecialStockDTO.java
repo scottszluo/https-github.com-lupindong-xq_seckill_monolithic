@@ -5,6 +5,7 @@ import net.lovexq.background.special.model.SpecialStockModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 特价库存DTO
@@ -19,7 +20,7 @@ public class SpecialStockDTO extends SpecialStockModel {
     private String totalPriceCurrent;
     private String unitPriceStr;
     private String areaStr;
-    private List<EstateImageModel> estateImageList = new ArrayList<>();
+    private List<EstateImageModel> estateImageList = new ArrayList();
 
     public String getDetailHref() {
         return detailHref;
@@ -69,4 +70,17 @@ public class SpecialStockDTO extends SpecialStockModel {
         this.estateImageList = estateImageList;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SpecialStockDTO)) return false;
+        if (!super.equals(o)) return false;
+        SpecialStockDTO that = (SpecialStockDTO) o;
+        return Objects.equals(detailHref, that.detailHref);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), detailHref);
+    }
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class CachedBeanCopier {
 
-    private static final Map<String, BeanCopier> BEAN_COPIERS = new HashMap<>();
+    private static final Map<String, BeanCopier> BEAN_COPIERS = new HashMap();
 
     public static void copy(Object sourceObj, Object targetObj) {
         String key = genKey(sourceObj.getClass(), targetObj.getClass());

@@ -20,7 +20,7 @@ public class IdWorkerTest {
     public void nextId() throws Exception {
         long avg = 0;
         for (int k = 0; k < 10; k++) {
-            List<Callable<Long>> partitions = new ArrayList<>();
+            List<Callable<Long>> partitions = new ArrayList();
             IdWorker idGen = IdWorker.INSTANCE;
             for (int i = 0; i < 1000000; i++) {
                 partitions.add(new Callable<Long>() {

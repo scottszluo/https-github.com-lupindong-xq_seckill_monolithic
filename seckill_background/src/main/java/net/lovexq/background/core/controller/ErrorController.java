@@ -35,7 +35,7 @@ public class ErrorController extends BasicErrorController {
         HttpStatus status = getStatus(request);
 
         //输出自定义的Json格式
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap();
         map.put("status", status.value());
         map.put("message", body.get("message"));
         map.put("data", body.get("error"));

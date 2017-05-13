@@ -5,6 +5,7 @@ import net.lovexq.background.estate.model.EstateItemModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 房源条目DTO
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public class EstateItemDTO extends EstateItemModel {
 
-    private List<EstateImageModel> estateImageList = new ArrayList<>();
+    private List<EstateImageModel> estateImageList = new ArrayList();
 
     private String batch;
 
@@ -30,6 +31,7 @@ public class EstateItemDTO extends EstateItemModel {
     private String areaStr;
     private String focusNumStr;
     private String watchNumStr;
+    private Boolean newEstate;
 
     public EstateItemDTO() {
         super();
@@ -125,5 +127,27 @@ public class EstateItemDTO extends EstateItemModel {
 
     public void setWatchNumStr(String watchNumStr) {
         this.watchNumStr = watchNumStr;
+    }
+
+    public Boolean getNewEstate() {
+        return newEstate;
+    }
+
+    public void setNewEstate(Boolean newEstate) {
+        this.newEstate = newEstate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EstateItemDTO)) return false;
+        if (!super.equals(o)) return false;
+        EstateItemDTO that = (EstateItemDTO) o;
+        return Objects.equals(detailHref, that.detailHref);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), detailHref);
     }
 }

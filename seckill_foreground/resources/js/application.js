@@ -116,7 +116,13 @@ var Common = (function () {
         }
     };
 
-    $.addTemplateFormatter({});
+    $.addTemplateFormatter({
+        newEstateFormatter: function (value, template) {
+            if (!value) {
+                return "display:none";
+            }
+        }
+    });
 
     return {
         PNotice: PNotice,
@@ -177,8 +183,11 @@ var Estate = (function () {
             $.get(List.dataUrl(), requestParamObj).done(function (result) {
                 var pageData = result.data;
                 if (pageData != null) {
+
+                    $("#countContent").html("<span class='font-size-lg'>[共找到 <strong>" + pageData.totalElements + "</strong> 套广州二手房]</span>")
+
                     $("#listing").loadTemplate("#listData", pageData.content, {
-                        complete: function () {
+                        success: function () {
                             Common.Lazyload.init();
                         },
                     });
@@ -200,6 +209,7 @@ var Estate = (function () {
                         List.goNextPage(num);
                     });
                 } else {
+                    $('#countContent').empty();
                     $("#listing").html("<h2>暂无符合条件的数据！</h2>");
                     $('#pagination').empty();
                 }
@@ -216,7 +226,6 @@ var Estate = (function () {
                 if (Common.StringUtil.isNotBlank(selectValue)) {
                     obj.value = selectValue;
                 } else {
-                    obj.value = "";
                     delete requestParamObj[obj.name];
                 }
             })
@@ -283,7 +292,7 @@ var Special = (function () {
         init: function () {
             $.get(List.dataUrl()).done(function (result) {
                 $("#listing").loadTemplate("#listData", result.data, {
-                    complete: function () {
+                    success: function () {
                         Common.Lazyload.init();
                     }
                 });

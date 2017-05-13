@@ -133,6 +133,9 @@
                                 <li class="sort watchNum" data-loading-text="带看次数">
                                     <a href="#">带看次数</a>
                                 </li>
+                                <li>
+                                    <a href="#" id="countContent" style="float: right">带看次数</a>
+                                </li>
                             </ul>
                         </form>
                     </div>
@@ -175,6 +178,8 @@
             <span class="thumb-info thumb-info-lighten">
                 <span class="thumb-info-wrapper m-none">
                     <img class="lazyload img-responsive" style="height: 240px" data-template-bind='[{"attribute": "data-original", "value": "coverUrl"}]'>
+                    <span class="thumb-info-listing-type background-color-secondary text-uppercase text-color-light font-weight-semibold p-xs pl-md pr-md"
+                          data-template-bind='[{"attribute": "style", "value": "newEstate", "formatter": "newEstateFormatter"}]'>新上</span>
                 </span>
                 <span class="thumb-info-price background-color-primary text-color-light text-xl p-sm pl-md pr-md">
                     <sapn class="text-xl font-red" data-content="totalPriceStr"></sapn><br/>

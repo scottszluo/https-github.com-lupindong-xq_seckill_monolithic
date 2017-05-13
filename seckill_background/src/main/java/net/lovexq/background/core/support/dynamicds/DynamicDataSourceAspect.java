@@ -77,7 +77,7 @@ public class DynamicDataSourceAspect {
             }
             response = pjp.proceed();
         } finally {
-            if (!hasBinding && !DynamicDataSourceHolder.masterDSKey.equals(dataSourceKey)) {
+            if (!hasBinding && !DynamicDataSourceHolder.getMasterDSKey().equals(dataSourceKey)) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.info("移除自动选取数据源:{}", dataSourceKey);
                 }

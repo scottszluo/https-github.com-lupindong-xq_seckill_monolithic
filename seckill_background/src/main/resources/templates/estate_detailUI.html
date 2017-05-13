@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
 <!-- BEGIN HEAD -->
 <head>
     <meta charset="utf-8">
@@ -46,7 +46,19 @@
                                             <a href="/" th:href="${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
                                                 <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
                                                     <span class="thumb-info-wrapper font-size-xl">
-                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" src="/3rd-party/porto/img/blank.jpg" th:src="${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" src="/3rd-party/porto/img/blank.jpg" th:attr="data-original=${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
+                                                        <span class="thumb-info-title font-size-xl">
+                                                            <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div th:if="${#lists.isEmpty(estateImageList)}">
+                                            <a href="/3rd-party/porto/img/blank.jpg">
+                                                <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
+                                                    <span class="thumb-info-wrapper font-size-xl">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" src="/3rd-party/porto/img/blank.jpg">
                                                         <span class="thumb-info-title font-size-xl">
                                                             <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
                                                         </span>
@@ -58,7 +70,10 @@
                                 </div>
                                 <div class="owl-carousel owl-theme manual thumb-gallery-thumbs mt" id="thumbGalleryThumbs">
                                     <div th:if="${not #lists.isEmpty(estateImageList)}" th:each="iamge, iamgeStat : ${estateImageList}">
-                                        <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg" th:src="${iamge.url}?:'/3rd-party/porto/img/blank.jpg'">
+                                        <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg" th:attr="data-original=${iamge.url}?:'/3rd-party/porto/img/blank.jpg'">
+                                    </div>
+                                    <div th:if="${#lists.isEmpty(estateImageList)}">
+                                        <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg">
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +88,8 @@
                                 <tbody>
                                 <tr>
                                     <td class="p-sm pl-md pr-md background-color-primary text-light" colspan="2">
-                                        <sapn class="text-xl font-red">[[${totalPrice}]]万</sapn><br/>
+                                        <sapn class="text-xl font-red">[[${totalPrice}]]万</sapn>
+                                        <br/>
                                         <sapn class="text-sm">单价[[${unitPrice}]]/平米&nbsp&nbsp&nbsp&nbsp首付[[${#numbers.formatDecimal(totalPrice * 0.3, 1, 2)}]]万</sapn>
                                     </td>
                                 </tr>
@@ -283,6 +299,9 @@
     $(function () {
         // 图片懒加载
         Common.Lazyload.init();
+        $.each($("img[data-original]"), function (index, imgObj) {
+            this.src = this.attributes["data-original"].value;
+        });
     })
 </script>
 <!-- END PAGESCRIPT -->

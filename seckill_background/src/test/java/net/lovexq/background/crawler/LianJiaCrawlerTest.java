@@ -1,15 +1,22 @@
 package net.lovexq.background.crawler;
 
 import com.alibaba.fastjson.JSON;
+import net.lovexq.background.crawler.service.CrawlerService;
+import net.lovexq.background.estate.dto.EstateItemDTO;
+import net.lovexq.background.estate.model.EstateImageModel;
+import net.lovexq.background.estate.model.EstateItemModel;
+import net.lovexq.background.estate.repository.EstateImageRepository;
+import net.lovexq.background.estate.repository.EstateItemRepository;
+import net.lovexq.seckill.common.utils.BeanMapUtil;
+import net.lovexq.seckill.common.utils.CachedBeanCopier;
 import net.lovexq.seckill.common.utils.ProtoStuffUtil;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
-import net.lovexq.background.estate.model.EstateItemModel;
-import net.lovexq.background.estate.repository.EstateItemRepository;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
@@ -26,6 +33,12 @@ public class LianJiaCrawlerTest {
 
     @Autowired
     private EstateItemRepository estateItemRepository;
+
+    @Autowired
+    private EstateImageRepository estateImageRepository;
+
+    @Autowired
+    private CrawlerService crawlerService;
 
     @Test
     public void testAll() throws Exception {
@@ -87,7 +100,7 @@ public class LianJiaCrawlerTest {
         EstateItemModel estateItemModelB = JSON.parseObject(dataB, EstateItemModel.class);
         System.out.println("读取的数据为：" + estateItemModelB);
 
-        List<EstateItemModel> list = new ArrayList<>();
+        List<EstateItemModel> list = new ArrayList();
         list.add(estateItemModel);
         list.add(estateItemModelB);
 
@@ -147,7 +160,7 @@ public class LianJiaCrawlerTest {
         List<EstateItemModel> estateItemModelBList = JSON.parseArray(dataB, EstateItemModel.class);
         System.out.println("读取的数据为：" + estateItemModelBList.size());
 
-        List<EstateItemModel> list = new ArrayList<>();
+        List<EstateItemModel> list = new ArrayList();
         list.addAll(estateItemModelList);
         list.addAll(estateItemModelBList);
         list.addAll(estateItemModelList);
@@ -232,7 +245,7 @@ public class LianJiaCrawlerTest {
         EstateItemModel estateItemModelBx = ProtoStuffUtil.deserialize(dataArrayBx, EstateItemModel.class);
         System.out.println("读取的数据为：" + estateItemModelBx);
 
-        List<EstateItemModel> list = new ArrayList<>();
+        List<EstateItemModel> list = new ArrayList();
         list.add(estateItemModel);
         list.add(estateItemModelBx);
 
@@ -293,7 +306,7 @@ public class LianJiaCrawlerTest {
         List<EstateItemModel> estateItemModelListB = ProtoStuffUtil.deserializeList(dataArrayB, EstateItemModel.class);
         System.out.println("读取的数据为：" + estateItemModelListB.size());
 
-        List<EstateItemModel> list = new ArrayList<>();
+        List<EstateItemModel> list = new ArrayList();
         list.addAll(estateItemModelListB);
         list.addAll(estateItemModelList2);
         list.addAll(estateItemModelListB);
@@ -337,4 +350,24 @@ public class LianJiaCrawlerTest {
         return time;
     }
 
+
+    @Test
+    public void genEstateItem() throws Exception {
+        List<EstateItemModel> estateItemModelList = estateItemRepository.findAll();
+        for (EstateItemModel estateItemModel : estateItemModelList) {
+            String houseCode = estateItemModel.getHouseCode();
+
+            EstateItemDTO estateItemDTO = new EstateItemDTO();
+            CachedBeanCopier.copy(estateItemModel, estateItemDTO);
+            EstateImageModel condition = new EstateImageModel();
+            condition.setHouseCode(houseCode);
+            Example<EstateImageModel> example = Example.of(condition);
+            List<EstateImageModel> estateImageModelList = estateImageRepository.findAll(example);
+            estateItemDTO.setEstateImageList(estateImageModelList);
+
+            // 转为Map
+            crawlerService.generateStaticPage(BeanMapUtil.beanToMap(estateItemDTO), "estate_detailUI");
+
+        }
+    }
 }

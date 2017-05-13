@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class LianJiaParam {
 
-    private List<EstateItemDTO> estateItemList = new ArrayList<>();
+    private List<EstateItemDTO> estateItemList = new ArrayList();
     private AppProperties appProperties;
     private String batch;
     private String baseUrl;

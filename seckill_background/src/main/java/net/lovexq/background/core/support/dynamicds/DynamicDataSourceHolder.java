@@ -18,19 +18,51 @@ import java.util.*;
 public class DynamicDataSourceHolder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicDataSourceHolder.class);
-    private static final ThreadLocal<String> dataSourceHolder = new ThreadLocal<>();    // 线程本地环境
+    private static final ThreadLocal<String> dataSourceHolder = new ThreadLocal();    // 线程本地环境
     private static final Random RANDOM = new Random();
-    public static DruidDataSource masterDS;
-    public static Map<String, DruidDataSource> slaveDSMap = new HashMap<>();
-    public static String masterDSKey;
-    public static List<String> slaveDSKeys = new ArrayList<>();
+    private static DruidDataSource masterDS;
+    private static Map<String, DruidDataSource> slaveDSMap = new HashMap();
+    private static String masterDSKey = "master";
+    private static List<String> slaveDSKeys = new ArrayList();
 
     public static String getDataSourceKey() {
         return dataSourceHolder.get();
     }
 
-    public void setDataSourceKey(String key) {
+    public static void setDataSourceKey(String key) {
         dataSourceHolder.set(key);
+    }
+
+    public static DruidDataSource getMasterDS() {
+        return masterDS;
+    }
+
+    public static void setMasterDS(DruidDataSource masterDS) {
+        DynamicDataSourceHolder.masterDS = masterDS;
+    }
+
+    public static Map<String, DruidDataSource> getSlaveDSMap() {
+        return slaveDSMap;
+    }
+
+    public static void setSlaveDSMap(Map<String, DruidDataSource> slaveDSMap) {
+        DynamicDataSourceHolder.slaveDSMap = slaveDSMap;
+    }
+
+    public static String getMasterDSKey() {
+        return masterDSKey;
+    }
+
+    public static void setMasterDSKey(String masterDSKey) {
+        DynamicDataSourceHolder.masterDSKey = masterDSKey;
+    }
+
+    public static List<String> getSlaveDSKeys() {
+        return slaveDSKeys;
+    }
+
+    public static void setSlaveDSKeys(List<String> slaveDSKeys) {
+        DynamicDataSourceHolder.slaveDSKeys = slaveDSKeys;
     }
 
     /**

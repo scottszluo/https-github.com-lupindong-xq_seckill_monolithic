@@ -11,7 +11,9 @@ import net.lovexq.background.estate.repository.specification.EstateItemSpecifica
 import net.lovexq.background.estate.service.EstateService;
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import net.lovexq.seckill.common.utils.CachedBeanCopier;
+import net.lovexq.seckill.common.utils.TimeUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -48,6 +50,8 @@ public class EstateServiceImpl implements EstateService {
         String cacheKey = CacheKeyGenerator.generate(EstateItemDTO.class, "listForSaleByPage", pageable, paramMap);
 
         Page<EstateItemDTO> targetItemPage = new PageX();
+        //redisClient.del(cacheKey);
+
         // 读取缓存数据
         targetItemPage = redisClient.getObj(cacheKey, targetItemPage.getClass());
         if (targetItemPage != null && CollectionUtils.isNotEmpty(targetItemPage.getContent())) {
@@ -61,15 +65,15 @@ public class EstateServiceImpl implements EstateService {
                 for (EstateItemModel model : sourceItemList) {
                     EstateItemDTO dto = new EstateItemDTO();
                     CachedBeanCopier.copy(model, dto);
-
+                    if (StringUtils.isBlank(dto.getCoverUrl())) dto.setCoverUrl("/3rd-party/porto/img/blank.jpg");
                     dto.setDetailHref("/estate/" + dto.getHouseCode() + ".shtml");
                     dto.setTotalPriceStr(dto.getTotalPrice() + "万");
                     dto.setUnitPriceStr("单价" + dto.getUnitPrice() + "万");
-                    dto.setDownPayments(dto.getUnitPriceStr() + ", 首付" + new BigDecimal(0.3).multiply(dto.getTotalPrice()).setScale(2, BigDecimal.ROUND_HALF_DOWN) + "万");
+                    dto.setDownPayments(dto.getUnitPriceStr() + ", 首付" + BigDecimal.valueOf(0.3d).multiply(dto.getTotalPrice()).setScale(2, BigDecimal.ROUND_HALF_DOWN) + "万");
                     dto.setAreaStr(dto.getArea() + "平米");
                     dto.setFocusNumStr(dto.getFocusNum() + "人关注");
                     dto.setWatchNumStr(dto.getWatchNum() + "次带看");
-
+                    dto.setNewEstate(dto.getUpdateTime().isAfter(TimeUtil.nowDateTime().minusDays(3))); // 是当前日期三天前发布的
                     targetItemList.add(dto);
                 }
                 targetItemPage = new PageX(targetItemList, pageable, sourceItemPage.getTotalElements());

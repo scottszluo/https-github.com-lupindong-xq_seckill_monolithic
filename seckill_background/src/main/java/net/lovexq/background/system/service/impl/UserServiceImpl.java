@@ -10,12 +10,15 @@ import net.lovexq.seckill.common.utils.IdWorker;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import net.lovexq.background.core.support.security.JwtClaims;
 import net.lovexq.background.core.support.security.JwtTokenUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 
 /**
  * @author LuPindong
@@ -23,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Service
 public class UserServiceImpl implements UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private SysUserRepository sysUserRepository;
@@ -33,9 +38,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public JsonResult executeSignUp(String account, String email, String cipher) throws Exception {
-        account = new String(Base64Utils.decodeFromString(account));
-        email = new String(Base64Utils.decodeFromString(email));
-        cipher = new String(Base64Utils.decodeFromString(cipher));
+        account = new String(Base64Utils.decodeFromString(account), AppConstants.CHARSET_UTF8);
+        email = new String(Base64Utils.decodeFromString(email), AppConstants.CHARSET_UTF8);
+        cipher = new String(Base64Utils.decodeFromString(cipher), AppConstants.CHARSET_UTF8);
 
         SystemUserModel userModel = sysUserRepository.findByAccount(account);
         if (userModel != null && userModel.getId() != null) {
@@ -56,8 +61,8 @@ public class UserServiceImpl implements UserService {
     public JsonResult executeSignIn(HttpServletResponse response, String account, String cipher) throws Exception {
         JsonResult result = new JsonResult();
 
-        account = new String(Base64Utils.decodeFromString(account));
-        cipher = new String(Base64Utils.decodeFromString(cipher));
+        account = new String(Base64Utils.decodeFromString(account), AppConstants.CHARSET_UTF8);
+        cipher = new String(Base64Utils.decodeFromString(cipher), AppConstants.CHARSET_UTF8);
 
         SystemUserModel userModel = sysUserRepository.findByAccount(account);
         if (userModel == null || userModel.getId() == null) {
@@ -76,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
         // 存入Cookie
         CookieUtil.createCookie(AppConstants.TOKEN, token, "127.0.0.1", 3600, true, response);
-        CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", 3600,  response);
+        CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", 3600, response);
 
         return result;
     }
@@ -85,7 +90,11 @@ public class UserServiceImpl implements UserService {
     public JsonResult getPublicSalt() {
         JsonResult jsonResult = new JsonResult();
         String publicSalt = appProperties.getPublicSalt();
-        jsonResult.setData(Base64Utils.encodeToString(publicSalt.getBytes()));
+        try {
+            jsonResult.setData(Base64Utils.encodeToString(publicSalt.getBytes(AppConstants.CHARSET_UTF8)));
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
         return jsonResult;
     }
 }
