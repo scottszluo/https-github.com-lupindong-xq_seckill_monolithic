@@ -17,10 +17,10 @@ public class CookieUtil {
      * @param response
      * @return
      */
-    public static Cookie createCookie(String name, String context, int maxAge, HttpServletResponse response) {
+    public static Cookie createCookie(String name, String context, Long maxAge, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, context); // 新建Cookie
         cookie.setDomain("127.0.0.1"); // 设置域名
-        cookie.setMaxAge(maxAge); // 设置有效期
+        cookie.setMaxAge(maxAge.intValue()); // 设置有效期
         cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
         response.addCookie(cookie); // 输出到客户端
         return cookie;
@@ -36,10 +36,10 @@ public class CookieUtil {
      * @param response
      * @return
      */
-    public static Cookie createCookie(String name, String context, String domain, int maxAge, HttpServletResponse response) {
+    public static Cookie createCookie(String name, String context, String domain, Long maxAge, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, context); // 新建Cookie
         cookie.setDomain(domain); // 设置域名
-        cookie.setMaxAge(maxAge); // 设置有效期
+        cookie.setMaxAge(maxAge.intValue()); // 设置有效期
         cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
         response.addCookie(cookie); // 输出到客户端
         return cookie;
@@ -56,10 +56,10 @@ public class CookieUtil {
      * @param response
      * @return
      */
-    public static Cookie createCookie(String name, String context, String domain, int maxAge, boolean isHttpOnly, HttpServletResponse response) {
+    public static Cookie createCookie(String name, String context, String domain, Long maxAge, boolean isHttpOnly, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, context); // 新建Cookie
         cookie.setDomain(domain); // 设置域名
-        cookie.setMaxAge(maxAge); // 设置有效期
+        cookie.setMaxAge(maxAge.intValue()); // 设置有效期
         cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
         cookie.setHttpOnly(isHttpOnly);
         response.addCookie(cookie); // 输出到客户端

@@ -54,6 +54,7 @@ public class UserController extends BasicController {
 
     @PostMapping("/signin")
     public JsonResult signin(HttpServletRequest request, HttpServletResponse response) {
+        String userAgent = request.getHeader("User-Agent").toLowerCase();
         String account = request.getParameter("account");
         String cipher = request.getParameter("cipher");
         if (StringUtils.isBlank(account)) {
@@ -63,7 +64,7 @@ public class UserController extends BasicController {
             return new JsonResult(400, "密码不能为空！");
         }
         try {
-            result = userService.executeSignIn(response, account, cipher);
+            result = userService.executeSignIn(response, userAgent, account, cipher);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return new JsonResult(500, e.getMessage(), e);

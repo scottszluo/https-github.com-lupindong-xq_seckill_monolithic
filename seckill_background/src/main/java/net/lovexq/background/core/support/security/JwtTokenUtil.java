@@ -69,7 +69,7 @@ public class JwtTokenUtil {
     }
 
     /**
-     * 判断是否过期
+     * 有效期是否期满，过期为true
      *
      * @param token
      * @param secretKey
@@ -82,7 +82,7 @@ public class JwtTokenUtil {
     }
 
     /**
-     * 判断是否过期
+     * 有效期是否期满，过期为true
      *
      * @param claims
      * @return

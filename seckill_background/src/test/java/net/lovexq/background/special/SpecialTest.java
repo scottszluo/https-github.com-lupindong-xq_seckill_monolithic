@@ -10,7 +10,7 @@ import net.lovexq.background.special.dto.SpecialStockDTO;
 import net.lovexq.background.special.model.SpecialStockModel;
 import net.lovexq.background.special.repository.SpecialStockRepository;
 import net.lovexq.background.system.model.SystemConfigModel;
-import net.lovexq.background.system.repository.SysConfigRepository;
+import net.lovexq.background.system.repository.SystemConfigRepository;
 import net.lovexq.seckill.common.utils.*;
 import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import org.junit.Assert;
@@ -50,7 +50,7 @@ public class SpecialTest {
     @Autowired
     private CrawlerService crawlerService;
     @Autowired
-    private SysConfigRepository sysConfigRepository;
+    private SystemConfigRepository systemConfigRepository;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
@@ -167,13 +167,13 @@ public class SpecialTest {
             }
 
             // 更新特价批次
-            SystemConfigModel sysConfigModel = sysConfigRepository.findByConfigKey("special_batch");
+            SystemConfigModel sysConfigModel = systemConfigRepository.findByConfigKey("special_batch");
             if (sysConfigModel == null) {
                 sysConfigModel = new SystemConfigModel();
                 sysConfigModel.setConfigKey("special_batch");
             }
             sysConfigModel.setConfigValue(batch);
-            sysConfigRepository.saveAndFlush(sysConfigModel);
+            systemConfigRepository.saveAndFlush(sysConfigModel);
 
             String cacheKey = CacheKeyGenerator.generate(SystemConfigModel.class, "getByConfigKey", "special_batch");
             redisClient.setObj(cacheKey, sysConfigModel);

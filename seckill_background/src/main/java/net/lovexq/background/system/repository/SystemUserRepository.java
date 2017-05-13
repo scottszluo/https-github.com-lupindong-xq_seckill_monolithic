@@ -9,7 +9,7 @@ import net.lovexq.background.system.model.SystemUserModel;
  * @author LuPindong
  * @time 2017-04-29 23:53
  */
-public interface SysUserRepository extends BasicRepository<SystemUserModel, Long> {
+public interface SystemUserRepository extends BasicRepository<SystemUserModel, Long> {
     SystemUserModel findByAccount(String account);
 
     SystemUserModel findByEmail(String email);

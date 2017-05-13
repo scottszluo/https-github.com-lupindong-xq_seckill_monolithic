@@ -1,15 +1,16 @@
 package net.lovexq.background.system.service.impl;
 
 import net.lovexq.background.core.properties.AppProperties;
+import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.core.support.security.JwtClaims;
+import net.lovexq.background.core.support.security.JwtTokenUtil;
 import net.lovexq.background.system.model.SystemUserModel;
-import net.lovexq.background.system.repository.SysUserRepository;
+import net.lovexq.background.system.repository.SystemUserRepository;
 import net.lovexq.background.system.service.UserService;
 import net.lovexq.seckill.common.model.JsonResult;
 import net.lovexq.seckill.common.utils.CookieUtil;
 import net.lovexq.seckill.common.utils.IdWorker;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
-import net.lovexq.background.core.support.security.JwtClaims;
-import net.lovexq.background.core.support.security.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,10 @@ public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    private SysUserRepository sysUserRepository;
+    private SystemUserRepository systemUserRepository;
+
+    @Autowired
+    private RedisClient redisClient;
 
     @Autowired
     private AppProperties appProperties;
@@ -42,31 +46,31 @@ public class UserServiceImpl implements UserService {
         email = new String(Base64Utils.decodeFromString(email), AppConstants.CHARSET_UTF8);
         cipher = new String(Base64Utils.decodeFromString(cipher), AppConstants.CHARSET_UTF8);
 
-        SystemUserModel userModel = sysUserRepository.findByAccount(account);
+        SystemUserModel userModel = systemUserRepository.findByAccount(account);
         if (userModel != null && userModel.getId() != null) {
             return new JsonResult(400, "此用户账号已被注册！");
         }
-        userModel = sysUserRepository.findByEmail(email);
+        userModel = systemUserRepository.findByEmail(email);
         if (userModel != null && userModel.getId() != null) {
             return new JsonResult(400, "此邮箱地址已被注册！");
         }
 
         userModel = new SystemUserModel(IdWorker.INSTANCE.nextId(), account, cipher, email);
-        sysUserRepository.save(userModel);
+        systemUserRepository.save(userModel);
         return new JsonResult();
     }
 
     @Override
     @Transactional
-    public JsonResult executeSignIn(HttpServletResponse response, String account, String cipher) throws Exception {
+    public JsonResult executeSignIn(HttpServletResponse response, String userAgent, String account, String cipher) throws Exception {
         JsonResult result = new JsonResult();
 
         account = new String(Base64Utils.decodeFromString(account), AppConstants.CHARSET_UTF8);
         cipher = new String(Base64Utils.decodeFromString(cipher), AppConstants.CHARSET_UTF8);
 
-        SystemUserModel userModel = sysUserRepository.findByAccount(account);
+        SystemUserModel userModel = systemUserRepository.findByAccount(account);
         if (userModel == null || userModel.getId() == null) {
-            userModel = sysUserRepository.findByEmail(account);
+            userModel = systemUserRepository.findByEmail(account);
             if (userModel == null || userModel.getId() == null) {
                 return new JsonResult(400, "账号/邮箱或密码有误，请重新输入！");
             }
@@ -75,13 +79,17 @@ public class UserServiceImpl implements UserService {
             return new JsonResult(400, "账号/邮箱或密码有误，请重新输入！");
         }
 
-        JwtClaims claims = new JwtClaims(userModel.getAccount());
+        // 生成Token
+        JwtClaims claims = new JwtClaims(userAgent, userModel.getAccount());
         String token = JwtTokenUtil.generateToken(claims, appProperties.getJwtExpiration(), appProperties.getJwtSecretKey());
         result.setData(token);
 
         // 存入Cookie
-        CookieUtil.createCookie(AppConstants.TOKEN, token, "127.0.0.1", 3600, true, response);
-        CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", 3600, response);
+        CookieUtil.createCookie(AppConstants.TOKEN, token, "127.0.0.1", appProperties.getJwtExpiration(), true, response);
+        CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", appProperties.getJwtExpiration(), response);
+
+        // 缓存Token
+        redisClient.setStrValue(account, token, appProperties.getJwtExpiration());
 
         return result;
     }

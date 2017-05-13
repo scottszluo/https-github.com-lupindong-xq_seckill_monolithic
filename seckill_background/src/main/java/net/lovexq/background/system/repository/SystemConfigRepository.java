@@ -9,7 +9,7 @@ import net.lovexq.background.system.model.SystemConfigModel;
  * @author LuPindong
  * @time 2017-04-29 23:53
  */
-public interface SysConfigRepository extends BasicRepository<SystemConfigModel, Integer> {
+public interface SystemConfigRepository extends BasicRepository<SystemConfigModel, Integer> {
 
     SystemConfigModel findByConfigKey(String key);
 }

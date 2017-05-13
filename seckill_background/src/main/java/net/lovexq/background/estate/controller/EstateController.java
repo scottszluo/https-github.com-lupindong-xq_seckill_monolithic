@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 房源控制层
@@ -26,18 +27,10 @@ public class EstateController extends BasicController {
     @GetMapping("/estates")
     public JsonResult listWithGetUI(HttpServletRequest request) throws Exception {
         pageable = buildPageRequest(request);
-        Page<EstateItemDTO> estateItemPage = estateService.listForSaleByPage(pageable, buildParamMap(request));
-        result.setData(estateItemPage);
-        return result;
-    }
-
-    /*@PostMapping("/estates")
-    public JsonResult listWithPostUI(HttpServletRequest request) throws Exception {
-        pageable = buildPageRequest(request);
-        paramMap = buildParamMap(request);
+        Map<String, String> paramMap = buildParamMap(request);
         Page<EstateItemDTO> estateItemPage = estateService.listForSaleByPage(pageable, paramMap);
         result.setData(estateItemPage);
         return result;
-    }*/
+    }
 
 }

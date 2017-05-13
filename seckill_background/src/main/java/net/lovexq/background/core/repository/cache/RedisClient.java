@@ -51,6 +51,14 @@ public class RedisClient {
 
     //String（字符串）
 
+    public void setStrValue(String key, String value) {
+        setObj(key, value);
+    }
+
+    public void setStrValue(String key, String value, long timeout) {
+        setObj(key, value, timeout);
+    }
+
     /**
      * 实现命令：SET key value，设置一个key-value（将值 value关联到 key）
      *
@@ -98,6 +106,9 @@ public class RedisClient {
         redisTemplate.opsForValue().set(key, dataArray, timeout, TimeUnit.SECONDS);
     }
 
+    public String getStrValue(String key) {
+        return getObj(key, String.class);
+    }
 
     /**
      * 实现命令：GET key，返回 key所关联的值。

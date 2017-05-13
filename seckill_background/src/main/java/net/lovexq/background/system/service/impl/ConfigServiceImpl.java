@@ -2,7 +2,7 @@ package net.lovexq.background.system.service.impl;
 
 import net.lovexq.background.core.repository.cache.RedisClient;
 import net.lovexq.background.system.model.SystemConfigModel;
-import net.lovexq.background.system.repository.SysConfigRepository;
+import net.lovexq.background.system.repository.SystemConfigRepository;
 import net.lovexq.background.system.service.ConfigService;
 import net.lovexq.seckill.common.utils.CacheKeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
-    private SysConfigRepository sysConfigRepository;
+    private SystemConfigRepository systemConfigRepository;
 
     @Autowired
     private RedisClient redisClient;
@@ -29,7 +29,7 @@ public class ConfigServiceImpl implements ConfigService {
         if (sysConfigModel != null) {
             return sysConfigModel;
         } else {
-            sysConfigModel = sysConfigRepository.findByConfigKey(key);
+            sysConfigModel = systemConfigRepository.findByConfigKey(key);
             redisClient.setObj(cacheKey, sysConfigModel);
             return sysConfigModel;
         }
