@@ -62,15 +62,15 @@ public class SpecialController extends BasicController {
 
 
     @GetMapping("/special/{id}/exposure")
-    public JsonResult exposureSecKillUrl(HttpServletRequest request, @PathVariable("id") String id, @RequestParam("captcha") String captcha) throws Exception {
+    public JsonResult exposureSecKillUrl(HttpServletRequest request, @PathVariable("id") String id) throws Exception {
         Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
-        return specialService.exposureSecKillUrl(Long.valueOf(id), captcha, claims);
+        return specialService.exposureSecKillUrl(Long.valueOf(id), claims);
     }
 
     @PostMapping("/special/{id}/execution/{key}")
-    public JsonResult executeSecKill(HttpServletRequest request, @PathVariable("id") String id, @PathVariable("key") String key) throws Exception {
+    public JsonResult executeSecKill(HttpServletRequest request, @PathVariable("id") String id, @PathVariable("key") String key, @RequestParam("captcha") String captcha) throws Exception {
         Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
-        result = specialService.executeSecKill(Long.valueOf(id), key, claims);
+        result = specialService.executeSecKill(Long.valueOf(id), key, captcha, claims);
         return result;
     }
 

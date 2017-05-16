@@ -140,11 +140,11 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                            <section class="call-to-action with-borders button-centered mb-xl">
+                            <section class="call-to-action with-borders button-centered mb-xl" id="section1">
                                 <div class="call-to-action-content" id="countDownArea"></div>
                             </section>
 
-                            <section class="call-to-action with-borders button-centered mb-xl" style="display: none">
+                            <section class="call-to-action with-borders button-centered mb-xl" style="display: none" id="section2">
                                 <div class="call-to-action-content" id="secKillArea">
                                     <input type="hidden" id="secKillUrl">
                                     <div class="row">
@@ -162,7 +162,7 @@
                                                 <input type="text" value="" maxlength="6" placeholder="请输入左侧问号代表的数值" class="form-control input-lg captcha-input" name="captcha" id="captcha">
                                             </div>
                                             <div class="col-md-1">
-                                                <a href="javascript:void(0)" class="btn btn-lg btn-primary mt-md" id="killBtn" onclick="Special.Detail.execSecKillFun('[[${id}]]')">立即秒杀</a>
+                                                <a href="javascript:void(0)" class="btn btn-lg btn-primary mt-md" id="killBtn">立即秒杀</a>
                                             </div>
                                         </div>
                                     </div>

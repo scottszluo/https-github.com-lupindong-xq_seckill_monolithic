@@ -378,19 +378,39 @@ var Special = (function () {
         captchaFun: function (id, nowTimeX, startTimeX, endTimeX) {
             var countDownArea = $("#countDownArea");
 
-            // 显示倒计时区域
-            countDownArea.countdown(endTimeX, function (event) {
-                var htmlContent = '<h3>结束时间：<strong class="font-red">' + Common.StringUtil.dateFormat(endTimeX) + '</strong>';
-                htmlContent += '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" onclick="Special.Detail.refreshFun()">刷新抢房</a></h3>';
-                htmlContent += '<h4>' + event.strftime('距离秒杀结束: %H时 %M分 %S秒') + '</h4>';
+            $.get(Detail.exposureUrl(id)).done(function (result) {
+                if (200 == result.status) {
+                    // 显示倒计时区域
+                    countDownArea.countdown(endTimeX, function (event) {
+                        var htmlContent = '<h3>结束时间：<strong class="font-red">' + Common.StringUtil.dateFormat(endTimeX) + '</strong>';
+                        htmlContent += '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" onclick="Special.Detail.refreshFun()">刷新抢房</a></h3>';
+                        htmlContent += '<h4>' + event.strftime('距离秒杀结束: %H时 %M分 %S秒') + '</h4>';
+                        countDownArea.html(htmlContent);
+                    }).on('finish.countdown', function () {
+                        var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>秒杀已结束</a>';
+                        countDownArea.html(htmlContent);
+                    });
+
+                    // 显示秒杀区域
+                    $("section").show();
+
+                    $("#secKillUrl").val(Detail.executionUrl(id, result.data));
+                    $("#killBtn").click(Detail.execSecKillFun);
+                } else if (403 == result.status) {
+                    var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
+                    countDownArea.html(htmlContent);
+                    Common.PNotice.error(result.message);
+                } else {
+                    var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
+                    countDownArea.html(htmlContent);
+                    Common.PNotice.error(result.message);
+                }
+            }).fail(function (result) {
+                var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.responseJSON.message + '</a>';
                 countDownArea.html(htmlContent);
-            }).on('finish.countdown', function () {
-                var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>秒杀已结束</a>';
-                countDownArea.html(htmlContent);
+                Common.PNotice.error(result.responseJSON.message);
             });
 
-            // 显示秒杀区域
-            $("section").show();
         },
 
         refreshFun: function () {
@@ -398,7 +418,7 @@ var Special = (function () {
             $("#captcha").val("");
         },
 
-        execSecKillFun: function (id) {
+        execSecKillFun: function () {
             var userName = $.cookie("USER_NAME");
             if (Common.StringUtil.isBlank(userName)) {
                 Common.PNotice.error("受限内容，请登录后再操作！");
@@ -411,34 +431,21 @@ var Special = (function () {
                 return false;
             }
 
-            $.get(Detail.exposureUrl(id), {captcha: captcha}).done(function (result) {
+            // 发出秒杀请求
+            $.post($("#secKillUrl").val(), {"captcha": captcha}).done(function (result) {
                 if (200 == result.status) {
-                    var secKillUrl = Detail.executionUrl(id, result.data);
-                    //2.发送秒杀请求执行秒杀
-                    $.post(secKillUrl).done(function (result) {
-                        if (200 == result.status) {
-                            $("section").hide();
-                            //$('#countDownArea').countdown('stop');
-                            Common.PNotice.success(result.message);
-                        } else {
-                            Detail.changeCaptcha();
-                            Common.PNotice.error(result.message);
-                        }
-                    }).fail(function (result) {
-                        Detail.changeCaptcha();
-                        Common.PNotice.error(result.responseJSON.message);
-                    });
-                } else if (403 == result.status) {
-                    $("section").hide();
-                    //$('#countDownArea').countdown('stop');
-                    Common.PNotice.error(result.message);
+                    $("#section2").hide();
+                    $("#countDownArea").countdown('stop');
+                    var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
+                    $("#countDownArea").html(htmlContent);
+                    Common.PNotice.success(result.message);
                 } else {
                     Detail.changeCaptcha();
                     Common.PNotice.error(result.message);
                 }
             }).fail(function (result) {
                 Detail.changeCaptcha();
-                Common.PNotice.error(result.message);
+                Common.PNotice.error(result.responseJSON.message);
             });
         }
     };

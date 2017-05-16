@@ -18,9 +18,9 @@ public interface SpecialService {
 
     SpecialStockDTO getOne(Long id) throws Exception;
 
-    JsonResult exposureSecKillUrl(Long id, String captcha, Claims claims) throws Exception;
+    JsonResult exposureSecKillUrl(Long id, Claims claims) throws Exception;
 
-    JsonResult executeSecKill(Long id, String key, Claims claims) throws Exception;
+    JsonResult executeSecKill(Long id, String key, String captcha, Claims claims) throws Exception;
 
     void saveCaptcha(Claims claims, String captcha) throws Exception;
 }

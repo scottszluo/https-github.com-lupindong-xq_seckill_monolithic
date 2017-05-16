@@ -111,18 +111,9 @@ public class SpecialServiceImpl implements SpecialService {
 
     @Override
     @Transactional(readOnly = true)
-    public JsonResult exposureSecKillUrl(Long id, String captcha, Claims claims) throws Exception {
+    public JsonResult exposureSecKillUrl(Long id, Claims claims) throws Exception {
         String account = claims.getAudience();
 
-        // 先检查验证码
-        String cacheKey = "-CAPTCHA-" + account;
-        String cacheCaptcha = redisClient.getStrValue(cacheKey);
-        if (StringUtils.isBlank(cacheCaptcha)) {
-            return new JsonResult(401, "验证码已过期，请刷新重试！");
-        }
-        if (!captcha.equals(cacheCaptcha)) {
-            return new JsonResult(401, "请输入正常的验证码！");
-        }
 
         SpecialStockDTO specialStock = getOne(id);
 
@@ -161,14 +152,25 @@ public class SpecialServiceImpl implements SpecialService {
 
     @Override
     @Transactional
-    public JsonResult executeSecKill(Long id, String key, Claims claims) throws Exception {
+    public JsonResult executeSecKill(Long id, String key, String captcha, Claims claims) throws Exception {
         JsonResult result = new JsonResult();
+
+        String account = claims.getAudience();
+
+        // 先检查验证码
+        String cacheKey = "-CAPTCHA-" + account;
+        String cacheCaptcha = redisClient.getStrValue(cacheKey);
+        if (StringUtils.isBlank(cacheCaptcha)) {
+            return new JsonResult(401, "验证码已过期，请刷新重试！");
+        }
+        if (!captcha.equals(cacheCaptcha)) {
+            return new JsonResult(401, "请输入正常的验证码！");
+        }
 
         if (key == null || !key.equals(getMd5Url(id))) {
             return new JsonResult(401, "秒杀请求无效！");
         }
 
-        String account = claims.getAudience();
         // 执行插入秒杀记录操作
         String nowTime = TimeUtil.format(TimeUtil.nowDateTime());
         int insertCount = specialOrderRepository.executeUpdateBySql(INSERT_KILLED_SQL, IdWorker.INSTANCE.nextId(), id, account, nowTime, nowTime);
