@@ -22,11 +22,14 @@ public class APIServiceImpl implements APIService {
 
     @Override
     public String getAPIUrl(String apiKey) {
-        String apiUrl = redisClient.getStrValue(apiKey);
+        String cacheKey = "-API_KEY-" + apiKey;
+        String apiUrl = redisClient.getStrValue(cacheKey);
         if (StringUtils.isBlank(apiUrl)) {
             apiUrl = systemConfigRepository.findByConfigKey(apiKey).getConfigValue();
-            redisClient.setStrValue(apiKey, apiUrl);
+            redisClient.setStrValue(cacheKey, apiUrl);
         }
         return apiUrl;
     }
+
 }
+

@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class EstateItemSpecification {
 
-    public static Specification<EstateItemModel> getForSaleSpec(Map<String, String> paramMap) {
+    public static Specification<EstateItemModel> getForSaleSpec(Map<String, Object> paramMap) {
         return (root, criteriaQuery, criteriaBuilder) -> {
 
             Path<String> path = root.get("saleState");
@@ -26,7 +26,7 @@ public class EstateItemSpecification {
 
             if (MapUtils.isNotEmpty(paramMap)) {
                 // 区域
-                String regionAName = paramMap.get("regionAName");
+                String regionAName = MapUtils.getString(paramMap, "regionAName");
                 if (StringUtils.isNotBlank(regionAName)) {
                     Path<String> path1 = root.get("regionAName");
                     Predicate predicate1 = criteriaBuilder.equal(path1, regionAName);
@@ -34,7 +34,7 @@ public class EstateItemSpecification {
                 }
 
                 // 售价
-                String totalPrice = paramMap.get("totalPrice");
+                String totalPrice = MapUtils.getString(paramMap, "totalPrice");
                 if (StringUtils.isNotBlank(totalPrice)) {
                     Path<BigDecimal> exp2 = root.get("totalPrice");
                     Predicate predicate2 = null;
@@ -57,7 +57,7 @@ public class EstateItemSpecification {
                 }
 
                 // 户型
-                String model = paramMap.get("model");
+                String model = MapUtils.getString(paramMap, "model");
                 if (StringUtils.isNotBlank(model)) {
                     Path<String> exp3 = root.get("model");
                     Predicate predicate3 = null;
@@ -76,7 +76,7 @@ public class EstateItemSpecification {
                 }
 
                 // 面积
-                String area = paramMap.get("area");
+                String area = MapUtils.getString(paramMap, "area");
                 if (StringUtils.isNotBlank(area)) {
                     Path<BigDecimal> exp4 = root.get("area");
                     Predicate predicate4 = null;
@@ -99,7 +99,7 @@ public class EstateItemSpecification {
                 }
 
                 // 朝向
-                String direction = paramMap.get("direction");
+                String direction = MapUtils.getString(paramMap, "direction");
                 if (StringUtils.isNotBlank(direction)) {
                     Path<String> exp5 = root.get("direction");
                     Predicate predicate5 = criteriaBuilder.like(exp5, "%" + direction + "%");
@@ -108,7 +108,7 @@ public class EstateItemSpecification {
                 }
 
                 // 楼层
-                String floor = paramMap.get("floor");
+                String floor = MapUtils.getString(paramMap, "floor");
                 if (StringUtils.isNotBlank(floor)) {
                     Path<String> exp6 = root.get("floor");
                     Predicate predicate6 = criteriaBuilder.like(exp6, floor + "%");

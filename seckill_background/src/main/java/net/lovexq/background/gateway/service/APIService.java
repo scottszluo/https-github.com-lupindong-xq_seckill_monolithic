@@ -7,4 +7,5 @@ package net.lovexq.background.gateway.service;
 public interface APIService {
 
     String getAPIUrl(String apiKey);
+
 }

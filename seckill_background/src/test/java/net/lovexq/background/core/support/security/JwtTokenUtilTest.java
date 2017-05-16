@@ -19,7 +19,7 @@ public class JwtTokenUtilTest {
 
     @Test
     public void testGenerateToken() {
-        JwtClaims claims = new JwtClaims(userAgent, "admin123");
+        JwtClaims claims = new JwtClaims("admin123",userAgent,"admin123x");
         String token = JwtTokenUtil.generateToken(claims, expiration, jwtSecretKey);
         System.out.println(token);
 

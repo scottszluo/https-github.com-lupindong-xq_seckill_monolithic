@@ -25,11 +25,12 @@ public class APIController extends BasicController {
     @Autowired
     private APIService apiService;
 
+
     @GetMapping("/api/{apiKey}")
     public void route(HttpServletRequest request, HttpServletResponse response, @PathVariable("apiKey") String apiKey) {
-        pageable = buildPageRequest(request);
-        Map<String, String> paramMap = buildParamMap(request);
+        Map<String, Object> paramMap = buildParamMap(request);
+        paramMap.put("pageable", buildPageRequest(request));
         String apiUrl = apiService.getAPIUrl(apiKey);
-        
     }
+
 }

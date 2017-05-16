@@ -47,7 +47,19 @@
                                             <a href="/" th:href="${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
                                                 <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
                                                     <span class="thumb-info-wrapper font-size-xl">
-                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" src="/3rd-party/porto/img/blank.jpg" th:src="${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" src="/3rd-party/porto/img/blank.jpg" th:attr="data-original=${iamge.pictureSourceUrl}?:'/3rd-party/porto/img/blank.jpg'">
+                                                        <span class="thumb-info-title font-size-xl">
+                                                            <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div th:if="${#lists.isEmpty(estateImageList)}">
+                                            <a href="/3rd-party/porto/img/blank.jpg">
+                                                <span class="thumb-info thumb-info-centered-info thumb-info-no-borders font-size-xl">
+                                                    <span class="thumb-info-wrapper font-size-xl">
+                                                        <img alt="房源照片" class="img-responsive" style="height: 361px" src="/3rd-party/porto/img/blank.jpg">
                                                         <span class="thumb-info-title font-size-xl">
                                                             <span class="thumb-info-inner font-size-xl"><i class="icon-magnifier icons font-size-xl"></i></span>
                                                         </span>
@@ -59,7 +71,10 @@
                                 </div>
                                 <div class="owl-carousel owl-theme manual thumb-gallery-thumbs mt" id="thumbGalleryThumbs">
                                     <div th:if="${not #lists.isEmpty(estateImageList)}" th:each="iamge, iamgeStat : ${estateImageList}">
-                                        <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg" th:src="${iamge.url}?:'/3rd-party/porto/img/blank.jpg'">
+                                        <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg" th:attr="data-original=${iamge.url}?:'/3rd-party/porto/img/blank.jpg'">
+                                    </div>
+                                    <div th:if="${#lists.isEmpty(estateImageList)}">
+                                        <img alt="房源缩略图" class="img-responsive cur-pointer" src="/3rd-party/porto/img/blank.jpg">
                                     </div>
                                 </div>
                             </div>
@@ -73,12 +88,12 @@
                                 </colgroup>
                                 <tbody>
                                 <tr>
-                                    <td class="pt-md pb-md background-color-primary text-light font-red" colspan="2">
+                                    <td class="pt-md pb-md background-color-primary text-light" colspan="2">
                                         <sapn class="text-lg">
                                             <del>原价[[${totalPrice}]]万</del>
                                         </sapn>
                                         &nbsp&nbsp
-                                        <sapn class="text-xl" th:text="'秒杀价'+${#numbers.formatDecimal(totalPrice * 0.1, 1, 2)}+'万'">totalPrice</sapn>
+                                        <sapn class="text-xl font-red" th:text="'秒杀价'+${#numbers.formatDecimal(totalPrice * 0.1, 1, 2)}+'万'">totalPrice</sapn>
                                     </td>
                                 </tr>
                                 <tr>
@@ -126,15 +141,32 @@
                     <div class="row">
                         <div class="col-md-12">
                             <section class="call-to-action with-borders button-centered mb-xl">
-                                <div class="call-to-action-content">
-                                    <h3>
-                                        开始时间：<strong th:text="${startTime}">startTime</strong>
-                                    </h3>
-                                    <p id="countDownArea" th:if="${number}>0"></p>
-                                    <p th:if="${number}<=0">
-                                    <h2 class="font-red" th:if="${number}<=0">秒杀结束</h2></p>
+                                <div class="call-to-action-content" id="countDownArea"></div>
+                            </section>
+
+                            <section class="call-to-action with-borders button-centered mb-xl" style="display: none">
+                                <div class="call-to-action-content" id="secKillArea">
+                                    <input type="hidden" id="secKillUrl">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <div class="col-md-3">
+                                                <div class="captcha form-control" style="float: right">
+                                                    <div class="captcha-image">
+                                                        <img id="captcha-image" alt="验证码" src="/special/captcha" onclick="Special.Detail.changeCaptcha()"></div>
+                                                    <div class="captcha-refresh">
+                                                        <a href="javascript:void(0)" onclick="Special.Detail.changeCaptcha()"><i class="fa fa-refresh"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" value="" maxlength="6" placeholder="请输入左侧问号代表的数值" class="form-control input-lg captcha-input" name="captcha" id="captcha">
+                                            </div>
+                                            <div class="col-md-1">
+                                                <a href="javascript:void(0)" class="btn btn-lg btn-primary mt-md" id="killBtn" onclick="Special.Detail.execSecKillFun('[[${id}]]')">立即秒杀</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="call-to-action-btn" id="execution"></div>
                             </section>
 
                             <hr class="solid tall">
@@ -295,25 +327,20 @@
 <!-- END FOOT -->
 <!-- BEGIN PAGESCRIPT -->
 <script src="https://cdn.bootcss.com/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
-<script th:if="${number}>0">
+<script>
     $(function () {
         // 图片懒加载
         Common.Lazyload.init();
+        $.each($("img[data-original]"), function (index, imgObj) {
+            this.src = this.attributes["data-original"].value;
+        });
         // 详情页初始化
         Special.Detail.init({
-            houseCode: '[[${houseCode}]]',
-            nowTime: '[[${nowTimeX}]]',
-            startTime: '[[${startTimeX}]]',
-            endTime: '[[${endTimeX}]]'
+            id: "[[${id}]]",
+            startTimeX: [[${startTimeX}]],
+            endTimeX: [[${endTimeX}]]
         });
     })
-</script>
-<script th:if="${number}<=0">
-    $(function () {
-        // 图片懒加载
-        Common.Lazyload.init();
-    })
-
 </script>
 <!-- END PAGESCRIPT -->
 </body>

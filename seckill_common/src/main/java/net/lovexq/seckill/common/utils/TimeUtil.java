@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class TimeUtil {
 
-    static ZoneId shanghai = ZoneId.of("Asia/Shanghai");
+    public static ZoneId shanghai = ZoneId.of("Asia/Shanghai");
 
     public static LocalDate nowDate() {
         return LocalDate.now(shanghai);

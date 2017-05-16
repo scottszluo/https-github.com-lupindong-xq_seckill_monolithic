@@ -45,10 +45,9 @@ public class AuthenticationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String uri = request.getRequestURI();
-        if (uri.contains("special")) {
+        if (uri.contains("/special/")) {
 
-            Cookie tokenCookie = CookieUtil.getCookieByName(request, AppConstants.TOKEN);
-            Cookie userNameCookie = CookieUtil.getCookieByName(request, AppConstants.USER_NAME);
+            Cookie tokenCookie = CookieUtil.getCookieByName(request, AppConstants.ACCESS_TOKEN);
 
             if (tokenCookie != null) {
                 try {
@@ -57,6 +56,7 @@ public class AuthenticationFilter implements Filter {
                     Claims requestClaims = JwtTokenUtil.getClaims(requestToken, appProperties.getJwtSecretKey());
                     String requestAccount = requestClaims.getAudience();
                     String claimsUA = String.valueOf(requestClaims.get("userAgent"));
+                    String claimsUN = String.valueOf(requestClaims.get("userName"));
                     String requestUA = request.getHeader("User-Agent").toLowerCase();
 
                     // 检查是否失效
@@ -65,7 +65,8 @@ public class AuthenticationFilter implements Filter {
                     }
 
                     // 缓存的Token
-                    String redisToken = redisClient.getStrValue(requestAccount);
+                    String cacheKey = "-ACCESS_TOKEN-" + requestAccount;
+                    String redisToken = redisClient.getStrValue(cacheKey);
                     if (redisToken == null || !requestToken.equals(redisToken)) {
                         throw new ApplicationException("Redis中无此Token！");
                     }
@@ -73,18 +74,20 @@ public class AuthenticationFilter implements Filter {
                     // 当前日期往前退5分钟，如果最后有效期在其中，则可以更新Token，实现自动续期
                     Date expiration = requestClaims.getExpiration();
                     long currentTime = System.currentTimeMillis();
-                    if (expiration.after(new Date(currentTime - 300)) && expiration.before(new Date(currentTime))) {
+                    if (expiration.after(new Date(currentTime - 600)) && expiration.before(new Date(currentTime))) {
+
+
                         // 重新生成Token
-                        requestClaims = new JwtClaims(claimsUA, requestAccount);
+                        requestClaims = new JwtClaims(requestAccount, claimsUA, claimsUN);
                         // 延迟有效时间
                         String token = JwtTokenUtil.generateToken(requestClaims, appProperties.getJwtExpiration(), appProperties.getJwtSecretKey());
 
                         // 更新Cookie
-                        CookieUtil.createCookie(AppConstants.TOKEN, token, "127.0.0.1", appProperties.getJwtExpiration(), true, response);
-                        CookieUtil.createCookie(AppConstants.USER_NAME, userNameCookie.getValue(), "127.0.0.1", appProperties.getJwtExpiration(), response);
+                        CookieUtil.createCookie(AppConstants.ACCESS_TOKEN, token, "127.0.0.1", appProperties.getJwtExpiration(), true, response);
+                        CookieUtil.createCookie(AppConstants.USER_NAME, claimsUN, "127.0.0.1", appProperties.getJwtExpiration(), response);
 
                         // 缓存Token
-                        redisClient.setStrValue(requestAccount, token, appProperties.getJwtExpiration());
+                        redisClient.setStrValue(cacheKey, token, appProperties.getJwtExpiration());
                     }
 
                     request.setAttribute(AppConstants.CLAIMS, requestClaims);

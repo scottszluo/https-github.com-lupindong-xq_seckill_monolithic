@@ -21,7 +21,7 @@ public class SpecialOrderModel extends BasicModel implements Serializable {
     @Id
     private Long id;              //主键
 
-    private String houseCode;       //编号x
+    private Long stockId;       //编号x
     private String account;       //用户账号
     private String state;       //状态
 
@@ -33,9 +33,9 @@ public class SpecialOrderModel extends BasicModel implements Serializable {
         this.id = id;
     }
 
-    public SpecialOrderModel(Long id, String houseCode, String account) {
+    public SpecialOrderModel(Long id, Long stockId, String account) {
         this.id = id;
-        this.houseCode = houseCode;
+        this.stockId = stockId;
         this.account = account;
     }
 
@@ -47,12 +47,12 @@ public class SpecialOrderModel extends BasicModel implements Serializable {
         this.id = id;
     }
 
-    public String getHouseCode() {
-        return houseCode;
+    public Long getStockId() {
+        return stockId;
     }
 
-    public void setHouseCode(String houseCode) {
-        this.houseCode = houseCode;
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
     }
 
     public String getAccount() {
@@ -88,7 +88,7 @@ public class SpecialOrderModel extends BasicModel implements Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("SpecialOrderModel{");
         sb.append("id=").append(id);
-        sb.append(", houseCode='").append(houseCode).append('\'');
+        sb.append(", stockId='").append(stockId).append('\'');
         sb.append(", account='").append(account).append('\'');
         sb.append(", state='").append(state).append('\'');
         sb.append('}');

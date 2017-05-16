@@ -46,7 +46,7 @@ public class EstateServiceImpl implements EstateService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<EstateItemDTO> listForSaleByPage(Pageable pageable, Map<String, String> paramMap) throws Exception {
+    public Page<EstateItemDTO> listForSaleByPage(Pageable pageable, Map<String, Object> paramMap) throws Exception {
         String cacheKey = CacheKeyGenerator.generate(EstateItemDTO.class, "listForSaleByPage", pageable, paramMap);
 
         Page<EstateItemDTO> targetItemPage = new PageX();

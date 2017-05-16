@@ -98,6 +98,7 @@ public class TimeTest {
         LocalDateTime todayKolkata = LocalDateTime.now(ZoneId.of("America/New_York"));
         System.out.println("Current Date in IST=" + todayKolkata);
 
+
         //java.time.zone.ZoneRulesException: Unknown time-zone ID: IST
         //LocalDateTime todayIST = LocalDateTime.now(ZoneId.of("IST"));
 
@@ -147,24 +148,35 @@ public class TimeTest {
     public void testDateParseFormatExample() {
 
         //Format examples
-        LocalDate date = LocalDate.now();
-        //default format
-        System.out.println("Default format of LocalDate=" + date);
-        //specific format
-        System.out.println(date.format(DateTimeFormatter.ofPattern("d::MMM::uuuu")));
-        System.out.println(date.format(DateTimeFormatter.BASIC_ISO_DATE));
+//        LocalDate date = LocalDate.now();
+//        //default format
+//        System.out.println("Default format of LocalDate=" + date);
+//        //specific format
+//        System.out.println(date.format(DateTimeFormatter.ofPattern("d::MMM::uuuu")));
+//        System.out.println(date.format(DateTimeFormatter.BASIC_ISO_DATE));
 
-        LocalDateTime dateTime = TimeUtil.nowDateTime();
+        LocalDateTime dateTime = TimeUtil.nowDateTime().minusHours(5);
 
         //default format
         System.out.println("Default format of LocalDateTime=" + dateTime);
         //specific format
-        System.out.println("格式："+ dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")));
+        System.out.println("格式："+ dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         System.out.println(dateTime.format(DateTimeFormatter.BASIC_ISO_DATE));
+        System.out.println(dateTime.atZone(TimeUtil.shanghai).toInstant().toEpochMilli());
+        System.out.println(System.currentTimeMillis());
 
-        Instant timestamp = Instant.now();
+        dateTime = dateTime.plusHours(15);
+
         //default format
-        System.out.println("Default format of Instant=" + timestamp);
+        System.out.println("Default format of LocalDateTime=" + dateTime);
+        //specific format
+        System.out.println("格式："+ dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        System.out.println(dateTime.format(DateTimeFormatter.BASIC_ISO_DATE));
+        System.out.println(dateTime.atZone(TimeUtil.shanghai).toInstant().toEpochMilli());
+
+        // 1494769097
+        // 1494767777000
+        // 1494767801982
 
         //Parse examples
 //        LocalDateTime dt = LocalDateTime.parse("27::Apr::2014 21::39::48", DateTimeFormatter.ofPattern("d::MMM::uuuu HH::mm::ss"));

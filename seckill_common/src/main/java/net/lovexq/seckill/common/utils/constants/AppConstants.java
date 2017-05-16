@@ -80,7 +80,7 @@ public class AppConstants {
     /**
      * Token的key
      */
-    public static final String TOKEN = "TOKEN";
+    public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
 
     /**
      * 用户名称

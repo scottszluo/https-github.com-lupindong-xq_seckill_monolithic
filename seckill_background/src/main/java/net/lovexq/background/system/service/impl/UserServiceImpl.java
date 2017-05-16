@@ -1,5 +1,6 @@
 package net.lovexq.background.system.service.impl;
 
+import io.jsonwebtoken.Claims;
 import net.lovexq.background.core.properties.AppProperties;
 import net.lovexq.background.core.repository.cache.RedisClient;
 import net.lovexq.background.core.support.security.JwtClaims;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 
@@ -80,16 +83,36 @@ public class UserServiceImpl implements UserService {
         }
 
         // 生成Token
-        JwtClaims claims = new JwtClaims(userAgent, userModel.getAccount());
+        JwtClaims claims = new JwtClaims(userModel.getAccount(), userAgent, userModel.getName());
         String token = JwtTokenUtil.generateToken(claims, appProperties.getJwtExpiration(), appProperties.getJwtSecretKey());
         result.setData(token);
 
         // 存入Cookie
-        CookieUtil.createCookie(AppConstants.TOKEN, token, "127.0.0.1", appProperties.getJwtExpiration(), true, response);
+        CookieUtil.createCookie(AppConstants.ACCESS_TOKEN, token, "127.0.0.1", appProperties.getJwtExpiration(), true, response);
         CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", appProperties.getJwtExpiration(), response);
 
         // 缓存Token
-        redisClient.setStrValue(account, token, appProperties.getJwtExpiration());
+        String cacheKey = "-ACCESS_TOKEN-" + account;
+        redisClient.setStrValue(cacheKey, token, appProperties.getJwtExpiration());
+
+        return result;
+    }
+
+    @Override
+    public JsonResult executeSignOut(HttpServletRequest request, HttpServletResponse response) {
+        JsonResult result = new JsonResult();
+
+        Cookie tokenCookie = CookieUtil.getCookieByName(request, AppConstants.ACCESS_TOKEN);
+        if (tokenCookie != null) {
+            Claims requestClaims = JwtTokenUtil.getClaims(tokenCookie.getValue(), appProperties.getJwtSecretKey());
+            // 清除缓存
+            String cacheKey = "-ACCESS_TOKEN-" + requestClaims.getAudience();
+            redisClient.del(cacheKey);
+        }
+
+        // 清除Cookie
+        CookieUtil.removeCookie(AppConstants.ACCESS_TOKEN, "127.0.0.1", response);
+        CookieUtil.removeCookie(AppConstants.USER_NAME, "127.0.0.1", response);
 
         return result;
     }

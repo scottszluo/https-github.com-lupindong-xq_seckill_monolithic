@@ -66,8 +66,8 @@ public class BasicController {
         }
     }
 
-    protected Map<String, String> buildParamMap(HttpServletRequest request) {
-        Map<String, String> paramMap = new HashMap();
+    protected Map<String, Object> buildParamMap(HttpServletRequest request) {
+        Map<String, Object> paramMap = new HashMap();
         Map<String, String[]> maps = request.getParameterMap();
         if (MapUtils.isNotEmpty(maps)) {
             maps.forEach((key, value) -> paramMap.put(key, value[0]));

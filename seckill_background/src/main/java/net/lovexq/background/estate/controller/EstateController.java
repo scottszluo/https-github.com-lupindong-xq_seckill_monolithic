@@ -27,7 +27,7 @@ public class EstateController extends BasicController {
     @GetMapping("/estates")
     public JsonResult listWithGetUI(HttpServletRequest request) throws Exception {
         pageable = buildPageRequest(request);
-        Map<String, String> paramMap = buildParamMap(request);
+        Map<String, Object> paramMap = buildParamMap(request);
         Page<EstateItemDTO> estateItemPage = estateService.listForSaleByPage(pageable, paramMap);
         result.setData(estateItemPage);
         return result;

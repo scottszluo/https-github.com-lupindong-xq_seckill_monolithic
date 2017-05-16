@@ -9,5 +9,5 @@ import net.lovexq.background.special.model.SpecialOrderModel;
 
 public interface SpecialOrderRepository extends BasicRepository<SpecialOrderModel, Long> {
 
-    SpecialOrderModel findByHouseCodeAndAccount(String houseCode, String account);
+    SpecialOrderModel findByStockIdAndAccount(Long id, String account);
 }

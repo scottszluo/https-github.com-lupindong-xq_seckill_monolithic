@@ -21,7 +21,7 @@ public class CacheKeyGenerator {
 
     public static <T> String generate(Class<T> targetClass, String methodName, Object... params) {
         String finalKey;
-        StringBuilder key = new StringBuilder();
+        StringBuilder key = new StringBuilder("-");
         key.append(targetClass.getSimpleName()).append(".").append(methodName).append(":");
         // 无参数时
         if (params.length == 0) {
@@ -45,9 +45,10 @@ public class CacheKeyGenerator {
             } else {
                 key.append(param.hashCode());
             }
-            key.append('-');
+            key.append('*');
         }
         finalKey = key.toString();
+        if (finalKey.endsWith("*")) finalKey = finalKey.substring(0, finalKey.length() - 1);
         LOGGER.debug("Using Cache Key={}, HashCode={}", finalKey, finalKey.hashCode());
         return finalKey;
     }

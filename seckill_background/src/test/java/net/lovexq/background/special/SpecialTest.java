@@ -153,6 +153,9 @@ public class SpecialTest {
                     SpecialStockDTO specialStockDTO = new SpecialStockDTO();
                     CachedBeanCopier.copy(specialStock, specialStockDTO);
 
+                    specialStockDTO.setStartTimeX(specialStockDTO.getStartTime().atZone(TimeUtil.shanghai).toInstant().toEpochMilli());
+                    specialStockDTO.setEndTimeX(specialStockDTO.getEndTime().atZone(TimeUtil.shanghai).toInstant().toEpochMilli());
+
                     EstateImageModel condition = new EstateImageModel();
                     condition.setHouseCode(estateItem.getHouseCode());
                     Example<EstateImageModel> example = Example.of(condition);

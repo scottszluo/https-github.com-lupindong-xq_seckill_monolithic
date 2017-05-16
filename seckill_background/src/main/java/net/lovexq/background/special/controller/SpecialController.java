@@ -5,12 +5,16 @@ import net.lovexq.background.core.controller.BasicController;
 import net.lovexq.background.special.dto.SpecialStockDTO;
 import net.lovexq.background.special.service.SpecialService;
 import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.seckill.common.utils.TimeUtil;
+import net.lovexq.seckill.common.utils.CaptchaGenerator;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -33,24 +37,40 @@ public class SpecialController extends BasicController {
         return result;
     }
 
-    @ResponseBody
-    @GetMapping("/special/now")
-    public JsonResult now() {
-        return new JsonResult(TimeUtil.format(TimeUtil.nowDateTime()));
+    @GetMapping("/special/nowTime")
+    public JsonResult getNowTime() {
+        return new JsonResult(Instant.now().toEpochMilli());
     }
 
-    @ResponseBody
-    @GetMapping("/special/{houseCode}/exposure")
-    public JsonResult exposure(HttpServletRequest request, @PathVariable("houseCode") String houseCode) throws Exception {
+    @GetMapping("/special/captcha")
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
-        return specialService.getExposureSecKillUrl(houseCode, claims);
+
+        // 缓存验证码数值
+        CaptchaGenerator instance = CaptchaGenerator.INSTANCE;
+        BufferedImage bi = instance.genImage();
+        specialService.saveCaptcha(claims, instance.getCaptcha());
+
+        // 输出验证码图片
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/JPEG");
+        ImageIO.write(bi, "JPEG", response.getOutputStream());
+        response.getOutputStream().flush();
     }
 
-    @ResponseBody
-    @PostMapping("/special/{houseCode}/execution/{key}")
-    public JsonResult execution(HttpServletRequest request, @PathVariable("houseCode") String houseCode, @PathVariable("key") String key) throws Exception {
+
+    @GetMapping("/special/{id}/exposure")
+    public JsonResult exposureSecKillUrl(HttpServletRequest request, @PathVariable("id") String id, @RequestParam("captcha") String captcha) throws Exception {
         Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
-        result = specialService.executionSecKill(houseCode, key, claims);
+        return specialService.exposureSecKillUrl(Long.valueOf(id), captcha, claims);
+    }
+
+    @PostMapping("/special/{id}/execution/{key}")
+    public JsonResult executeSecKill(HttpServletRequest request, @PathVariable("id") String id, @PathVariable("key") String key) throws Exception {
+        Claims claims = (Claims) request.getAttribute(AppConstants.CLAIMS);
+        result = specialService.executeSecKill(Long.valueOf(id), key, claims);
         return result;
     }
 

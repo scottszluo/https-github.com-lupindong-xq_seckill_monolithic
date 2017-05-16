@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import javax.jms.Queue;
@@ -233,6 +234,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         resolver.setSuffix(".html");//模板文件后缀
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(resolver);
+        templateEngine.addDialect(new Java8TimeDialect());
 
         //渲染模板
         Assert.notNull(templateName, "templateName must not be null!");

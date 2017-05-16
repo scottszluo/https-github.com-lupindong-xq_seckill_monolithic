@@ -3,13 +3,14 @@ package net.lovexq.background.system.controller;
 import net.lovexq.background.core.controller.BasicController;
 import net.lovexq.background.system.service.UserService;
 import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.seckill.common.utils.CookieUtil;
-import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,10 +74,8 @@ public class UserController extends BasicController {
     }
 
     @PostMapping("/signout")
-    public JsonResult signout(HttpServletResponse response) {
-        CookieUtil.removeCookie(AppConstants.TOKEN, "127.0.0.1", response);
-        CookieUtil.removeCookie(AppConstants.USER_NAME, "127.0.0.1", response);
-        return result;
+    public JsonResult signout(HttpServletRequest request, HttpServletResponse response) {
+        return userService.executeSignOut(request, response);
     }
 
     @GetMapping("/salt")

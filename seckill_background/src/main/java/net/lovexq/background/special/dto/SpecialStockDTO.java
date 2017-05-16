@@ -21,6 +21,8 @@ public class SpecialStockDTO extends SpecialStockModel {
     private String unitPriceStr;
     private String areaStr;
     private List<EstateImageModel> estateImageList = new ArrayList();
+    private Long startTimeX;
+    private Long endTimeX;
 
     public String getDetailHref() {
         return detailHref;
@@ -68,6 +70,22 @@ public class SpecialStockDTO extends SpecialStockModel {
 
     public void setEstateImageList(List<EstateImageModel> estateImageList) {
         this.estateImageList = estateImageList;
+    }
+
+    public Long getStartTimeX() {
+        return startTimeX;
+    }
+
+    public void setStartTimeX(Long startTimeX) {
+        this.startTimeX = startTimeX;
+    }
+
+    public Long getEndTimeX() {
+        return endTimeX;
+    }
+
+    public void setEndTimeX(Long endTimeX) {
+        this.endTimeX = endTimeX;
     }
 
     @Override

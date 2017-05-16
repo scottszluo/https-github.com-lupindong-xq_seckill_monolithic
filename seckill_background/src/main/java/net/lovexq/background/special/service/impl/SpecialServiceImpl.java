@@ -11,25 +11,20 @@ import net.lovexq.background.special.repository.SpecialOrderRepository;
 import net.lovexq.background.special.repository.SpecialStockRepository;
 import net.lovexq.background.special.service.SpecialService;
 import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.seckill.common.utils.CacheKeyGenerator;
-import net.lovexq.seckill.common.utils.CachedBeanCopier;
-import net.lovexq.seckill.common.utils.IdWorker;
-import net.lovexq.seckill.common.utils.TimeUtil;
+import net.lovexq.seckill.common.utils.*;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +39,7 @@ import java.util.List;
 public class SpecialServiceImpl implements SpecialService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpecialServiceImpl.class);
-    private static final String INSERT_KILLED_SQL = "INSERT IGNORE INTO special_order(id,house_code,account,state,create_time,update_time) values(?,?,?,'下单',?,?)";
+    private static final String INSERT_KILLED_SQL = "INSERT IGNORE INTO special_order(id,stock_id,account,state,create_time,update_time) values(?,?,?,'下单',?,?)";
     @Autowired
     private SpecialStockRepository specialStockRepository;
     @Autowired
@@ -109,8 +104,27 @@ public class SpecialServiceImpl implements SpecialService {
 
     @Override
     @Transactional(readOnly = true)
-    public JsonResult getExposureSecKillUrl(String houseCode, Claims claims) throws Exception {
-        SpecialStockDTO specialStock = getOne(null);
+    public void saveCaptcha(Claims claims, String captcha) {
+        String cacheKey = "-CAPTCHA-" + claims.getAudience();
+        redisClient.setStrValue(cacheKey, captcha, 120);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public JsonResult exposureSecKillUrl(Long id, String captcha, Claims claims) throws Exception {
+        String account = claims.getAudience();
+
+        // 先检查验证码
+        String cacheKey = "-CAPTCHA-" + account;
+        String cacheCaptcha = redisClient.getStrValue(cacheKey);
+        if (StringUtils.isBlank(cacheCaptcha)) {
+            return new JsonResult(401, "验证码已过期，请刷新重试！");
+        }
+        if (!captcha.equals(cacheCaptcha)) {
+            return new JsonResult(401, "请输入正常的验证码！");
+        }
+
+        SpecialStockDTO specialStock = getOne(id);
 
         LocalDateTime startTime = specialStock.getStartTime(); // 秒杀开始时间
         LocalDateTime endTime = specialStock.getEndTime(); // 秒杀结束时间
@@ -120,39 +134,44 @@ public class SpecialServiceImpl implements SpecialService {
         if (startTime.isAfter(nowTime)) {
             return new JsonResult(406, "秒杀活动未开始！");
             //秒杀已经结束
-        } else if (endTime.isBefore(nowTime)) {
+        } else if (endTime.isBefore(nowTime) || specialStock.getNumber() < 1) {
             return new JsonResult(406, "秒杀活动已经结束！");
             //秒杀处于开启窗口
         } else {
-            String account = claims.getAudience();
             // 检查是否秒杀过
-            SpecialOrderModel order = specialOrderRepository.findByHouseCodeAndAccount(houseCode, account);
+            SpecialOrderModel order = specialOrderRepository.findByStockIdAndAccount(id, account);
             if (order != null) {
-                return new JsonResult(403, "请勿重复秒杀！");
+                return new JsonResult(403, "已秒杀成功，请勿重复秒杀！");
             }
-            return new JsonResult(getMd5Url(houseCode, account));
+            return new JsonResult(getMd5Url(id));
         }
     }
 
-    private String getMd5Url(String houseCode, String account) throws UnsupportedEncodingException {
-        String saltUrl = houseCode + "/" + account + "/" + appProperties.getPrivateSalt();
-        return DigestUtils.md5DigestAsHex(saltUrl.getBytes(AppConstants.CHARSET_UTF8));
+    private String getMd5Url(Long id) throws UnsupportedEncodingException {
+        String cacheKey = CacheKeyGenerator.generate(String.class, "getMd5Url", id);
+        // 先从缓存中取
+        String md5Url = redisClient.getStrValue(cacheKey);
+        if (StringUtils.isBlank(md5Url)) {
+            String saltUrl = id + "/" + Instant.now().toEpochMilli() + "/" + appProperties.getPrivateSalt();
+            md5Url = DigestUtils.md5DigestAsHex(saltUrl.getBytes(AppConstants.CHARSET_UTF8));
+            redisClient.setStrValue(cacheKey, md5Url, 3600);
+        }
+        return md5Url;
     }
 
     @Override
     @Transactional
-    public JsonResult executionSecKill(String houseCode, String key, Claims claims) throws Exception {
+    public JsonResult executeSecKill(Long id, String key, Claims claims) throws Exception {
         JsonResult result = new JsonResult();
 
-        String account = claims.getAudience();
-
-        if (key == null || !key.equals(getMd5Url(houseCode, account))) {
+        if (key == null || !key.equals(getMd5Url(id))) {
             return new JsonResult(401, "秒杀请求无效！");
         }
 
+        String account = claims.getAudience();
         // 执行插入秒杀记录操作
         String nowTime = TimeUtil.format(TimeUtil.nowDateTime());
-        int insertCount = specialOrderRepository.executeUpdateBySql(INSERT_KILLED_SQL, IdWorker.INSTANCE.nextId(), houseCode, account, nowTime, nowTime);
+        int insertCount = specialOrderRepository.executeUpdateBySql(INSERT_KILLED_SQL, IdWorker.INSTANCE.nextId(), id, account, nowTime, nowTime);
 
         // 插入失败
         if (insertCount <= 0) {
@@ -160,7 +179,7 @@ public class SpecialServiceImpl implements SpecialService {
             // 插入成功
         } else {
             // 执行减库存操作
-            int updateCount = specialStockRepository.reduceNumber(houseCode, TimeUtil.nowDateTime());
+            int updateCount = specialStockRepository.reduceNumber(id, TimeUtil.nowDateTime());
 
             // 更新失败，说明库存为零，则秒杀失败
             if (updateCount <= 0) {
@@ -174,22 +193,4 @@ public class SpecialServiceImpl implements SpecialService {
         return result;
     }
 
-    @Override
-    public void generateStaticPage(Long id) throws Exception {
-        //构造模板引擎
-        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix("templates/");//模板所在目录，相对于当前classloader的classpath。
-        resolver.setSuffix(".html");//模板文件后缀
-        TemplateEngine templateEngine = new TemplateEngine();
-        templateEngine.setTemplateResolver(resolver);
-
-        //构造上下文(Model)
-        Context context = new Context();
-        context.setVariable("name", "蔬菜列表");
-        context.setVariable("array", new String[]{"土豆", "番茄", "白菜", "芹菜"});
-
-        //渲染模板
-        FileWriter write = new FileWriter("result.html");
-        templateEngine.process("example", context, write);
-    }
 }

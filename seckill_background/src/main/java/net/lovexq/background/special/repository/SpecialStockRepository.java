@@ -18,7 +18,7 @@ public interface SpecialStockRepository extends BasicRepository<SpecialStockMode
 
     String FINDFORSECKILLLIST_COUNT_SQL = "SELECT count(s.id) FROM special_stock s JOIN system_config c ON c.config_value = s.batch WHERE s.sale_state = '在售' AND s.number > 0 AND c.config_key = 'special_batch'";
 
-    String REDUCENUMBER_SQL = "UPDATE SpecialStockModel s SET number = number - 1 WHERE s.houseCode=?1 AND startTime < ?2 AND endTime >= ?2 AND number > 0";
+    String REDUCENUMBER_SQL = "UPDATE SpecialStockModel s SET number = number - 1 WHERE s.id=?1 AND startTime < ?2 AND endTime >= ?2 AND number > 0";
 
     
     SpecialStockModel findByHouseCode(String houseCode);
@@ -28,5 +28,5 @@ public interface SpecialStockRepository extends BasicRepository<SpecialStockMode
 
     @Modifying
     @Query(REDUCENUMBER_SQL)
-    int reduceNumber(String houseCode, LocalDateTime killTime);
+    int reduceNumber(Long id, LocalDateTime killTime);
 }

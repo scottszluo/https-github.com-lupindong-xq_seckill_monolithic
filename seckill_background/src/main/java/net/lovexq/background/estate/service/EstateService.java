@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface EstateService {
 
-    Page<EstateItemDTO> listForSaleByPage(Pageable pageable, Map<String, String> paramMap) throws Exception;
+    Page<EstateItemDTO> listForSaleByPage(Pageable pageable, Map<String, Object> paramMap) throws Exception;
 
     EstateItemDTO getByHouseCode(String houseCode) throws Exception;
 

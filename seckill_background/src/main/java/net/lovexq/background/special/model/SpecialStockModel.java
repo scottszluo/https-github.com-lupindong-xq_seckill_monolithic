@@ -23,9 +23,7 @@ import java.util.Objects;
 public class SpecialStockModel extends BasicModel implements Serializable {
     @Id
     private Long id;              //主键
-
     private String batch;       //批次
-
     private Integer total;         //总库存数量
     private Integer number;         //库存数量
     @Type(type = "localDateTimeType")

@@ -44,19 +44,19 @@ var Common = (function () {
             });
         },
         primary: function (text, title) {
-            this.common(text, title, 'primary', 'notification-primary stack-bottomright', stack_bottomright);
+            PNotice.common(text, title, 'primary', 'notification-primary stack-bottomright', stack_bottomright);
         },
         notice: function (text, title) {
-            this.common(text, title, 'notice', 'stack-bottomright', stack_bottomright);
+            PNotice.common(text, title, 'notice', 'stack-bottomright', stack_bottomright);
         },
         success: function (text, title) {
-            this.common(text, title, 'success', 'stack-bottomright', stack_bottomright);
+            PNotice.common(text, title, 'success', 'stack-bottomright', stack_bottomright);
         },
         info: function (text, title) {
-            this.common(text, title, 'info', 'stack-bottomright', stack_bottomright);
+            PNotice.common(text, title, 'info', 'stack-bottomright', stack_bottomright);
         },
         error: function (text, title) {
-            this.common(text, title, 'error', 'stack-bottomright', stack_bottomright);
+            PNotice.common(text, title, 'error', 'stack-bottomright', stack_bottomright);
         }
     };
 
@@ -77,11 +77,13 @@ var Common = (function () {
             }
             return false;
         },
+
         isNotBlank: function (strVal) {
-            return !this.isBlank(strVal);
+            return !StringUtil.isBlank(strVal);
         },
+
         getNewSortType: function (sortType) {
-            if (this.isNotBlank(sortType)) {
+            if (StringUtil.isNotBlank(sortType)) {
                 if ("ASC" == $.trim(sortType)) {
                     sortType = "DESC";
                 } else {
@@ -90,6 +92,7 @@ var Common = (function () {
             }
             return sortType;
         },
+
         //获取url中"?"符后的字串
         getRequestParam: function () {
             var url = window.location.search;
@@ -103,6 +106,7 @@ var Common = (function () {
             }
             return theRequest;
         },
+
         getRequestParamWithSearch: function (locationSearch) {
             var theRequest = new Object();
             if (locationSearch.indexOf("?") != -1) {
@@ -113,6 +117,17 @@ var Common = (function () {
                 }
             }
             return theRequest;
+        },
+
+        dateFormat: function (timestamp) {
+            var time = new Date(timestamp);
+            var y = time.getFullYear();//年
+            var m = time.getMonth() + 1;//月
+            var d = time.getDate();//日
+            var h = time.getHours();//时
+            var mm = time.getMinutes();//分
+            var s = time.getSeconds();//秒
+            return y + "-" + m + "-" + d + " " + h + ":" + mm + ":" + s;
         }
     };
 
@@ -150,10 +165,10 @@ var Estate = (function () {
 
         init: function () {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
-            requestParamObj = this.checkRequestParamObj(requestParamObj);
+            requestParamObj = List.checkRequestParamObj(requestParamObj);
 
             // 选中过滤条件
-            this.checkFilterFiled(requestParamObj);
+            List.checkFilterFiled(requestParamObj);
 
             // 触发排序函数
             var sortValues = requestParamObj.sort.split(":");
@@ -173,10 +188,10 @@ var Estate = (function () {
 
         goNextPage: function (pageNum) {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
-            requestParamObj = this.checkRequestParamObj(requestParamObj);
+            requestParamObj = List.checkRequestParamObj(requestParamObj);
             requestParamObj.page = pageNum;
 
-            this.loadData(requestParamObj);
+            List.loadData(requestParamObj);
         },
 
         loadData: function (requestParamObj) {
@@ -233,7 +248,7 @@ var Estate = (function () {
 
         filterData: function (obj) {
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
-            requestParamObj = this.checkRequestParamObj(requestParamObj);
+            requestParamObj = List.checkRequestParamObj(requestParamObj);
 
             var selectName = obj.name;
             var selectValue = obj.options[obj.selectedIndex].value;
@@ -243,7 +258,7 @@ var Estate = (function () {
                 delete requestParamObj[selectName];
             }
             requestParamObj.page = 1;
-            this.loadData(requestParamObj);
+            List.loadData(requestParamObj);
         },
 
         sortData: function (obj, type) {
@@ -261,7 +276,7 @@ var Estate = (function () {
             var arrowIcon = " <i class='fa fa-long-arrow-up'></i>";
 
             var requestParamObj = JSON.parse(sessionStorage.getItem("requestParam"));
-            requestParamObj = this.checkRequestParamObj(requestParamObj);
+            requestParamObj = List.checkRequestParamObj(requestParamObj);
             var sortValues = requestParamObj.sort.split(":");
             var sortType = sortValues[1];
             if (1 == type) {
@@ -274,7 +289,7 @@ var Estate = (function () {
             $(selector).html(html);
 
             requestParamObj.sort = classNames[1] + ":" + sortType;
-            this.loadData(requestParamObj);
+            List.loadData(requestParamObj);
         }
     };
 
@@ -303,88 +318,127 @@ var Special = (function () {
     };
 
     var Detail = {
-        nowUrl: function () {
-            return "/special/now";
+        nowTimeUrl: function () {
+            return "/special/nowTime";
         },
-        exposure: function (houseCode) {
-            return '/special/' + houseCode + '/exposure';
+
+        exposureUrl: function (id) {
+            return '/special/' + id + '/exposure';
         },
-        execution: function (houseCode, key) {
-            return '/special/' + houseCode + '/execution/' + key;
+
+        executionUrl: function (id, key) {
+            return '/special/' + id + '/execution/' + key;
         },
+
+        changeCaptcha: function () {
+            $('#captcha-image').attr('src', '/special/captcha?t=' + new Date().getTime());
+        },
+
         init: function (params) {
-            var houseCode = params['houseCode'];
-            var nowTime = params['nowTime'];
-            var startTime = params['startTime'];
-            var endTime = params['endTime'];
+            var id = params['id'];
+            var startTimeX = params['startTimeX'];
+            var endTimeX = params['endTimeX'];
 
-            Detail.countDownX(houseCode, nowTime, startTime, endTime);
-        },
-        countDownX: function (houseCode, nowTime, startTime, endTime) {
-            var countDownArea = $("#countDownArea");
-            if (nowTime > endTime) {
-                countDownArea.html('<h2 class="font-red">秒杀结束</h2>');
-            } else if (nowTime < startTime) {
-                var killTime = new Date(startTime);
-                countDownArea.countdown(killTime, function (event) {
-                    var format = event.strftime('距秒杀开启: %D天 %H时 %M分 %S秒 ');
-                    countDownArea.html('<h2 class="font-red">' + format + '</h2>');
-                }).on('finish.countdown', function () {
-                    Detail.executeSecKill(houseCode, nowTime, startTime, endTime);
-                });
-            } else {
-                Detail.executeSecKill(houseCode, nowTime, startTime, endTime);
-            }
-        },
-        executeSecKill: function (houseCode, nowTime, startTime, endTime) {
-            var countDownArea = $("#countDownArea");
-            var execution = $("#execution");
-
-            execution.hide().html('<a href="javascript:void(0)" class="btn btn-lg btn-primary" id="killBtn">开始秒杀</a>');
-
-            $.get(Detail.exposure(houseCode)).done(function (result) {
-                //在回调函数种执行交互流程
+            // 获取系统当前时间
+            $.get(Detail.nowTimeUrl()).done(function (result) {
                 if (200 == result.status) {
-                    var endTimeX = new Date(endTime);
-                    countDownArea.countdown(endTimeX, function (event) {
-                        var format = event.strftime('距秒杀结束: %D天 %H时 %M分 %S秒 ');
-                        countDownArea.html('<h2 class="font-red">' + format + '</h2>');
-                    }).on('finish.countdown', function () {
-                        countDownArea.html('<h2 class="font-red">秒杀结束</h2>');
-                        execution.hide();
-                    });
-
-                    var killUrl = Detail.execution(houseCode, result.data);
-
-                    //绑定一次点击事件
-                    $('#killBtn').one('click', function () {
-                        var userName = $.cookie("USER_NAME");
-                        if (Common.StringUtil.isBlank(userName)) {
-                            Common.PNotice.error("受限内容，请登录后再访问！");
-                            return false;
-                        }
-
-                        //执行秒杀请求
-                        //1.先禁用按钮
-                        $(this).hide();
-
-                        //2.发送秒杀请求执行秒杀
-                        $.post(killUrl).done(function (result) {
-                            if (200 == result.status) {
-                                Common.PNotice.success(result.message);
-                            } else {
-                                Common.PNotice.error(result.message);
-                            }
-                        }).fail(function (result) {
-                            Common.PNotice.error(result.responseJSON.message);
-                        });
-                    });
-                    execution.show();
-                } else if (403 == result.status) {
-                    countDownArea.html('<h2 class="font-red">秒杀成功</h2>');
+                    Detail.countDownFun(id, result.data, startTimeX, endTimeX);
+                } else {
+                    Common.PNotice.error("受限内容，请登录后再操作！");
                 }
             }).fail(function (result) {
                 Common.PNotice.error(result.responseJSON.message);
+            });
+        },
+
+        countDownFun: function (id, nowTimeX, startTimeX, endTimeX) {
+            var countDownArea = $("#countDownArea");
+
+            // 秒杀结束
+            if (nowTimeX > endTimeX) {
+                countDownArea.html('<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>秒杀已结束</a>');
+
+                // 秒杀未开始
+            } else if (nowTimeX < startTimeX) {
+                countDownArea.countdown(startTimeX, function (event) {
+                    var htmlContent = '<h3>开始时间：<strong class="font-red">' + Common.StringUtil.dateFormat(startTimeX) + '</strong>';
+                    htmlContent += '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>即将开始</a></h3>';
+                    htmlContent += '<h4>' + event.strftime('距离秒杀开启: %H时 %M分 %S秒') + '</h4>';
+                    countDownArea.html(htmlContent);
+                }).on('finish.countdown', function () {
+                    Detail.captchaFun(id, nowTimeX, startTimeX, endTimeX);
+                });
+
+                // 秒杀进行中
+            } else {
+                Detail.captchaFun(id, nowTimeX, startTimeX, endTimeX);
+            }
+        },
+
+        captchaFun: function (id, nowTimeX, startTimeX, endTimeX) {
+            var countDownArea = $("#countDownArea");
+
+            // 显示倒计时区域
+            countDownArea.countdown(endTimeX, function (event) {
+                var htmlContent = '<h3>结束时间：<strong class="font-red">' + Common.StringUtil.dateFormat(endTimeX) + '</strong>';
+                htmlContent += '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" onclick="Special.Detail.refreshFun()">刷新抢房</a></h3>';
+                htmlContent += '<h4>' + event.strftime('距离秒杀结束: %H时 %M分 %S秒') + '</h4>';
+                countDownArea.html(htmlContent);
+            }).on('finish.countdown', function () {
+                var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>秒杀已结束</a>';
+                countDownArea.html(htmlContent);
+            });
+
+            // 显示秒杀区域
+            $("section").show();
+        },
+
+        refreshFun: function () {
+            Detail.changeCaptcha();
+            $("#captcha").val("");
+        },
+
+        execSecKillFun: function (id) {
+            var userName = $.cookie("USER_NAME");
+            if (Common.StringUtil.isBlank(userName)) {
+                Common.PNotice.error("受限内容，请登录后再操作！");
+                return false;
+            }
+
+            var captcha = $("#captcha").val();
+            if (Common.StringUtil.isBlank(captcha)) {
+                Common.PNotice.error("请输入正常的答案！");
+                return false;
+            }
+
+            $.get(Detail.exposureUrl(id), {captcha: captcha}).done(function (result) {
+                if (200 == result.status) {
+                    var secKillUrl = Detail.executionUrl(id, result.data);
+                    //2.发送秒杀请求执行秒杀
+                    $.post(secKillUrl).done(function (result) {
+                        if (200 == result.status) {
+                            $("section").hide();
+                            //$('#countDownArea').countdown('stop');
+                            Common.PNotice.success(result.message);
+                        } else {
+                            Detail.changeCaptcha();
+                            Common.PNotice.error(result.message);
+                        }
+                    }).fail(function (result) {
+                        Detail.changeCaptcha();
+                        Common.PNotice.error(result.responseJSON.message);
+                    });
+                } else if (403 == result.status) {
+                    $("section").hide();
+                    //$('#countDownArea').countdown('stop');
+                    Common.PNotice.error(result.message);
+                } else {
+                    Detail.changeCaptcha();
+                    Common.PNotice.error(result.message);
+                }
+            }).fail(function (result) {
+                Detail.changeCaptcha();
+                Common.PNotice.error(result.message);
             });
         }
     };
