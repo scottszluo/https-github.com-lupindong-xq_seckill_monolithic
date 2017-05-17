@@ -1,6 +1,7 @@
 package net.lovexq.background.special;
 
-import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.core.repository.cache.ByteRedisClient;
+import net.lovexq.background.core.repository.cache.StringRedisClient;
 import net.lovexq.background.crawler.service.CrawlerService;
 import net.lovexq.background.estate.model.EstateImageModel;
 import net.lovexq.background.estate.model.EstateItemModel;
@@ -12,6 +13,7 @@ import net.lovexq.background.special.repository.SpecialStockRepository;
 import net.lovexq.background.system.model.SystemConfigModel;
 import net.lovexq.background.system.repository.SystemConfigRepository;
 import net.lovexq.seckill.common.utils.*;
+import net.lovexq.seckill.common.utils.constants.AppConstants;
 import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,7 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Example;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -52,9 +53,9 @@ public class SpecialTest {
     @Autowired
     private SystemConfigRepository systemConfigRepository;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private ByteRedisClient byteRedisClient;
     @Autowired
-    private RedisClient redisClient;
+    private StringRedisClient stringRedisClient;
 
     private TemplateEngine templateEngine;
 
@@ -72,7 +73,7 @@ public class SpecialTest {
     @Test
     public void clearCache() {
         String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
-        redisTemplate.delete(cacheKey);
+        byteRedisClient.del(cacheKey);
 
         List<String> keysList = new ArrayList();
         List<SpecialStockModel> list = specialStockRepository.findAll();
@@ -81,7 +82,7 @@ public class SpecialTest {
             keysList.add(cacheKey);
         }
 
-        redisTemplate.delete(keysList);
+        byteRedisClient.del(keysList);
     }
 
     @Test
@@ -128,15 +129,26 @@ public class SpecialTest {
                 maxNum = estateItemList.size();
             }
 
+            // 更新特价批次
+            SystemConfigModel sysConfigModel = systemConfigRepository.findByConfigKey("special_batch");
+            if (sysConfigModel == null) {
+                sysConfigModel = new SystemConfigModel();
+                sysConfigModel.setConfigKey("special_batch");
+                sysConfigModel.setConfigValue("0");
+            }
+            Long batch = Long.valueOf(sysConfigModel.getConfigValue()) + 1;
+            sysConfigModel.setConfigValue(batch.toString());
+            systemConfigRepository.saveAndFlush(sysConfigModel);
+
             System.out.println("本次生成的特价房源数：" + maxNum);
             LocalDate today = LocalDate.now();
-            String batch = maxNum + "@" + today.toString();
             Random random = new Random();
             int count = 1;
             for (int i = 0; i < maxNum; i++) {
                 EstateItemModel estateItem = estateItemList.get(i);
                 SpecialStockModel old = specialStockRepository.findByHouseCode(estateItem.getHouseCode());
                 if (old == null && EstateEnum.FOR_SALE.getValue().equals(estateItem.getSaleState())) {
+                    // 插入特价库存表
                     SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
                     BeanUtils.copyProperties(estateItem, specialStock, "id");
                     specialStock.setTotal(random.nextInt(10) + 1);
@@ -146,8 +158,15 @@ public class SpecialTest {
                     LocalDateTime eTime = sTime.plusDays(1);
                     specialStock.setStartTime(sTime);
                     specialStock.setEndTime(eTime);
-                    specialStock.setBatch(batch);
+                    specialStock.setBatch(sysConfigModel.getConfigValue());
                     specialStockRepository.saveAndFlush(specialStock);
+
+                    // 缓存全局库存计数器
+                    stringRedisClient.increment(AppConstants.CACHE_SPECIAL_STOCK_COUNT + specialStock.getId(), specialStock.getTotal().longValue());
+
+                    // 对选中房源标特价
+                    estateItem.setSaleState(EstateEnum.SPECIAL.getValue());
+                    estateItemRepository.save(estateItem);
 
                     // 生成静态页面
                     SpecialStockDTO specialStockDTO = new SpecialStockDTO();
@@ -169,17 +188,9 @@ public class SpecialTest {
                 }
             }
 
-            // 更新特价批次
-            SystemConfigModel sysConfigModel = systemConfigRepository.findByConfigKey("special_batch");
-            if (sysConfigModel == null) {
-                sysConfigModel = new SystemConfigModel();
-                sysConfigModel.setConfigKey("special_batch");
-            }
-            sysConfigModel.setConfigValue(batch);
-            systemConfigRepository.saveAndFlush(sysConfigModel);
 
             String cacheKey = CacheKeyGenerator.generate(SystemConfigModel.class, "getByConfigKey", "special_batch");
-            redisClient.setObj(cacheKey, sysConfigModel);
+            byteRedisClient.setByteObj(cacheKey, sysConfigModel);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.assertTrue(false);

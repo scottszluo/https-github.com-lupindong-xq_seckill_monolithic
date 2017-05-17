@@ -1,6 +1,6 @@
 package net.lovexq.background.system.service.impl;
 
-import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.core.repository.cache.ByteRedisClient;
 import net.lovexq.background.system.model.SystemConfigModel;
 import net.lovexq.background.system.repository.SystemConfigRepository;
 import net.lovexq.background.system.service.ConfigService;
@@ -19,18 +19,18 @@ public class ConfigServiceImpl implements ConfigService {
     private SystemConfigRepository systemConfigRepository;
 
     @Autowired
-    private RedisClient redisClient;
+    private ByteRedisClient byteRedisClient;
 
     @Override
     public SystemConfigModel getByConfigKey(String key) {
         String cacheKey = CacheKeyGenerator.generate(SystemConfigModel.class, "getByConfigKey", key);
 
-        SystemConfigModel sysConfigModel = redisClient.getObj(cacheKey, SystemConfigModel.class);
+        SystemConfigModel sysConfigModel = byteRedisClient.getByteObj(cacheKey, SystemConfigModel.class);
         if (sysConfigModel != null) {
             return sysConfigModel;
         } else {
             sysConfigModel = systemConfigRepository.findByConfigKey(key);
-            redisClient.setObj(cacheKey, sysConfigModel);
+            byteRedisClient.setByteObj(cacheKey, sysConfigModel);
             return sysConfigModel;
         }
     }

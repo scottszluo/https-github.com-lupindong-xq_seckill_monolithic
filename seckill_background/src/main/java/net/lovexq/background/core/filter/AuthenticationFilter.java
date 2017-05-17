@@ -4,16 +4,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureException;
 import net.lovexq.background.core.properties.AppProperties;
-import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.core.repository.cache.ByteRedisClient;
 import net.lovexq.background.core.support.security.JwtClaims;
 import net.lovexq.background.core.support.security.JwtTokenUtil;
 import net.lovexq.seckill.common.exception.ApplicationException;
 import net.lovexq.seckill.common.utils.CookieUtil;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.core.annotation.Order;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,11 +27,12 @@ import java.util.Date;
  * @author LuPindong
  * @time 2017-05-07 10:32
  */
-@Component
+@Order(1)
+@WebFilter(filterName = "authenticationFilter", urlPatterns = "/special/*")
 public class AuthenticationFilter implements Filter {
 
     @Autowired
-    private RedisClient redisClient;
+    private ByteRedisClient byteRedisClient;
 
     @Autowired
     private AppProperties appProperties;
@@ -65,8 +67,8 @@ public class AuthenticationFilter implements Filter {
                     }
 
                     // 缓存的Token
-                    String cacheKey = "-ACCESS_TOKEN-" + requestAccount;
-                    String redisToken = redisClient.getStrValue(cacheKey);
+                    String cacheKey = AppConstants.CACHE_ACCESS_TOKEN + requestAccount;
+                    String redisToken = byteRedisClient.getByteObj(cacheKey, String.class);
                     if (redisToken == null || !requestToken.equals(redisToken)) {
                         throw new ApplicationException("Redis中无此Token！");
                     }
@@ -87,7 +89,7 @@ public class AuthenticationFilter implements Filter {
                         CookieUtil.createCookie(AppConstants.USER_NAME, claimsUN, "127.0.0.1", appProperties.getJwtExpiration(), response);
 
                         // 缓存Token
-                        redisClient.setStrValue(cacheKey, token, appProperties.getJwtExpiration());
+                        byteRedisClient.setByteObj(cacheKey, token, appProperties.getJwtExpiration());
                     }
 
                     request.setAttribute(AppConstants.CLAIMS, requestClaims);

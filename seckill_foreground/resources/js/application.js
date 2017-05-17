@@ -371,7 +371,10 @@ var Special = (function () {
 
                 // 秒杀进行中
             } else {
-                Detail.captchaFun(id, nowTimeX, startTimeX, endTimeX);
+                var flag = sessionStorage.getItem("flag:" + id);
+                if (!flag) {
+                    Detail.captchaFun(id, nowTimeX, startTimeX, endTimeX);
+                }
             }
         },
 
@@ -400,6 +403,7 @@ var Special = (function () {
                     var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
                     countDownArea.html(htmlContent);
                     Common.PNotice.error(result.message);
+                    sessionStorage.setItem("flag:" + id, true);
                 } else {
                     var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
                     countDownArea.html(htmlContent);
@@ -419,6 +423,8 @@ var Special = (function () {
         },
 
         execSecKillFun: function () {
+            var countDownArea = $("#countDownArea");
+
             var userName = $.cookie("USER_NAME");
             if (Common.StringUtil.isBlank(userName)) {
                 Common.PNotice.error("受限内容，请登录后再操作！");
@@ -427,7 +433,7 @@ var Special = (function () {
 
             var captcha = $("#captcha").val();
             if (Common.StringUtil.isBlank(captcha)) {
-                Common.PNotice.error("请输入正常的答案！");
+                Common.PNotice.error("请输入正确的答案！");
                 return false;
             }
 
@@ -435,10 +441,15 @@ var Special = (function () {
             $.post($("#secKillUrl").val(), {"captcha": captcha}).done(function (result) {
                 if (200 == result.status) {
                     $("#section2").hide();
-                    $("#countDownArea").countdown('stop');
                     var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
-                    $("#countDownArea").html(htmlContent);
+                    countDownArea.html(htmlContent);
+                    countDownArea.countdown('stop');
                     Common.PNotice.success(result.message);
+                } else if (403 == result.status) {
+                    var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
+                    countDownArea.html(htmlContent);
+                    countDownArea.countdown('stop');
+                    Common.PNotice.error(result.message);;
                 } else {
                     Detail.changeCaptcha();
                     Common.PNotice.error(result.message);

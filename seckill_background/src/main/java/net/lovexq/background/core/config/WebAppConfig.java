@@ -1,11 +1,9 @@
 package net.lovexq.background.core.config;
 
-import net.lovexq.background.core.filter.AuthenticationFilter;
 import net.lovexq.background.core.interceptor.LogInterceptor;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -35,9 +33,6 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
     @Autowired
     private LogInterceptor logInterceptor;
 
-    @Autowired
-    private AuthenticationFilter authenticationFilter;
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -49,14 +44,6 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
         // addPathPatterns 用于添加拦截规则
         // excludePathPatterns 用户排除拦截
         registry.addInterceptor(logInterceptor).addPathPatterns("/**");
-    }
-
-    @Bean
-    public FilterRegistrationBean addAuthenticationFilter() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(authenticationFilter);
-        registration.addUrlPatterns("/special/*");
-        return registration;
     }
 
     @Bean

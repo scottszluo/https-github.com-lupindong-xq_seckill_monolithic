@@ -2,7 +2,7 @@ package net.lovexq.background.system.service.impl;
 
 import io.jsonwebtoken.Claims;
 import net.lovexq.background.core.properties.AppProperties;
-import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.core.repository.cache.ByteRedisClient;
 import net.lovexq.background.core.support.security.JwtClaims;
 import net.lovexq.background.core.support.security.JwtTokenUtil;
 import net.lovexq.background.system.model.SystemUserModel;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     private SystemUserRepository systemUserRepository;
 
     @Autowired
-    private RedisClient redisClient;
+    private ByteRedisClient byteRedisClient;
 
     @Autowired
     private AppProperties appProperties;
@@ -72,7 +72,8 @@ public class UserServiceImpl implements UserService {
         cipher = new String(Base64Utils.decodeFromString(cipher), AppConstants.CHARSET_UTF8);
 
         SystemUserModel userModel = systemUserRepository.findByAccount(account);
-        if (userModel == null || userModel.getId() == null) {
+        //FIXME 测试阶段暂时关闭，后续需要打开
+        /*if (userModel == null || userModel.getId() == null) {
             userModel = systemUserRepository.findByEmail(account);
             if (userModel == null || userModel.getId() == null) {
                 return new JsonResult(400, "账号/邮箱或密码有误，请重新输入！");
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
         }
         if (!cipher.equals(userModel.getPassword())) {
             return new JsonResult(400, "账号/邮箱或密码有误，请重新输入！");
-        }
+        }*/
 
         // 生成Token
         JwtClaims claims = new JwtClaims(userModel.getAccount(), userAgent, userModel.getName());
@@ -92,8 +93,8 @@ public class UserServiceImpl implements UserService {
         CookieUtil.createCookie(AppConstants.USER_NAME, userModel.getName(), "127.0.0.1", appProperties.getJwtExpiration(), response);
 
         // 缓存Token
-        String cacheKey = "-ACCESS_TOKEN-" + account;
-        redisClient.setStrValue(cacheKey, token, appProperties.getJwtExpiration());
+        String cacheKey = AppConstants.CACHE_ACCESS_TOKEN + account;
+        byteRedisClient.setByteObj(cacheKey, token, appProperties.getJwtExpiration());
 
         return result;
     }
@@ -106,8 +107,8 @@ public class UserServiceImpl implements UserService {
         if (tokenCookie != null) {
             Claims requestClaims = JwtTokenUtil.getClaims(tokenCookie.getValue(), appProperties.getJwtSecretKey());
             // 清除缓存
-            String cacheKey = "-ACCESS_TOKEN-" + requestClaims.getAudience();
-            redisClient.del(cacheKey);
+            String cacheKey = AppConstants.CACHE_ACCESS_TOKEN + requestClaims.getAudience();
+            byteRedisClient.del(cacheKey);
         }
 
         // 清除Cookie

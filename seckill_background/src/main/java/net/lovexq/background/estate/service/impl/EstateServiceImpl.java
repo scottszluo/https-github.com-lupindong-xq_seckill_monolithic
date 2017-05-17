@@ -1,7 +1,7 @@
 package net.lovexq.background.estate.service.impl;
 
 import net.lovexq.background.core.model.PageX;
-import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.core.repository.cache.ByteRedisClient;
 import net.lovexq.background.estate.dto.EstateItemDTO;
 import net.lovexq.background.estate.model.EstateImageModel;
 import net.lovexq.background.estate.model.EstateItemModel;
@@ -42,7 +42,7 @@ public class EstateServiceImpl implements EstateService {
     @Autowired
     private EstateImageRepository estateImageRepository;
     @Autowired
-    private RedisClient redisClient;
+    private ByteRedisClient byteRedisClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -53,7 +53,7 @@ public class EstateServiceImpl implements EstateService {
         //redisClient.del(cacheKey);
 
         // 读取缓存数据
-        targetItemPage = redisClient.getObj(cacheKey, targetItemPage.getClass());
+        targetItemPage = byteRedisClient.getByteObj(cacheKey, targetItemPage.getClass());
         if (targetItemPage != null && CollectionUtils.isNotEmpty(targetItemPage.getContent())) {
             return new PageX(targetItemPage.getContent(), pageable, targetItemPage.getTotalElements());
         } else {
@@ -79,7 +79,7 @@ public class EstateServiceImpl implements EstateService {
                 targetItemPage = new PageX(targetItemList, pageable, sourceItemPage.getTotalElements());
 
                 // 数据写入缓存
-                redisClient.setObj(cacheKey, targetItemPage, 3600);
+                byteRedisClient.setByteObj(cacheKey, targetItemPage, 3600);
             }
 
             return targetItemPage;

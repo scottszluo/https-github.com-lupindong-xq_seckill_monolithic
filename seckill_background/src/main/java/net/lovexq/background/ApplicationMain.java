@@ -5,6 +5,7 @@ import net.lovexq.background.core.support.dynamicds.DynamicDataSourceRegister;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @time 2017-04-19 06:53
  */
 @SpringBootApplication
+@ServletComponentScan
 @Import({DynamicDataSourceRegister.class}) // 注册动态多数据源
 @EnableJpaRepositories(repositoryBaseClass = BasicRepositoryImpl.class) // 启用Jpa基类
 public class ApplicationMain extends SpringBootServletInitializer {

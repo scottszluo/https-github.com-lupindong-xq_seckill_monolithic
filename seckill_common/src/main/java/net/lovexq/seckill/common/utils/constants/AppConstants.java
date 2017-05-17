@@ -86,4 +86,30 @@ public class AppConstants {
      * 用户名称
      */
     public static final String USER_NAME = "USER_NAME";
+
+    /**
+     * 缓存KEY：访问Token
+     */
+    public static final String CACHE_ACCESS_TOKEN = "ACCESS_TOKEN:";
+
+    /**
+     * 缓存KEY：API关键词
+     */
+    public static final String CACHE_API_KEY = "API_KEY:";
+
+    /**
+     * 缓存KEY：验证码
+     */
+    public static final String CACHE_CAPTCHA = "CAPTCHA:";
+
+    /**
+     * 缓存KEY：秒杀库存数
+     */
+    public static final String CACHE_SPECIAL_STOCK_COUNT = "SPECIAL_STOCK_COUNT:";
+
+    /**
+     * 缓存KEY：秒杀订单列表
+     */
+    public static final String CACHE_ZSET_SPECIAL_ORDER = "ZSET-SPECIAL_ORDER:";
+
 }

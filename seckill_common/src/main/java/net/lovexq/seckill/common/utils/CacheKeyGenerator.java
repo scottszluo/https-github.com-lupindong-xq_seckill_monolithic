@@ -21,7 +21,7 @@ public class CacheKeyGenerator {
 
     public static <T> String generate(Class<T> targetClass, String methodName, Object... params) {
         String finalKey;
-        StringBuilder key = new StringBuilder("-");
+        StringBuilder key = new StringBuilder();
         key.append(targetClass.getSimpleName()).append(".").append(methodName).append(":");
         // 无参数时
         if (params.length == 0) {

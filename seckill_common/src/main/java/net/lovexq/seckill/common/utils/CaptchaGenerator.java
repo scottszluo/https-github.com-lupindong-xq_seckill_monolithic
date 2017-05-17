@@ -24,8 +24,8 @@ public enum CaptchaGenerator {
         Random random = new Random();
         Graphics2D g = initImage(image, random);
 
-        int x = random.nextInt(11);
-        int y = random.nextInt(22);
+        int x = random.nextInt(10) + 1;
+        int y = random.nextInt(20) + 10;
         if (y < x) y = x;
 
         switch (random.nextInt(7)) {

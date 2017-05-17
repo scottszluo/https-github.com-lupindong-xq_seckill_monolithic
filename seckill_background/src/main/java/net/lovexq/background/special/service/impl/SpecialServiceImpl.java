@@ -2,7 +2,8 @@ package net.lovexq.background.special.service.impl;
 
 import io.jsonwebtoken.Claims;
 import net.lovexq.background.core.properties.AppProperties;
-import net.lovexq.background.core.repository.cache.RedisClient;
+import net.lovexq.background.core.repository.cache.ByteRedisClient;
+import net.lovexq.background.core.repository.cache.StringRedisClient;
 import net.lovexq.background.estate.service.EstateService;
 import net.lovexq.background.special.dto.SpecialStockDTO;
 import net.lovexq.background.special.model.SpecialOrderModel;
@@ -11,7 +12,9 @@ import net.lovexq.background.special.repository.SpecialOrderRepository;
 import net.lovexq.background.special.repository.SpecialStockRepository;
 import net.lovexq.background.special.service.SpecialService;
 import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.seckill.common.utils.*;
+import net.lovexq.seckill.common.utils.CacheKeyGenerator;
+import net.lovexq.seckill.common.utils.CachedBeanCopier;
+import net.lovexq.seckill.common.utils.TimeUtil;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +50,9 @@ public class SpecialServiceImpl implements SpecialService {
     @Autowired
     private EstateService estateService;
     @Autowired
-    private RedisClient redisClient;
+    private ByteRedisClient byteRedisClient;
+    @Autowired
+    private StringRedisClient stringRedisClient;
     @Autowired
     private AppProperties appProperties;
 
@@ -56,7 +61,7 @@ public class SpecialServiceImpl implements SpecialService {
     public List<SpecialStockDTO> listForSecKill() throws Exception {
         String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
 
-        List<SpecialStockDTO> targetList = redisClient.getList(cacheKey, SpecialStockDTO.class);
+        List<SpecialStockDTO> targetList = byteRedisClient.getByteList(cacheKey, SpecialStockDTO.class);
         if (CollectionUtils.isNotEmpty(targetList)) {
             return targetList;
         } else {
@@ -75,7 +80,7 @@ public class SpecialServiceImpl implements SpecialService {
 
                     targetList.add(target);
                 }
-                redisClient.setList(cacheKey, targetList, 60);
+                byteRedisClient.setByteList(cacheKey, targetList, 60);
             }
 
             return targetList;
@@ -87,7 +92,7 @@ public class SpecialServiceImpl implements SpecialService {
     public SpecialStockDTO getOne(Long id) throws Exception {
         String cacheKey = CacheKeyGenerator.generate(SpecialStockModel.class, "getOne", id);
 
-        SpecialStockDTO targetStock = redisClient.getObj(cacheKey, SpecialStockDTO.class);
+        SpecialStockDTO targetStock = byteRedisClient.getByteObj(cacheKey, SpecialStockDTO.class);
         if (targetStock != null) {
             return targetStock;
         } else {
@@ -96,7 +101,7 @@ public class SpecialServiceImpl implements SpecialService {
             if (sourceStock != null) {
                 CachedBeanCopier.copy(sourceStock, targetStock);
                 targetStock.setEstateImageList(estateService.listByHouseCode(targetStock.getHouseCode()));
-                redisClient.setObj(cacheKey, targetStock, 60);
+                byteRedisClient.setByteObj(cacheKey, targetStock, 60);
             }
             return targetStock;
         }
@@ -105,8 +110,8 @@ public class SpecialServiceImpl implements SpecialService {
     @Override
     @Transactional(readOnly = true)
     public void saveCaptcha(Claims claims, String captcha) {
-        String cacheKey = "-CAPTCHA-" + claims.getAudience();
-        redisClient.setStrValue(cacheKey, captcha, 120);
+        String cacheKey = AppConstants.CACHE_CAPTCHA + claims.getAudience();
+        byteRedisClient.setByteObj(cacheKey, captcha, 120);
     }
 
     @Override
@@ -141,11 +146,11 @@ public class SpecialServiceImpl implements SpecialService {
     private String getMd5Url(Long id) throws UnsupportedEncodingException {
         String cacheKey = CacheKeyGenerator.generate(String.class, "getMd5Url", id);
         // 先从缓存中取
-        String md5Url = redisClient.getStrValue(cacheKey);
+        String md5Url = byteRedisClient.getByteObj(cacheKey, String.class);
         if (StringUtils.isBlank(md5Url)) {
             String saltUrl = id + "/" + Instant.now().toEpochMilli() + "/" + appProperties.getPrivateSalt();
             md5Url = DigestUtils.md5DigestAsHex(saltUrl.getBytes(AppConstants.CHARSET_UTF8));
-            redisClient.setStrValue(cacheKey, md5Url, 3600);
+            byteRedisClient.setByteObj(cacheKey, md5Url, 3600);
         }
         return md5Url;
     }
@@ -158,8 +163,8 @@ public class SpecialServiceImpl implements SpecialService {
         String account = claims.getAudience();
 
         // 先检查验证码
-        String cacheKey = "-CAPTCHA-" + account;
-        String cacheCaptcha = redisClient.getStrValue(cacheKey);
+        String cacheKey = AppConstants.CACHE_CAPTCHA + account;
+        String cacheCaptcha = byteRedisClient.getByteObj(cacheKey, String.class);
         if (StringUtils.isBlank(cacheCaptcha)) {
             return new JsonResult(401, "验证码已过期，请刷新重试！");
         }
@@ -171,7 +176,21 @@ public class SpecialServiceImpl implements SpecialService {
             return new JsonResult(401, "秒杀请求无效！");
         }
 
-        // 执行插入秒杀记录操作
+        SpecialOrderModel specialOrderModel = new SpecialOrderModel(id, account, "下单");
+
+        // 加到缓存队列
+        Boolean isAdd = byteRedisClient.zadd(AppConstants.CACHE_ZSET_SPECIAL_ORDER + id, specialOrderModel, Instant.now().toEpochMilli());
+        if (isAdd) {
+            // 成功加入才减库存
+            Long stock = stringRedisClient.increment(AppConstants.CACHE_SPECIAL_STOCK_COUNT + id, -1L);
+            if (stock < 0) {
+                return new JsonResult(410, "房源已售罄！");
+            }
+        } else {
+            return new JsonResult(403, "已秒杀成功，请勿重复秒杀！");
+        }
+
+        /*// 执行插入秒杀记录操作
         String nowTime = TimeUtil.format(TimeUtil.nowDateTime());
         int insertCount = specialOrderRepository.executeUpdateBySql(INSERT_KILLED_SQL, IdWorker.INSTANCE.nextId(), id, account, nowTime, nowTime);
 
@@ -190,7 +209,7 @@ public class SpecialServiceImpl implements SpecialService {
             } else {
                 result.setMessage("秒杀成功！");
             }
-        }
+        }*/
 
         return result;
     }

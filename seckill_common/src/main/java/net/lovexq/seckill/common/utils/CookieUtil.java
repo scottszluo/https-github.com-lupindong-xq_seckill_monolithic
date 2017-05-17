@@ -1,8 +1,12 @@
 package net.lovexq.seckill.common.utils;
 
+import net.lovexq.seckill.common.utils.constants.AppConstants;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +21,8 @@ public class CookieUtil {
      * @param response
      * @return
      */
-    public static Cookie createCookie(String name, String context, Long maxAge, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name, context); // 新建Cookie
+    public static Cookie createCookie(String name, String context, Long maxAge, HttpServletResponse response) throws UnsupportedEncodingException {
+        Cookie cookie = new Cookie(name, URLEncoder.encode(context, AppConstants.CHARSET_UTF8)); // 新建Cookie
         cookie.setDomain("127.0.0.1"); // 设置域名
         cookie.setMaxAge(maxAge.intValue()); // 设置有效期
         cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
@@ -36,8 +40,8 @@ public class CookieUtil {
      * @param response
      * @return
      */
-    public static Cookie createCookie(String name, String context, String domain, Long maxAge, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name, context); // 新建Cookie
+    public static Cookie createCookie(String name, String context, String domain, Long maxAge, HttpServletResponse response) throws UnsupportedEncodingException {
+        Cookie cookie = new Cookie(name, URLEncoder.encode(context, AppConstants.CHARSET_UTF8)); // 新建Cookie
         cookie.setDomain(domain); // 设置域名
         cookie.setMaxAge(maxAge.intValue()); // 设置有效期
         cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问
@@ -56,8 +60,8 @@ public class CookieUtil {
      * @param response
      * @return
      */
-    public static Cookie createCookie(String name, String context, String domain, Long maxAge, boolean isHttpOnly, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name, context); // 新建Cookie
+    public static Cookie createCookie(String name, String context, String domain, Long maxAge, boolean isHttpOnly, HttpServletResponse response) throws UnsupportedEncodingException {
+        Cookie cookie = new Cookie(name, URLEncoder.encode(context, AppConstants.CHARSET_UTF8)); // 新建Cookie
         cookie.setDomain(domain); // 设置域名
         cookie.setMaxAge(maxAge.intValue()); // 设置有效期
         cookie.setPath("/"); //设置路径，这个路径即该工程下都可以访问该cookie 如果不设置路径，那么只有设置该cookie路径及其子路径可以访问

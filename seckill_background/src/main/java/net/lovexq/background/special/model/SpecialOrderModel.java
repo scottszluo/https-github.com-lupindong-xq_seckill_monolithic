@@ -39,6 +39,12 @@ public class SpecialOrderModel extends BasicModel implements Serializable {
         this.account = account;
     }
 
+    public SpecialOrderModel(Long stockId, String account, String state) {
+        this.stockId = stockId;
+        this.account = account;
+        this.state = state;
+    }
+
     public Long getId() {
         return id;
     }

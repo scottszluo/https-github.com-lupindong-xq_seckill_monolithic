@@ -3,11 +3,14 @@ package net.lovexq.seckill.common.utils;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.runtime.RuntimeSchema;
+import org.springframework.util.CollectionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 序列化和反序列化工具类
@@ -115,6 +118,34 @@ public class ProtoStuffUtil {
         List<T> result = null;
         try {
             result = ProtostuffIOUtil.parseListFrom(new ByteArrayInputStream(dataArray), schema);
+        } catch (IOException e) {
+            throw new RuntimeException("反序列化对象列表发生IO异常!", e);
+        }
+        return result;
+    }
+
+    /**
+     * 反序列花集合对象
+     *
+     * @param dataArray
+     * @param targetClass
+     * @param <T>
+     * @return
+     */
+    public static <T> Set<T> deserializeSet(byte[] dataArray, Class<T> targetClass) {
+        if (dataArray == null || dataArray.length == 0) {
+            throw new RuntimeException("反序列化对象发生异常,Byte序列为空!");
+        }
+        RuntimeSchema<T> schema = RuntimeSchema.createFrom(targetClass);
+        Set<T> result = null;
+        try {
+            List<T> sourceList = ProtostuffIOUtil.parseListFrom(new ByteArrayInputStream(dataArray), schema);
+            if (!CollectionUtils.isEmpty(sourceList)) {
+                result = new HashSet();
+                for (T source : sourceList) {
+                    result.add(source);
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException("反序列化对象列表发生IO异常!", e);
         }
