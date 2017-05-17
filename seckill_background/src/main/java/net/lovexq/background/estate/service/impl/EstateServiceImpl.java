@@ -16,9 +16,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +52,6 @@ public class EstateServiceImpl implements EstateService {
         String cacheKey = CacheKeyGenerator.generate(EstateItemDTO.class, "listForSaleByPage", pageable, paramMap);
 
         Page<EstateItemDTO> targetItemPage = new PageX();
-        //redisClient.del(cacheKey);
 
         // 读取缓存数据
         targetItemPage = byteRedisClient.getByteObj(cacheKey, targetItemPage.getClass());
@@ -88,22 +89,19 @@ public class EstateServiceImpl implements EstateService {
 
     @Override
     @Transactional(readOnly = true)
-    public EstateItemDTO getByHouseCode(String houseCode) throws Exception {
-        EstateItemDTO targetItem = new EstateItemDTO();
-        EstateItemModel sourceItem = estateItemRepository.findByHouseCode(houseCode);
-        if (sourceItem != null) {
-            BeanUtils.copyProperties(sourceItem, targetItem);
-            targetItem.setEstateImageList(listByHouseCode(houseCode));
-        }
-
-        return targetItem;
+    public List<EstateImageModel> listByHouseCode(String houseCode) {
+        EstateImageModel estateImage = new EstateImageModel(null, houseCode);
+        Sort sort = new Sort(Sort.Direction.ASC, "pictureType");
+        return estateImageRepository.findAll(Example.of(estateImage), sort);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<EstateImageModel> listByHouseCode(String id) {
-        EstateImageModel estateImage = new EstateImageModel(null, id);
-        Sort sort = new Sort(Sort.Direction.ASC, "pictureType");
-        return estateImageRepository.findAll(Example.of(estateImage), sort);
+    public List<EstateItemModel> findTop20ByHouseCodeLikeAndSaleState(String targetCode, String saleState) {
+        return estateItemRepository.findTop20ByHouseCodeLikeAndSaleState(targetCode, saleState);
+    }
+
+    @Override
+    public EstateItemModel save(EstateItemModel estateItem) {
+        return estateItemRepository.save(estateItem);
     }
 }

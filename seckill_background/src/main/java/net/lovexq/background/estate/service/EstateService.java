@@ -2,6 +2,7 @@ package net.lovexq.background.estate.service;
 
 import net.lovexq.background.estate.dto.EstateItemDTO;
 import net.lovexq.background.estate.model.EstateImageModel;
+import net.lovexq.background.estate.model.EstateItemModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,7 +19,9 @@ public interface EstateService {
 
     Page<EstateItemDTO> listForSaleByPage(Pageable pageable, Map<String, Object> paramMap) throws Exception;
 
-    EstateItemDTO getByHouseCode(String houseCode) throws Exception;
+    List<EstateImageModel> listByHouseCode(String houseCode);
 
-    List<EstateImageModel> listByHouseCode(String id);
+    List<EstateItemModel> findTop20ByHouseCodeLikeAndSaleState(String targetCode, String saleState);
+
+    EstateItemModel save(EstateItemModel estateItem);
 }

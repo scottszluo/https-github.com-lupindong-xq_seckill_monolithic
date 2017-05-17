@@ -123,7 +123,7 @@ public class SpecialTest {
 
         try {
             long targetId = System.currentTimeMillis() % 1000;
-            List<EstateItemModel> estateItemList = estateItemRepository.findByHouseCodeLike("%" + targetId + "%");
+            List<EstateItemModel> estateItemList = estateItemRepository.findTop20ByHouseCodeLikeAndSaleState("%" + targetId + "%", EstateEnum.FOR_SALE.getValue());
             int maxNum = estateItemList.size();
             if (maxNum > estateItemList.size()) {
                 maxNum = estateItemList.size();
@@ -197,50 +197,5 @@ public class SpecialTest {
         }
         Assert.assertTrue(true);
     }
-
-    @Test
-    public void randomInsertEstate() throws IllegalAccessException, InstantiationException {
-        List<EstateItemModel> estateItemList;
-        EstateItemModel estateIteml;
-        EstateItemModel newModel;
-
-        EstateImageModel condition;
-        List<EstateImageModel> imageModelList;
-        EstateImageModel newImage;
-        while (true) {
-            long targetId = System.currentTimeMillis() % 1000;
-            estateItemList = estateItemRepository.findByHouseCodeLike("%" + targetId + "%");
-            int maxNum = estateItemList.size();
-            for (int i = 0; i < maxNum; i++) {
-                estateIteml = estateItemList.get(i);
-                if (estateIteml.getHouseCode().contains("-N")) {
-                    continue;
-                }
-
-                newModel = new EstateItemModel(IdWorker.INSTANCE.nextId());
-                BeanUtils.copyProperties(estateIteml, newModel, "id");
-                String postfix = "-N" + targetId + "-" + maxNum + "-" + i;
-                newModel.setTitle(estateIteml.getTitle() + postfix);
-                newModel.setHouseCode(estateIteml.getHouseCode() + postfix);
-                LocalDateTime sTime = TimeUtil.nowDateTime();
-                LocalDateTime eTime = sTime.plusDays(1);
-                newModel.setCreateTime(sTime);
-                newModel.setUpdateTime(eTime);
-                estateItemRepository.saveAndFlush(newModel);
-
-                // 相关图片
-                condition = new EstateImageModel();
-                condition.setHouseCode(estateIteml.getHouseCode());
-                imageModelList = estateImageRepository.findAll(Example.of(condition));
-                for (EstateImageModel estateImageModel : imageModelList) {
-                    newImage = new EstateImageModel();
-                    BeanUtils.copyProperties(estateImageModel, newImage, "pictureId");
-                    newImage.setHouseCode(newModel.getHouseCode());
-                    estateImageRepository.saveAndFlush(newImage);
-                }
-            }
-        }
-    }
-
 
 }

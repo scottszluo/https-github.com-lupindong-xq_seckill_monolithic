@@ -29,6 +29,10 @@ public class SpecialController extends BasicController {
     @Autowired
     private SpecialService specialService;
 
+    @PostMapping("/specials")
+    public JsonResult createData() throws Exception {
+        return specialService.createData();
+    }
 
     @GetMapping("/specials")
     public JsonResult listData() throws Exception {

@@ -374,6 +374,8 @@ var Special = (function () {
                 var flag = sessionStorage.getItem("flag:" + id);
                 if (!flag) {
                     Detail.captchaFun(id, nowTimeX, startTimeX, endTimeX);
+                } else {
+                    countDownArea.html('<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>已秒杀成功，请勿重复秒杀！</a>');
                 }
             }
         },
@@ -449,7 +451,8 @@ var Special = (function () {
                     var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
                     countDownArea.html(htmlContent);
                     countDownArea.countdown('stop');
-                    Common.PNotice.error(result.message);;
+                    Common.PNotice.error(result.message);
+                    ;
                 } else {
                     Detail.changeCaptcha();
                     Common.PNotice.error(result.message);

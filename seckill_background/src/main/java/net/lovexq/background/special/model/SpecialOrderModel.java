@@ -1,11 +1,13 @@
 package net.lovexq.background.special.model;
 
 import net.lovexq.seckill.common.model.BasicModel;
+import net.lovexq.seckill.common.utils.TimeUtil;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -43,6 +45,9 @@ public class SpecialOrderModel extends BasicModel implements Serializable {
         this.stockId = stockId;
         this.account = account;
         this.state = state;
+        LocalDateTime nowTime = TimeUtil.nowDateTime();
+        setCreateTime(nowTime);
+        setUpdateTime(nowTime);
     }
 
     public Long getId() {

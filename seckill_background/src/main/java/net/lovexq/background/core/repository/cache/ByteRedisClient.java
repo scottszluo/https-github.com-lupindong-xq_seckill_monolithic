@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -208,12 +209,40 @@ public class ByteRedisClient {
      * @param key
      * @param targetClass
      * @param start
-     * @param stop
+     * @param end
      * @return
      */
-    public <T> Set<T> zrange(String key, Class<T> targetClass, double start, double stop) {
-        Object data = byteRedisTemplate.opsForZSet().rangeByScore(key, start, stop);
-        if (data == null) return null;
-        return ProtoStuffUtil.deserializeSet((byte[]) data, targetClass);
+    public <T> Set<T> zrange(String key, Class<T> targetClass, long start, long end) {
+        Set<Object> sourceSet = byteRedisTemplate.opsForZSet().range(key, start, end);
+        if (sourceSet == null) return null;
+        Set<T> targetSet = new LinkedHashSet();
+        for (Object source : sourceSet) {
+            T target = ProtoStuffUtil.deserialize((byte[]) source, targetClass);
+            targetSet.add(target);
+        }
+        return targetSet;
+    }
+
+    /**
+     * 实现命令：ZREM key member [member ...] ，移除有序集合中的一个或多个成员。
+     *
+     * @param key
+     * @param objs
+     * @return
+     */
+    public <T> Long zrem(String key, T... objs) {
+        return byteRedisTemplate.opsForZSet().remove(key, objs);
+    }
+
+    /**
+     * 实现命令：	ZREMRANGEBYRANK key start stop，移除有序集合中给定的排名区间的所有成员。
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Long zrem(String key, long start, long end) {
+        return byteRedisTemplate.opsForZSet().removeRange(key, start, end);
     }
 }

@@ -239,10 +239,10 @@ public class StringRedisClient {
      * 实现命令：ZADD key score member，将一个 member元素及其 score值加入到有序集 key当中。
      *
      * @param key
-     * @param score
      * @param member
+     * @param score
      */
-    public void zadd(String key, double score, String member) {
+    public void zadd(String key, String member, double score) {
         stringRedisTemplate.opsForZSet().add(key, member, score);
     }
 
@@ -251,10 +251,33 @@ public class StringRedisClient {
      *
      * @param key
      * @param start
-     * @param stop
+     * @param end
      * @return
      */
-    public Set<String> zrange(String key, double start, double stop) {
-        return stringRedisTemplate.opsForZSet().rangeByScore(key, start, stop);
+    public Set<String> zrange(String key, long start, long end) {
+        return stringRedisTemplate.opsForZSet().range(key, start, end);
+    }
+
+    /**
+     * 实现命令：ZREM key member [member ...] ，移除有序集合中的一个或多个成员。
+     *
+     * @param key
+     * @param members
+     * @return
+     */
+    public Long zrem(String key, String... members) {
+        return stringRedisTemplate.opsForZSet().remove(key, members);
+    }
+
+    /**
+     * 实现命令：	ZREMRANGEBYRANK key start stop，移除有序集合中给定的排名区间的所有成员。
+     *
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    public Long zrem(String key, long start, long end) {
+        return stringRedisTemplate.opsForZSet().removeRange(key, start, end);
     }
 }

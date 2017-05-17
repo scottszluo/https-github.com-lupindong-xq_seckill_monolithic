@@ -1,16 +1,20 @@
 package net.lovexq.background.core;
 
 import net.lovexq.background.core.repository.cache.ByteRedisClient;
+import net.lovexq.background.core.repository.cache.StringRedisClient;
+import net.lovexq.background.special.model.SpecialOrderModel;
+import net.lovexq.seckill.common.utils.constants.AppConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.Set;
 
 /**
  * @author LuPindong
@@ -28,14 +32,29 @@ public class RedisTest {
     @Autowired
     private ByteRedisClient byteRedisClient;
 
+    @Autowired
+    private StringRedisClient stringRedisClient;
+
     @Test
-    public void testSet() {
-        redisTemplate.execute((RedisCallback<Boolean>) connection -> {
-            byte[] key = "tempkey".getBytes();
-            byte[] value = "tempvalue".getBytes();
-            connection.set(key, value);
-            return true;
-        });
+    public void testZSet() {
+        //Set<SpecialOrderModel> specialOrderModelSet = byteRedisClient.zrange(AppConstants.CACHE_ZSET_SPECIAL_ORDER + "864742020508422144", SpecialOrderModel.class, 0, -1);
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        ZSetOperations<String, String> ops = redisTemplate.opsForZSet();
+        ops.add("newKey", "12345x", 200);
+        ops.add("newKey", "12345y", 300);
+        ops.add("newKey", "12345z", 100);
+        ops.add("newKey", "12345a", 400);
+        ops.add("newKey", "12345b", 50);
+        System.out.println(ops.range("newKey", 0, -1));
+        ops.remove("newKey","12345a");
+        System.out.println(ops.range("newKey", 0, -1));
+    }
+
+    @Test
+    public void testZSet2() {
+        Set<SpecialOrderModel> specialOrderModelSet = byteRedisClient.zrange(AppConstants.CACHE_ZSET_SPECIAL_ORDER + "864742020059631616", SpecialOrderModel.class, 0, -1);
+        System.out.println(specialOrderModelSet.size());
     }
 
     @Test

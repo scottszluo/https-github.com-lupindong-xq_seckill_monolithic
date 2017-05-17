@@ -39,7 +39,6 @@ import java.io.FileWriter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * @author LuPindong
@@ -73,7 +72,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
             LianJiaParam lianJiaParam = new LianJiaParam(appProperties, baseUrl, region, curPage, totalPage);
-            Future future = exec.submit(new LianJiaInitializeCallable(lianJiaParam, mqProducer, initializeQueue));
+            result = exec.submit(new LianJiaInitializeCallable(lianJiaParam, mqProducer, initializeQueue)).get();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             result = new JsonResult(500, e.getMessage());
@@ -91,7 +90,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
             LianJiaParam lianJiaParam = new LianJiaParam(appProperties, batch, baseUrl, region);
-            Future future = exec.submit(new LianJiaCheckCallable(lianJiaParam, mqProducer, checkQueue));
+            result = exec.submit(new LianJiaCheckCallable(lianJiaParam, mqProducer, checkQueue)).get();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             result = new JsonResult(500, e.getMessage());
@@ -134,7 +133,7 @@ public class CrawlerServiceImpl implements CrawlerService {
                 estateItemList.add(estateItemDTO);
             }
             LianJiaParam lianJiaParam = new LianJiaParam(estateItemList, appProperties, batch, curPage);
-            Future future = exec.submit(new LianJiaAddCallable(lianJiaParam, mqProducer, initializeQueue));
+            result = exec.submit(new LianJiaAddCallable(lianJiaParam, mqProducer, initializeQueue)).get();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             result = new JsonResult(500, e.getMessage());

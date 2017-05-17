@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import net.lovexq.background.core.properties.AppProperties;
 import net.lovexq.background.core.repository.cache.ByteRedisClient;
 import net.lovexq.background.core.repository.cache.StringRedisClient;
+import net.lovexq.background.crawler.service.CrawlerService;
+import net.lovexq.background.estate.model.EstateItemModel;
 import net.lovexq.background.estate.service.EstateService;
 import net.lovexq.background.special.dto.SpecialStockDTO;
 import net.lovexq.background.special.model.SpecialOrderModel;
@@ -11,15 +13,17 @@ import net.lovexq.background.special.model.SpecialStockModel;
 import net.lovexq.background.special.repository.SpecialOrderRepository;
 import net.lovexq.background.special.repository.SpecialStockRepository;
 import net.lovexq.background.special.service.SpecialService;
+import net.lovexq.background.system.model.SystemConfigModel;
+import net.lovexq.background.system.repository.SystemConfigRepository;
 import net.lovexq.seckill.common.model.JsonResult;
-import net.lovexq.seckill.common.utils.CacheKeyGenerator;
-import net.lovexq.seckill.common.utils.CachedBeanCopier;
-import net.lovexq.seckill.common.utils.TimeUtil;
+import net.lovexq.seckill.common.utils.*;
 import net.lovexq.seckill.common.utils.constants.AppConstants;
+import net.lovexq.seckill.common.utils.enums.EstateEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 房源业务层实现类
@@ -44,17 +49,87 @@ public class SpecialServiceImpl implements SpecialService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpecialServiceImpl.class);
     private static final String INSERT_KILLED_SQL = "INSERT IGNORE INTO special_order(id,stock_id,account,state,create_time,update_time) values(?,?,?,'下单',?,?)";
     @Autowired
+    private EstateService estateService;
+    @Autowired
+    private CrawlerService crawlerService;
+    @Autowired
     private SpecialStockRepository specialStockRepository;
     @Autowired
     private SpecialOrderRepository specialOrderRepository;
     @Autowired
-    private EstateService estateService;
+    private SystemConfigRepository systemConfigRepository;
     @Autowired
     private ByteRedisClient byteRedisClient;
     @Autowired
     private StringRedisClient stringRedisClient;
     @Autowired
     private AppProperties appProperties;
+
+    @Override
+    @Transactional
+    public JsonResult createData() throws Exception {
+        JsonResult result = new JsonResult();
+
+        LocalDateTime nowDateTime = TimeUtil.nowDateTime();
+        String targetCode = "%" + nowDateTime.getMinute() + "%";
+        List<EstateItemModel> estateItemModelList = estateService.findTop20ByHouseCodeLikeAndSaleState(targetCode, EstateEnum.FOR_SALE.getValue());
+        if (CollectionUtils.isNotEmpty(estateItemModelList)) {
+            // 先清空列表数据缓存
+            String cacheKeyForList = CacheKeyGenerator.generate(SpecialStockModel.class, "listForSecKill");
+            byteRedisClient.del(cacheKeyForList);
+
+            // 更新特价批次
+            SystemConfigModel sysConfigModel = systemConfigRepository.findByConfigKey("special_batch");
+            if (sysConfigModel == null) {
+                sysConfigModel = new SystemConfigModel();
+                sysConfigModel.setConfigKey("special_batch");
+                sysConfigModel.setConfigValue("0");
+            }
+            Long batch = Long.valueOf(sysConfigModel.getConfigValue()) + 1;
+            sysConfigModel.setConfigValue(batch.toString());
+            systemConfigRepository.save(sysConfigModel);
+            String cacheKey = CacheKeyGenerator.generate(SystemConfigModel.class, "getByConfigKey", "special_batch");
+            byteRedisClient.setByteObj(cacheKey, sysConfigModel);
+
+            // 开始生成特价库存相关
+            Random random = new Random();
+            for (EstateItemModel estateItem : estateItemModelList) {
+                // 插入特价库存表
+                SpecialStockModel specialStock = new SpecialStockModel(IdWorker.INSTANCE.nextId());
+                BeanUtils.copyProperties(estateItem, specialStock, "id");
+                specialStock.setTotal(random.nextInt(10) + 1);
+                specialStock.setNumber(specialStock.getTotal());
+                //LocalDateTime sTime = nowDateTime.toLocalDate().atStartOfDay().withHour(random.nextInt(24)).plusHours(nowDateTime.getHour()).withMinute(0).withSecond(0);
+                LocalDateTime sTime = nowDateTime.minusHours(2).plusHours(random.nextInt(6)).withMinute(0).withSecond(0);
+                LocalDateTime eTime = sTime.plusHours(3);
+                specialStock.setStartTime(sTime);
+                specialStock.setEndTime(eTime);
+                specialStock.setBatch(sysConfigModel.getConfigValue());
+                specialStockRepository.save(specialStock);
+
+                // 缓存全局库存计数器
+                stringRedisClient.increment(AppConstants.CACHE_SPECIAL_STOCK_COUNT + specialStock.getId(), specialStock.getTotal().longValue());
+
+                // 对选中房源标特价
+                estateItem.setSaleState(EstateEnum.SPECIAL.getValue());
+                estateService.save(estateItem);
+
+                // 生成静态页面
+                SpecialStockDTO specialStockDTO = new SpecialStockDTO();
+                CachedBeanCopier.copy(specialStock, specialStockDTO);
+
+                specialStockDTO.setStartTimeX(specialStockDTO.getStartTime().atZone(TimeUtil.shanghai).toInstant().toEpochMilli());
+                specialStockDTO.setEndTimeX(specialStockDTO.getEndTime().atZone(TimeUtil.shanghai).toInstant().toEpochMilli());
+                specialStockDTO.setEstateImageList(estateService.listByHouseCode(estateItem.getHouseCode()));
+
+                // 转为Map
+                crawlerService.generateStaticPage(BeanMapUtil.beanToMap(specialStockDTO), "special_detailUI");
+            }
+
+        }
+
+        return result;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -65,7 +140,7 @@ public class SpecialServiceImpl implements SpecialService {
         if (CollectionUtils.isNotEmpty(targetList)) {
             return targetList;
         } else {
-            List<SpecialStockModel> sourceList = specialStockRepository.findForSecKillList();
+            List<SpecialStockModel> sourceList = specialStockRepository.findForSecKillList(TimeUtil.format(TimeUtil.nowDateTime()));
             targetList = new ArrayList();
             if (CollectionUtils.isNotEmpty(sourceList)) {
                 for (SpecialStockModel source : sourceList) {
@@ -105,13 +180,6 @@ public class SpecialServiceImpl implements SpecialService {
             }
             return targetStock;
         }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void saveCaptcha(Claims claims, String captcha) {
-        String cacheKey = AppConstants.CACHE_CAPTCHA + claims.getAudience();
-        byteRedisClient.setByteObj(cacheKey, captcha, 120);
     }
 
     @Override
@@ -156,7 +224,6 @@ public class SpecialServiceImpl implements SpecialService {
     }
 
     @Override
-    @Transactional
     public JsonResult executeSecKill(Long id, String key, String captcha, Claims claims) throws Exception {
         JsonResult result = new JsonResult();
 
@@ -169,7 +236,7 @@ public class SpecialServiceImpl implements SpecialService {
             return new JsonResult(401, "验证码已过期，请刷新重试！");
         }
         if (!captcha.equals(cacheCaptcha)) {
-            return new JsonResult(401, "请输入正常的验证码！");
+            return new JsonResult(401, "请输入正确的验证码！");
         }
 
         if (key == null || !key.equals(getMd5Url(id))) {
@@ -190,18 +257,27 @@ public class SpecialServiceImpl implements SpecialService {
             return new JsonResult(403, "已秒杀成功，请勿重复秒杀！");
         }
 
-        /*// 执行插入秒杀记录操作
-        String nowTime = TimeUtil.format(TimeUtil.nowDateTime());
-        int insertCount = specialOrderRepository.executeUpdateBySql(INSERT_KILLED_SQL, IdWorker.INSTANCE.nextId(), id, account, nowTime, nowTime);
+        return result;
+    }
 
+    @Override
+    @Transactional
+    public JsonResult decreaseStock(SpecialOrderModel specialOrderModel) throws Exception {
+        JsonResult result = new JsonResult();
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("开始对[用户账户: " + specialOrderModel.getAccount() + "], [房源ID:" + specialOrderModel.getStockId() + "]的特价秒杀订单记录进行减库存操作");
+        }
+
+        String nowTime = TimeUtil.format(specialOrderModel.getCreateTime());
+        int insertCount = specialOrderRepository.executeUpdateBySql(INSERT_KILLED_SQL, IdWorker.INSTANCE.nextId(), specialOrderModel.getStockId(), specialOrderModel.getAccount(), nowTime, nowTime);
         // 插入失败
         if (insertCount <= 0) {
             return new JsonResult(403, "请勿重复秒杀！");
             // 插入成功
         } else {
             // 执行减库存操作
-            int updateCount = specialStockRepository.reduceNumber(id, TimeUtil.nowDateTime());
-
+            int updateCount = specialStockRepository.reduceNumber(specialOrderModel.getStockId(), TimeUtil.nowDateTime());
             // 更新失败，说明库存为零，则秒杀失败
             if (updateCount <= 0) {
                 return new JsonResult(410, "房源已售罄！");
@@ -209,9 +285,25 @@ public class SpecialServiceImpl implements SpecialService {
             } else {
                 result.setMessage("秒杀成功！");
             }
-        }*/
+        }
 
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void saveCaptcha(Claims claims, String captcha) {
+        String cacheKey = AppConstants.CACHE_CAPTCHA + claims.getAudience();
+        byteRedisClient.setByteObj(cacheKey, captcha, 120);
+    }
+
+    @Override
+    public List<SpecialStockModel> listReadyStock(String startTime, boolean isAll) {
+        if (isAll) {
+            return specialStockRepository.findAllReadyStockList(startTime);
+        } else {
+            return specialStockRepository.findReadyStockList(startTime);
+        }
     }
 
 }
