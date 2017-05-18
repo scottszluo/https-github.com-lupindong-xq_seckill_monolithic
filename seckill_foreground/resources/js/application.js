@@ -398,7 +398,9 @@ var Special = (function () {
 
                     // 显示秒杀区域
                     $("section").show();
-
+                    $(".changeCaptcha").click(function () {
+                        Special.Detail.changeCaptcha();
+                    });
                     $("#secKillUrl").val(Detail.executionUrl(id, result.data));
                     $("#killBtn").click(Detail.execSecKillFun);
                 } else if (403 == result.status) {
@@ -443,16 +445,15 @@ var Special = (function () {
             $.post($("#secKillUrl").val(), {"captcha": captcha}).done(function (result) {
                 if (200 == result.status) {
                     $("#section2").hide();
-                    var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
+                    var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>排队中……</a>';
                     countDownArea.html(htmlContent);
                     countDownArea.countdown('stop');
-                    Common.PNotice.success(result.message);
-                } else if (403 == result.status) {
+                    //Common.PNotice.success(result.message);
+                } else if (403 == result.status || 410 == result.status) {
                     var htmlContent = '<a href="javascript:void(0)" class="btn btn-lg btn-primary ml-lg" disabled>' + result.message + '</a>';
                     countDownArea.html(htmlContent);
                     countDownArea.countdown('stop');
                     Common.PNotice.error(result.message);
-                    ;
                 } else {
                     Detail.changeCaptcha();
                     Common.PNotice.error(result.message);
